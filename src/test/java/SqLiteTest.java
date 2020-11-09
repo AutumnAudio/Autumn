@@ -3,12 +3,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.sql.Time;
 import java.time.LocalTime;
 
+import models.Genre;
 import models.SqLite;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -37,8 +34,8 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertChatRoom("Jazz", "/jazz-links", "jazz-playlist");
-    db.insertChatRoom("Blues", "/blues-links", "blues-playlist");
+    db.insertChatRoom(Genre.Jazz, "/jazz-links", "jazz-playlist");
+    db.insertChatRoom(Genre.Blues, "/blues-links", "blues-playlist");
     db.commit();
     assertEquals(2, db.getChatRooms().size());
     db.close();
@@ -50,9 +47,9 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertParticipant("Jazz", "mary");
+    db.insertParticipant(Genre.Jazz, "mary");
     db.commit();
-    assertEquals("mary", db.getChatRoomParticipant("Jazz").get(0).getUsername());
+    assertEquals("mary", db.getChatRoomParticipant(Genre.Jazz).get(0).getUsername());
     db.close();
   }
 
@@ -62,9 +59,9 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertMessage("mary", Time.valueOf(LocalTime.now()), "Jazz", "Jazz is the best");
+    db.insertMessage("mary", Time.valueOf(LocalTime.now()), Genre.Jazz, "Jazz is the best");
     db.commit();
-    assertEquals("Jazz is the best", db.getChatRoomChat("Jazz").get(0).getMessage());
+    assertEquals("Jazz is the best", db.getChatRoomChat(Genre.Jazz).get(0).getMessage());
     db.close();
   }
 
@@ -74,9 +71,9 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertSong("mary", Time.valueOf(LocalTime.now()), "Blues", "blues-song");
+    db.insertSong("mary", Time.valueOf(LocalTime.now()), Genre.Blues, "blues-song");
     db.commit();
-    assertEquals("blues-song", db.getChatRoomPlaylist("Blues").get(0).getSong());
+    assertEquals("blues-song", db.getChatRoomPlaylist(Genre.Blues).get(0).getSong());
     db.close();
   }
 }

@@ -144,11 +144,11 @@ public class SqLite {
    * @param link String
    * @param spotifyPlaylist String
    */
-  public void insertChatRoom(final String genre, final String link, final String spotifyPlaylist) {
+  public void insertChatRoom(final Genre genre, final String link, final String spotifyPlaylist) {
     try {
       conn.setAutoCommit(false);
       String sql = "INSERT INTO CHATROOMS (GENRE, LINK, SPOTIFY_PLAYLIST) "
-                     + "VALUES (" + "'" + genre + "'" + "," + "'" + link + "'" + "," + "'" + spotifyPlaylist + "'" + ");";
+                     + "VALUES (" + "'" + genre.getGenre() + "'" + "," + "'" + link + "'" + "," + "'" + spotifyPlaylist + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -162,14 +162,14 @@ public class SqLite {
    */
   public List<ChatRoom> getChatRooms() {
 	List<ChatRoom> list = new ArrayList<>();
-	List<String> genres = new ArrayList<>();
+	List<Genre> genres = new ArrayList<>();
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM CHATROOMS");
       try {
         while (rs.next()) {
           ChatRoom room = new ChatRoom();
-          String genre = rs.getString("GENRE");
+          Genre genre = Genre.valueOf(rs.getString("GENRE"));
           room.setGenre(genre);
           room.setLink(rs.getString("LINK"));
           genres.add(genre);
@@ -199,11 +199,11 @@ public class SqLite {
    * @param username String
    */
 
-  public void insertParticipant(final String genre, final String username) {
+  public void insertParticipant(final Genre genre, final String username) {
     try {
       conn.setAutoCommit(false);
       String sql = "INSERT INTO PARTICIPANTS (GENRE, USERNAME) "
-                     + "VALUES (" + "'" + genre + "'" + "," + "'" + username + "'" + ");";
+                     + "VALUES (" + "'" + genre.getGenre() + "'" + "," + "'" + username + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -216,12 +216,12 @@ public class SqLite {
    * @param genre String
    * @return participant List<User>
    */
-  public List<User> getChatRoomParticipant(final String genre) {
+  public List<User> getChatRoomParticipant(final Genre genre) {
 	List<User> list = new ArrayList<>();
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM PARTICIPANTS "
-                              + "WHERE GENRE= " + "'" + genre + "'");
+                              + "WHERE GENRE= " + "'" + genre.getGenre() + "'");
       try {
         while (rs.next()) {
           User user = new User();
@@ -247,11 +247,11 @@ public class SqLite {
    * @param message String
    */
 
-  public void insertMessage(final String username, final Time timeSent, final String genre, final String message) {
+  public void insertMessage(final String username, final Time timeSent, final Genre genre, final String message) {
     try {
       conn.setAutoCommit(false);
       String sql = "INSERT INTO CHAT (USERNAME, TIME_SENT, GENRE, MESSAGE) "
-                     + "VALUES (" + "'" + username + "'" + "," + "'" + timeSent + "'" + "," + "'" + genre  + "'" + "," + "'" + message + "'" + ");";
+                     + "VALUES (" + "'" + username + "'" + "," + "'" + timeSent + "'" + "," + "'" + genre.getGenre()  + "'" + "," + "'" + message + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -264,12 +264,12 @@ public class SqLite {
    * @param genre String
    * @return chat history List<Message>
    */
-  public List<Message> getChatRoomChat(final String genre) {
+  public List<Message> getChatRoomChat(final Genre genre) {
 	List<Message> list = new ArrayList<>();
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM CHAT "
-                              + "WHERE GENRE= " + "'" + genre + "'");
+                              + "WHERE GENRE= " + "'" + genre.getGenre() + "'");
       try {
         while (rs.next()) {
           Message message = new Message();
@@ -295,11 +295,11 @@ public class SqLite {
    * @param song String
    */
 
-  public void insertSong(final String username, final Time timeShared, final String genre, final String song) {
+  public void insertSong(final String username, final Time timeShared, final Genre genre, final String song) {
     try {
       conn.setAutoCommit(false);
       String sql = "INSERT INTO PLAYLIST (USERNAME, TIME_SHARED, GENRE, SONG) "
-                     + "VALUES (" + "'" + username + "'" + "," + "'" + timeShared + "'" + "," + "'" + genre + "'" + "," + "'" + song + "'" + ");";
+                     + "VALUES (" + "'" + username + "'" + "," + "'" + timeShared + "'" + "," + "'" + genre.getGenre() + "'" + "," + "'" + song + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -312,12 +312,12 @@ public class SqLite {
    * @param genre String
    * @return playlist List<Song>
    */
-  public List<Song> getChatRoomPlaylist(final String genre) {
+  public List<Song> getChatRoomPlaylist(final Genre genre) {
 	List<Song> list = new ArrayList<>();
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM PLAYLIST "
-                              + "WHERE GENRE= " + "'" + genre + "'");
+                              + "WHERE GENRE= " + "'" + genre.getGenre() + "'");
       try {
         while (rs.next()) {
           Song song = new Song();

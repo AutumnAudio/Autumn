@@ -3,6 +3,10 @@ package models;
 import java.util.List;
 
 public class ChatList {
+  /**
+   * Type of music genres
+   */
+  private Enum<Genre> genre;
 
   /**
    * Player who starts the game.

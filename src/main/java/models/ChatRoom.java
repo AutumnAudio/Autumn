@@ -22,7 +22,7 @@ public class ChatRoom {
   /**
    * Genre of chatroom
    */
-  String genre;
+  Genre genre;
 
   /**
    * link chatroom
@@ -107,7 +107,7 @@ public class ChatRoom {
    * Get chatroom genre.
    * @return genre String.
    */
-  public String getGenre() {
+  public Genre getGenre() {
     return this.genre;
   }
 
@@ -115,7 +115,7 @@ public class ChatRoom {
    * Set chatroom genre.
    * @param genre String.
    */
-  public void setGenre(String genre) {
+  public void setGenre(Genre genre) {
     this.genre = genre;
   }  
 
