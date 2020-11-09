@@ -1,17 +1,26 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatList {
   /**
-   * Type of music genres
-   */
-  private Enum<Genre> genre;
-
-  /**
    * Player who starts the game.
    */
-  private List<ChatRoom> chatrooms;
+  private List<ChatRoom> chatrooms = new ArrayList<ChatRoom>();
+
+  public ChatList() {
+  	Genre[] genres = Genre.class.getEnumConstants();
+    for (Genre genre : genres) {
+  	  ChatRoom chatroom = new ChatRoom();
+  	  chatroom.setParticipant(new ArrayList<User>());
+  	  chatroom.setChat(new ArrayList<Message>());
+  	  chatroom.setPlaylist(new ArrayList<Song>());
+  	  chatroom.setGenre(genre);
+  	  chatroom.setLink("/joinroom/" + genre.getGenre());
+  	  chatrooms.add(chatroom);
+    }
+  }
 
   /**
    * Get chatrooms.
@@ -27,14 +36,6 @@ public class ChatList {
    */
   public void setChatrooms(List<ChatRoom> chatroomList) {
     this.chatrooms = chatroomList;
-  }
-
-  /**
-   * Add chatroom to chatroom list.
-   * @param chatroom ChatRoom Object
-   */
-  public void addChatRoom(final ChatRoom chatroom) {
-    this.chatrooms.add(chatroom);
   }
 
 }

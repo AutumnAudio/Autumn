@@ -3,10 +3,12 @@ package controllers;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Queue;
 
 import models.ChatList;
 import models.ChatRoom;
+import models.Genre;
 import models.Message;
 import models.User;
 import models.Song;
@@ -81,8 +83,8 @@ public final class StartChat {
     });
 
     // Send Chatroom List
-    app.get("/chatroom", ctx -> {
-      // TODO implement endpoint
+    app.get("/chatrooms", ctx -> {
+      ctx.result(new Gson().toJson(chatlist));
     });
 
     app.post("/registration", ctx -> {
