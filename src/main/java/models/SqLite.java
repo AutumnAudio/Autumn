@@ -352,7 +352,12 @@ public class SqLite {
    * Update chatroom after reboot.
    * @param chatroom ChatRoom Object
    */
-  public void inProgress(final ChatRoom chatroom) {
+  public ChatList backUp() {
+    ChatList chatlist = new ChatList();
+    chatlist.setChatrooms(new ArrayList<ChatRoom>());
+    chatlist.setChatrooms(getChatRooms());
+    return chatlist;
+
   }
 
   /**

@@ -123,7 +123,7 @@ public class ChatRoom {
    * Get link to chatroom.
    * @return link String.
    */
-  public String getList() {
+  public String getLink() {
     return this.link;
   }
 

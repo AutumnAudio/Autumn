@@ -9,19 +9,6 @@ public class ChatList {
    */
   private List<ChatRoom> chatrooms = new ArrayList<ChatRoom>();
 
-  public ChatList() {
-  	Genre[] genres = Genre.class.getEnumConstants();
-    for (Genre genre : genres) {
-  	  ChatRoom chatroom = new ChatRoom();
-  	  chatroom.setParticipant(new ArrayList<User>());
-  	  chatroom.setChat(new ArrayList<Message>());
-  	  chatroom.setPlaylist(new ArrayList<Song>());
-  	  chatroom.setGenre(genre);
-  	  chatroom.setLink("/joinroom/" + genre.getGenre());
-  	  chatrooms.add(chatroom);
-    }
-  }
-
   /**
    * Get chatrooms.
    * @return chatrooms List<Chatroom>.
@@ -36,6 +23,14 @@ public class ChatList {
    */
   public void setChatrooms(List<ChatRoom> chatroomList) {
     this.chatrooms = chatroomList;
+  }
+
+  /**
+   * Return size of ArrayList
+   * @return size integer
+   */
+  public int size() {
+    return this.chatrooms.size();
   }
 
 }

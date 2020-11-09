@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 import models.ChatList;
@@ -38,11 +39,6 @@ public final class StartChat {
   private static final int PORT_NUMBER = 8080;
 
   /**
-   *  Set number of rooms/genres.
-   */
-  private static final int GENRES = 1;
-
-  /**
    * Create Javalin instance.
    */
   private static Javalin app;
@@ -51,11 +47,6 @@ public final class StartChat {
    * Create database instance.
    */
   private static SqLite db = new SqLite();
-
-  /**
-   * Create ChatRoom instance.
-   */
-  private static ChatRoom chatroom = new ChatRoom();
 
   /**
    * Create ChatList.
@@ -68,6 +59,28 @@ public final class StartChat {
   public static void main(final String[] args) {
     db.start();
     db.commit();
+    chatlist = db.backUp();
+    db.commit();
+    if (chatlist.size() == 0) {
+      List<ChatRoom> list = new ArrayList<ChatRoom>();
+      Genre[] genres = Genre.class.getEnumConstants();
+      for (Genre genre : genres) {
+        ChatRoom chatroom = new ChatRoom();
+        chatroom.setParticipant(new ArrayList<User>());
+        chatroom.setChat(new ArrayList<Message>());
+        chatroom.setPlaylist(new ArrayList<Song>());
+        chatroom.setGenre(genre);
+      	chatroom.setLink("/joinroom/" + genre.getGenre());
+       	list.add(chatroom);
+      }
+      chatlist.setChatrooms(list);
+      for (int i = 0; i < chatlist.size(); i++) {
+        ChatRoom chatroom = chatlist.getChatrooms().get(i);
+        db.insertChatRoom(chatroom.getGenre(), chatroom.getLink(), "playlist-" + chatroom.getGenre().getGenre());
+        db.commit();
+      }
+    }
+
     app = Javalin.create(config -> {
       config.addStaticFiles("/public");
     }).start(PORT_NUMBER);
@@ -84,6 +97,7 @@ public final class StartChat {
 
     // Send Chatroom List
     app.get("/chatrooms", ctx -> {
+      chatlist.setChatrooms(db.getChatRooms());
       ctx.result(new Gson().toJson(chatlist));
     });
 
@@ -100,7 +114,7 @@ public final class StartChat {
       // get chatroom data from DB
       // update participant views
       String genre = ctx.pathParam("genre");
-      String userId = ctx.formParam("userId");
+      String username = ctx.formParam("username");
     });
 
     app.post("/send/:username", ctx -> {
@@ -130,7 +144,7 @@ public final class StartChat {
       // get chatroom data from DB
       // update participant views
       String genre = ctx.pathParam("genre");
-      int userId = Integer.parseInt(ctx.formParam("userId"));
+      String username = ctx.formParam("username");
     });
 
     app.after(ctx -> {
