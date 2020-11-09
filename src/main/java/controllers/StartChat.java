@@ -82,16 +82,19 @@ public final class StartChat {
 
     // Send Chatroom List
     app.get("/chatroom", ctx -> {
-      ctx.result(new Gson().toJson(chatlist));
+      // TODO implement endpoint
     });
 
     app.post("/registration", ctx -> {
+      // TODO implement endpoint
     });
 
     app.post("/login", ctx -> {
+      // TODO implement endpoint
     });
 
     app.post("/joinroom/:genre", ctx -> {
+      // TODO implement endpoint
       // get chatroom data from DB
       // update participant views
       String genre = ctx.pathParam("genre");
@@ -99,6 +102,7 @@ public final class StartChat {
     });
 
     app.post("/send/:username", ctx -> {
+      // TODO implement endpoint
       // add message to chatroom DB
       // update participant views
       String username = ctx.pathParam("username");
@@ -109,21 +113,23 @@ public final class StartChat {
     });
 
     app.post("/share/:username", ctx -> {
-        // add song to DB
-        // update participant views
-        String username = ctx.pathParam("username");
-        String spotifySong = ctx.formParam("song");
-        Song song = new Song();
-        song.setUsername(username);
-        song.setSong(spotifySong);
-      });
+      // TODO implement endpoint
+      // add song to DB
+      // update participant views
+      String username = ctx.pathParam("username");
+      String spotifySong = ctx.formParam("song");
+      Song song = new Song();
+      song.setUsername(username);
+      song.setSong(spotifySong);
+    });
 
     app.delete("/leaveroom/:genre", ctx -> {
-        // get chatroom data from DB
-        // update participant views
-    	String genre = ctx.pathParam("genre");
-        int userId = Integer.parseInt(ctx.formParam("userId"));
-      });
+      // TODO implement endpoint
+      // get chatroom data from DB
+      // update participant views
+      String genre = ctx.pathParam("genre");
+      int userId = Integer.parseInt(ctx.formParam("userId"));
+    });
 
     app.after(ctx -> {
       db.commit();
