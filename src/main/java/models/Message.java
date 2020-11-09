@@ -32,8 +32,8 @@ public class Message {
    * Set message.
    * @param msg String
    */
-  public void setMessage(final String msg) {
-    this.message = msg;
+  public void setMessage(final String message) {
+    this.message = message;
   }
 
   /**
@@ -41,7 +41,7 @@ public class Message {
    * @return message string
    */
   public String getMessage() {
-    return message;
+    return this.message;
   }
 
 }
