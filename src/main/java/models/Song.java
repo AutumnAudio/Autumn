@@ -41,7 +41,7 @@ public class Song {
    * @return message song
    */
   public String getSong() {
-    return song;
+    return this.song;
   }
 
 }

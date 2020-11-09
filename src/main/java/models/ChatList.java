@@ -29,7 +29,7 @@ public class ChatList {
    * Add chatroom to chatroom list.
    * @param chatroom ChatRoom Object
    */
-  public void addsong(final ChatRoom chatroom) {
+  public void addChatRoom(final ChatRoom chatroom) {
     this.chatrooms.add(chatroom);
   }
 

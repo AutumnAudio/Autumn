@@ -12,7 +12,7 @@ public class User {
    * @return String
    */
   public String getUsername() {
-    return username;
+    return this.username;
   }
 
   /**
