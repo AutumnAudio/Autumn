@@ -9,6 +9,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class SqLite {
 
   /**
@@ -169,7 +170,7 @@ public class SqLite {
       try {
         while (rs.next()) {
           ChatRoom room = new ChatRoom();
-          Genre genre = Genre.valueOf(rs.getString("GENRE"));
+          Genre genre = Genre.valueOf(rs.getString("GENRE").toUpperCase());
           room.setGenre(genre);
           room.setLink(rs.getString("LINK"));
           genres.add(genre);

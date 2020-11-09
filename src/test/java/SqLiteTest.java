@@ -34,8 +34,8 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertChatRoom(Genre.Jazz, "/jazz-links", "jazz-playlist");
-    db.insertChatRoom(Genre.Blues, "/blues-links", "blues-playlist");
+    db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
+    db.insertChatRoom(Genre.BLUES, "/blues-links", "blues-playlist");
     db.commit();
     assertEquals(2, db.getChatRooms().size());
     db.close();
@@ -47,9 +47,9 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertParticipant(Genre.Jazz, "mary");
+    db.insertParticipant(Genre.JAZZ, "mary");
     db.commit();
-    assertEquals("mary", db.getChatRoomParticipant(Genre.Jazz).get(0).getUsername());
+    assertEquals("mary", db.getChatRoomParticipant(Genre.JAZZ).get(0).getUsername());
     db.close();
   }
 
@@ -59,9 +59,9 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertMessage("mary", Time.valueOf(LocalTime.now()), Genre.Jazz, "Jazz is the best");
+    db.insertMessage("mary", Time.valueOf(LocalTime.now()), Genre.JAZZ, "Jazz is the best");
     db.commit();
-    assertEquals("Jazz is the best", db.getChatRoomChat(Genre.Jazz).get(0).getMessage());
+    assertEquals("Jazz is the best", db.getChatRoomChat(Genre.JAZZ).get(0).getMessage());
     db.close();
   }
 
@@ -71,9 +71,9 @@ public class SqLiteTest {
     db.commit();
     db.clear();
     db.commit();
-    db.insertSong("mary", Time.valueOf(LocalTime.now()), Genre.Blues, "blues-song");
+    db.insertSong("mary", Time.valueOf(LocalTime.now()), Genre.BLUES, "blues-song");
     db.commit();
-    assertEquals("blues-song", db.getChatRoomPlaylist(Genre.Blues).get(0).getSong());
+    assertEquals("blues-song", db.getChatRoomPlaylist(Genre.BLUES).get(0).getSong());
     db.close();
   }
 }
