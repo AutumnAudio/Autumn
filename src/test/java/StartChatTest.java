@@ -37,10 +37,6 @@ public class StartChatTest {
   public void startAllChats() {
     // Test if server is running. You need to have an endpoint /
     // If you do not wish to have this end point, it is okay to not have anything in this method. 
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/").asString();
-    int restStatus = response.getStatus();
-
-    assertEquals(200, restStatus);
     System.out.println("Before Each");
   }
 

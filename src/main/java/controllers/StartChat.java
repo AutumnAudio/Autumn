@@ -5,7 +5,6 @@ import io.javalin.Javalin;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
@@ -82,11 +81,14 @@ public final class StartChat {
       chatlist.setChatrooms(map);
     }
 
+    
     app = Javalin.create(config -> {
+      config.addStaticFiles("/public");
       //config.addStaticFiles("/resources");
     }).start(PORT_NUMBER);
-
+  
     //authentication
+    
     app.before(ctx -> {
       
       boolean loggedIn = false;
@@ -114,7 +116,7 @@ public final class StartChat {
       //if not go to login page
       ctx.redirect("/login");
     });
-
+	
     // Test Echo Server
     app.post("/echo", ctx -> {
       ctx.result(ctx.body());
