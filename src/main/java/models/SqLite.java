@@ -39,12 +39,11 @@ public class SqLite {
       conn.setAutoCommit(false);
       stmt = conn.createStatement();
       String sql = "CREATE TABLE IF NOT EXISTS USERS "
-                     + " (USERNAME         VARCHAR PRIMARY KEY NOT NULL, "
-                     + " PASSWORD_HASH     VARCHAR NOT NULL, "
-                     + " SPOTIFY_TOKEN     VARCHAR NOT NULL, "
-                     + " LOGGED_INT        BOOL, "
-                     + " SESSION_ID        INT, "
-                     + " LAST_CONNECTION   TIME) ";
+                     + " (USERNAME              VARCHAR PRIMARY KEY NOT NULL, "
+                     + " PASSWORD_HASH          VARCHAR NOT NULL, "
+                     + " SPOTIFY_TOKEN          VARCHAR NOT NULL, "
+                     + " SESSION_ID             INT, "
+                     + " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS CHATROOMS "
     		         + " (GENRE            VARCHAR PRIMARY KEY NOT NULL, "
@@ -130,6 +129,10 @@ public class SqLite {
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
+          user.setPassword_hash(rs.getString("PASSWORD_HASH"));
+          user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
+          user.setSessionId(rs.getString("SESSION_ID"));
+          user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
       } finally {
         rs.close();
@@ -140,7 +143,36 @@ public class SqLite {
     }
     return user;
   }
- 
+  
+  /**
+   * Get user by username.
+   * @param username String
+   * @return count equals 1 boolean
+   */
+  public User getUserBySessionId(final String sessionId) {
+    User user = new User();
+    try {
+      ResultSet rs;
+      rs = stmt.executeQuery("SELECT * FROM USERS "
+                              + "WHERE SESSION_ID= " + "'" + sessionId + "'");
+      try {
+        while (rs.next()) {
+          user.setUsername(rs.getString("USERNAME"));
+          user.setPassword_hash(rs.getString("PASSWORD_HASH"));
+          user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
+          user.setSessionId(rs.getString("SESSION_ID"));
+          user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
+        }
+      } finally {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return user;
+  }
+  
   /**
    * Add chatroom to Chatrooms Table
    * @param genre String
