@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SqLite {
@@ -161,8 +163,8 @@ public class SqLite {
    * Get the list of Chatroom available.
    * @return Chatroom list List<ChatRoom>
    */
-  public List<ChatRoom> getChatRooms() {
-	List<ChatRoom> list = new ArrayList<>();
+  public Map<String, ChatRoom> getAllChatRooms() {
+    Map<String, ChatRoom> map = new HashMap<>();
 	List<Genre> genres = new ArrayList<>();
     try {
       ResultSet rs;
@@ -174,7 +176,7 @@ public class SqLite {
           room.setGenre(genre);
           room.setLink(rs.getString("LINK"));
           genres.add(genre);
-          list.add(room);
+          map.put(genre.getGenre(), room);
         }
       } finally {
         rs.close();
@@ -184,14 +186,16 @@ public class SqLite {
       e.printStackTrace();
     }
     for (int i = 0; i < genres.size(); i++) {
+    	ChatRoom chatroom = map.get(genres.get(i).getGenre());
     	List<User> participants = getChatRoomParticipant(genres.get(i));
-    	list.get(i).setParticipant(participants);
     	List<Message> chat = getChatRoomChat(genres.get(i));
-    	list.get(i).setChat(chat);
     	List<Song> playlist = getChatRoomPlaylist(genres.get(i));
-    	list.get(i).setPlaylist(playlist);
+    	chatroom.setParticipant(participants);
+    	chatroom.setChat(chat);
+    	chatroom.setPlaylist(playlist);
+    	map.put(genres.get(i).getGenre(), chatroom);
     }
-    return list;
+    return map;
   }
 
   /**
@@ -352,10 +356,10 @@ public class SqLite {
    * Update chatroom after reboot.
    * @param chatroom ChatRoom Object
    */
-  public ChatList backUp() {
+  public ChatList update() {
     ChatList chatlist = new ChatList();
-    chatlist.setChatrooms(new ArrayList<ChatRoom>());
-    chatlist.setChatrooms(getChatRooms());
+    chatlist.setChatrooms(new HashMap<String, ChatRoom>());
+    chatlist.setChatrooms(getAllChatRooms());
     return chatlist;
 
   }

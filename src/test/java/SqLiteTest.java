@@ -38,7 +38,7 @@ public class SqLiteTest {
     db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
     db.insertChatRoom(Genre.BLUES, "/blues-links", "blues-playlist");
     db.commit();
-    assertEquals(2, db.getChatRooms().size());
+    assertEquals(2, db.getAllChatRooms().size());
   }
 
   @Test

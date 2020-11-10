@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import models.ChatList;
@@ -59,10 +61,10 @@ public final class StartChat {
   public static void main(final String[] args) {
     db.start();
     db.commit();
-    chatlist = db.backUp();
+    chatlist = db.update();
     db.commit();
     if (chatlist.size() == 0) {
-      List<ChatRoom> list = new ArrayList<ChatRoom>();
+      Map<String, ChatRoom> map = new HashMap<>();
       Genre[] genres = Genre.class.getEnumConstants();
       for (Genre genre : genres) {
         ChatRoom chatroom = new ChatRoom();
@@ -71,14 +73,11 @@ public final class StartChat {
         chatroom.setPlaylist(new ArrayList<Song>());
         chatroom.setGenre(genre);
       	chatroom.setLink("/joinroom/" + genre.getGenre());
-       	list.add(chatroom);
+      	map.put(genre.getGenre(), chatroom);
+      	db.insertChatRoom(chatroom.getGenre(), chatroom.getLink(), "playlist-" + genre.getGenre());
+      	db.commit();
       }
-      chatlist.setChatrooms(list);
-      for (int i = 0; i < chatlist.size(); i++) {
-        ChatRoom chatroom = chatlist.getChatrooms().get(i);
-        db.insertChatRoom(chatroom.getGenre(), chatroom.getLink(), "playlist-" + chatroom.getGenre().getGenre());
-        db.commit();
-      }
+      chatlist.setChatrooms(map);
     }
 
     app = Javalin.create(config -> {
@@ -97,7 +96,7 @@ public final class StartChat {
 
     // Send Chatroom List
     app.get("/chatrooms", ctx -> {
-      chatlist.setChatrooms(db.getChatRooms());
+      chatlist.setChatrooms(db.getAllChatRooms());
       ctx.result(new Gson().toJson(chatlist));
     });
 
@@ -110,11 +109,41 @@ public final class StartChat {
     });
 
     app.post("/joinroom/:genre", ctx -> {
-      // TODO implement endpoint
-      // get chatroom data from DB
-      // update participant views
-      String genre = ctx.pathParam("genre");
-      String username = ctx.formParam("username");
+      if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
+        Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
+        String username = ctx.formParam("username");
+        ctx.redirect("/" + genre + "?user=" + username);
+        // add to DB only if participant is new
+        List<User> participants = chatlist.getChatroomByGenre(genre).getParticipant();
+        boolean present = false;
+        for (User user : participants) {
+      	  if (user.getUsername().equals(username)) {
+    		present = true;
+    	  }
+        }
+        // only perform database operation if user is new
+        if (!present) {
+          db.insertParticipant(genre, username);
+          db.commit();
+          chatlist = db.update();
+          db.commit();
+        }
+      } else {
+        ctx.result("Invalid Room");
+      }
+    });
+
+    // user chatroom view
+    app.get("/:genre", ctx -> {
+      if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
+        Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
+        String username = ctx.queryParam("user");
+        ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+        sendChatRoomToAllParticipants(new Gson().toJson(chatroom));
+        ctx.result(new Gson().toJson(chatroom));
+      } else {
+        ctx.result("Invalid Room");
+      }
     });
 
     app.post("/send/:username", ctx -> {
