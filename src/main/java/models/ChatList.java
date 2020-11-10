@@ -1,19 +1,19 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatList {
   /**
    * Player who starts the game.
    */
-  private List<ChatRoom> chatrooms = new ArrayList<ChatRoom>();
+  private Map<String, ChatRoom> chatrooms = new HashMap<>();
 
   /**
    * Get chatrooms.
    * @return chatrooms List<Chatroom>.
    */
-  public List<ChatRoom> getChatrooms() {
+  public Map<String, ChatRoom> getChatrooms() {
     return this.chatrooms;
   }
 
@@ -21,8 +21,16 @@ public class ChatList {
    * Set chatroom list.
    * @param chatrooms List<ChatRoom>.
    */
-  public void setChatrooms(List<ChatRoom> chatroomList) {
-    this.chatrooms = chatroomList;
+  public void setChatrooms(Map<String, ChatRoom> map) {
+    this.chatrooms = map;
+  }
+
+  /**
+   * Get chatrooms by genre.
+   * @return chatroom Chatroom.
+   */
+  public ChatRoom getChatroomByGenre(Genre genre) {
+    return chatrooms.get(genre.getGenre());
   }
 
   /**
