@@ -37,10 +37,6 @@ public class StartChatTest {
   public void startAllChats() {
     // Test if server is running. You need to have an endpoint /
     // If you do not wish to have this end point, it is okay to not have anything in this method. 
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/").asString();
-    int restStatus = response.getStatus();
-
-    assertEquals(200, restStatus);
     System.out.println("Before Each");
   }
 
@@ -53,10 +49,8 @@ public class StartChatTest {
 
     // Create HTTP request and get response
     HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms").asString();
-    int restStatus = response.getStatus();
 
-    // Check assert statement (New Game has started)
-    assertEquals(200, restStatus);
+    assertEquals(200, response.getStatus());
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
@@ -88,10 +82,8 @@ public class StartChatTest {
 
     // Create HTTP request and get response
     HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms").asString();
-    int restStatus = response.getStatus();
 
-    // Check assert statement (New Game has started)
-    assertEquals(200, restStatus);
+    assertEquals(200, response.getStatus());
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
@@ -122,10 +114,8 @@ public class StartChatTest {
     // Create HTTP request and get response
 	HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues").body("username=ben").asString();
     response = Unirest.get("http://localhost:8080/blues?user=ben").asString();
-    int restStatus = response.getStatus();
 
-    // Check assert statement (New Game has started)
-    assertEquals(200, restStatus);
+    assertEquals(200, response.getStatus());
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
@@ -158,10 +148,8 @@ public class StartChatTest {
     response = Unirest.post("http://localhost:8080/joinroom/jazz").body("username=mary").asString();
     response = Unirest.post("http://localhost:8080/joinroom/jazz").body("username=ben").asString();
     response = Unirest.get("http://localhost:8080/jazz?user=ben").asString();
-    int restStatus = response.getStatus();
 
-    // Check assert statement (New Game has started)
-    assertEquals(200, restStatus);
+    assertEquals(200, response.getStatus());
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
@@ -186,20 +174,80 @@ public class StartChatTest {
   * This is a test case to evaluate the joinroom endpoint.
   */
   @Test
-  @Order(4)
+  @Order(5)
   public void invalidJoinRoomTest() {
 
     // Create HTTP request and get response
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/metal").body("username=ben").asString();
-    response = Unirest.get("http://localhost:8080/metal?user=ben").asString();
-    int restStatus = response.getStatus();
-
-    // Check assert statement (New Game has started)
-    assertEquals(200, restStatus);
     
     assertEquals("Invalid Room", response.getBody());
   
-    System.out.println("Test invalid chatroom");
+    System.out.println("Test invalid join chatroom");
+  }
+
+  /**
+  * This is a test case to evaluate the chatroom/genre endpoint.
+  */
+  @Test
+  @Order(6)
+  public void invalidChatroomGenreTest() {
+
+    // Create HTTP request and get response
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/metal?user=ben").asString();
+
+    assertEquals(200, response.getStatus());
+    assertEquals("Invalid Room", response.getBody());
+  
+    System.out.println("Test invalid chatroom genre");
+  }
+ 
+  /**
+  * This is a test case to evaluate the leaveroom endpoint.
+  */
+  @Test
+  @Order(7)
+  public void leaveRoomTest() {
+
+    // Create HTTP request and get response
+	HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").body("username=sean").asString();
+	response = Unirest.get("http://localhost:8080/country?user=sean").asString();  
+	assertEquals(200, response.getStatus());
+
+    JSONObject jsonObject = new JSONObject(response.getBody());
+    Gson gson = new Gson();
+    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is present after joinroom
+    assertEquals(true, chatroom.getParticipant().containsKey("sean"));
+	
+    response = Unirest.delete("http://localhost:8080/leaveroom/country").body("username=sean").asString();
+    response = Unirest.get("http://localhost:8080/country?user=sean").asString(); 
+    assertEquals(200, response.getStatus());
+    System.out.println("/leaveroom/[user] Response: " + response.getBody());
+
+    jsonObject = new JSONObject(response.getBody());
+    chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is not present after leaveroom
+    assertEquals(false, chatroom.getParticipant().containsKey("sean"));
+  
+    System.out.println("Test leave chatroom");
+  }
+
+  /**
+  * This is a test case to evaluate the leaveroom endpoint.
+  */
+  @Test
+  @Order(8)
+  public void invalidLeaveRoomTest() {
+
+    // Create HTTP request and get response
+	HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop").body("username=taylor").asString();
+	
+	assertEquals(200, response.getStatus());
+    assertEquals("You are not in the room", response.getBody());
+  
+    System.out.println("Test invalid leave chatroom");
   }
 
   /**
