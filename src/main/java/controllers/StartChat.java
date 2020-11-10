@@ -63,12 +63,13 @@ public final class StartChat {
     db.commit();
     chatlist = db.update();
     db.commit();
+    // Add to DB only when app starts for the first time
     if (chatlist.size() == 0) {
       Map<String, ChatRoom> map = new HashMap<>();
       Genre[] genres = Genre.class.getEnumConstants();
       for (Genre genre : genres) {
         ChatRoom chatroom = new ChatRoom();
-        chatroom.setParticipant(new ArrayList<User>());
+        chatroom.setParticipant(new HashMap<String, User>());
         chatroom.setChat(new ArrayList<Message>());
         chatroom.setPlaylist(new ArrayList<Song>());
         chatroom.setGenre(genre);
@@ -114,15 +115,10 @@ public final class StartChat {
         String username = ctx.formParam("username");
         ctx.redirect("/" + genre + "?user=" + username);
         // add to DB only if participant is new
-        List<User> participants = chatlist.getChatroomByGenre(genre).getParticipant();
+        Map<String, User> participants = chatlist.getChatroomByGenre(genre).getParticipant();
         boolean present = false;
-        for (User user : participants) {
-      	  if (user.getUsername().equals(username)) {
-    		present = true;
-    	  }
-        }
-        // only perform database operation if user is new
-        if (!present) {
+        if (!participants.containsKey(username)) {
+          // only perform database operation if user is new
           db.insertParticipant(genre, username);
           db.commit();
           chatlist = db.update();
@@ -170,10 +166,24 @@ public final class StartChat {
 
     app.delete("/leaveroom/:genre", ctx -> {
       // TODO implement endpoint
-      // get chatroom data from DB
-      // update participant views
-      String genre = ctx.pathParam("genre");
+      Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
       String username = ctx.formParam("username");
+      // check if participant is currently in room
+      // remove participant from DB
+      // update chatlist
+      // update participant views
+      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+      if (chatroom.getParticipant().containsKey(username)) {
+        db.removeParticipant(genre, username);
+        db.commit();
+        chatlist = db.update();
+        db.commit();
+        chatroom = chatlist.getChatroomByGenre(genre);
+        sendChatRoomToAllParticipants(new Gson().toJson(chatroom));
+        ctx.result(new Gson().toJson(chatroom));
+      } else {
+        ctx.result("You are not in the room");
+      }
     });
 
     app.after(ctx -> {

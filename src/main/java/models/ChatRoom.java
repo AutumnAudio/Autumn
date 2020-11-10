@@ -1,13 +1,14 @@
 package models;
 
 import java.util.List;
+import java.util.Map;
 
 public class ChatRoom {
 
   /**
    * Participant in chatroom.
    */
-  List<User> participants;
+  Map<String, User> participants;
 
   /**
    * Participant in chatroom.
@@ -33,7 +34,7 @@ public class ChatRoom {
    * Get participant list.
    * @return participant List<User>.
    */
-  public List<User> getParticipant() {
+  public Map<String, User> getParticipant() {
     return this.participants;
   }
 
@@ -41,7 +42,7 @@ public class ChatRoom {
    * Set participant list.
    * @param participant List<User>.
    */
-  public void setParticipant(List<User> participantList) {
+  public void setParticipant(Map<String, User> participantList) {
     this.participants = participantList;
   }
 
@@ -50,7 +51,7 @@ public class ChatRoom {
    * @param user User Object
    */
   public void addParticipant(final User user) {
-    this.participants.add(user);
+    this.participants.put(user.getUsername(), user);
   }
 
   /**

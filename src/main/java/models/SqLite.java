@@ -187,7 +187,7 @@ public class SqLite {
     }
     for (int i = 0; i < genres.size(); i++) {
     	ChatRoom chatroom = map.get(genres.get(i).getGenre());
-    	List<User> participants = getChatRoomParticipant(genres.get(i));
+    	Map<String, User> participants = getChatRoomParticipant(genres.get(i));
     	List<Message> chat = getChatRoomChat(genres.get(i));
     	List<Song> playlist = getChatRoomPlaylist(genres.get(i));
     	chatroom.setParticipant(participants);
@@ -217,12 +217,30 @@ public class SqLite {
   }
 
   /**
+   * Remove participant to Participant Table
+   * @param genre String
+   * @param username String
+   */
+
+  public void removeParticipant(final Genre genre, final String username) {
+    try {
+      conn.setAutoCommit(false);
+      String sql = "DELETE FROM PARTICIPANTS "
+                     + "WHERE GENRE= " + "'" + genre.getGenre() + "'" + " AND " + "USERNAME= " + "'" + username + "'" + ";";
+      stmt.executeUpdate(sql);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  /**
    * get participant of a chatroom
    * @param genre String
    * @return participant List<User>
    */
-  public List<User> getChatRoomParticipant(final Genre genre) {
-	List<User> list = new ArrayList<>();
+  public Map<String, User> getChatRoomParticipant(final Genre genre) {
+	  Map<String, User> list = new HashMap<>();
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM PARTICIPANTS "
@@ -231,7 +249,7 @@ public class SqLite {
         while (rs.next()) {
           User user = new User();
           user.setUsername(rs.getString("USERNAME"));
-          list.add(user);
+          list.put(user.getUsername(), user);
         }
       } finally {
         rs.close();
