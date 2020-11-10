@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.UUID;
 
 import models.ChatList;
 import models.ChatRoom;
@@ -82,12 +83,36 @@ public final class StartChat {
     }
 
     app = Javalin.create(config -> {
-      config.addStaticFiles("/public");
+      //config.addStaticFiles("/resources");
     }).start(PORT_NUMBER);
 
-    // Test Echo Server
-    app.post("/", ctx -> {
-      ctx.result(ctx.body());
+    //authentication
+    app.before(ctx -> {
+      
+      boolean loggedIn = false;
+      
+      String sessionId = (String)ctx.sessionAttribute("sessionId");
+      if(sessionId == null) {
+        
+        sessionId = UUID.randomUUID().toString();
+        ctx.sessionAttribute("sessionId", sessionId);
+      }
+      
+      if(db.getUserBySessionId(sessionId) == null)
+        ctx.redirect("/login"); //placeholder for get request to spotify
+    });
+    
+    
+    
+    // Front page
+    app.get("/", ctx -> {
+      
+      //check if logged in -> fwd to chatrooms
+      
+      
+      
+      //if not go to login page
+      ctx.redirect("/login");
     });
 
     // Test Echo Server
@@ -101,12 +126,10 @@ public final class StartChat {
       ctx.result(new Gson().toJson(chatlist));
     });
 
-    app.post("/registration", ctx -> {
-      // TODO implement endpoint
-    });
-
-    app.post("/login", ctx -> {
-      // TODO implement endpoint
+    app.post("/process_auth", ctx -> {
+      
+      
+      
     });
 
     app.post("/joinroom/:genre", ctx -> {
