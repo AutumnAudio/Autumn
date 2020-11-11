@@ -38,14 +38,14 @@ public class SqLiteTest {
     db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
     db.insertChatRoom(Genre.BLUES, "/blues-links", "blues-playlist");
     db.commit();
-    assertEquals(2, db.getChatRooms().size());
+    assertEquals(2, db.getAllChatRooms().size());
   }
 
   @Test
   public void testInsertParticipant() {
     db.insertParticipant(Genre.JAZZ, "mary");
     db.commit();
-    assertEquals("mary", db.getChatRoomParticipant(Genre.JAZZ).get(0).getUsername());
+    assertEquals(true, db.getChatRoomParticipant(Genre.JAZZ).containsKey("mary"));
   }
 
   @Test
