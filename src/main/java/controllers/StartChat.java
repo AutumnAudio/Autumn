@@ -11,6 +11,7 @@ import java.util.UUID;
 import models.ChatList;
 import models.ChatRoom;
 import models.Genre;
+import models.Login;
 import models.Message;
 import models.User;
 import models.Song;
@@ -89,20 +90,20 @@ public final class StartChat {
     //authentication
     app.before(ctx -> {
       
-      boolean loggedIn = false;
+      //if /auth and code present
+      if(ctx.url().contains("/process_auth") && ctx.queryParam("code") != null)
+        return;
       
       String sessionId = (String)ctx.sessionAttribute("sessionId");
       if(sessionId == null) {
-        
         sessionId = UUID.randomUUID().toString();
         ctx.sessionAttribute("sessionId", sessionId);
       }
       
-      if(db.getUserBySessionId(sessionId) == null)
-        ctx.redirect("/login"); //placeholder for get request to spotify
+      if(db.getUserBySessionId(sessionId).getUsername() == null) {     
+        ctx.redirect(Login.getSpotifyAuthUrl()); 
+      }
     });
-    
-    
     
     // Front page
     app.get("/", ctx -> {
@@ -126,10 +127,11 @@ public final class StartChat {
       ctx.result(new Gson().toJson(chatlist));
     });
 
-    app.post("/process_auth", ctx -> {
+    app.get("/process_auth", ctx -> {
       
+      String token = Login.getSpotifyTokenFromCode(ctx.queryParam("code"));
       
-      
+      ctx.result("Theoretically authorized - boom.");
     });
 
     app.post("/joinroom/:genre", ctx -> {

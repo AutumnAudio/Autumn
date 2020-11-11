@@ -123,7 +123,7 @@ public class SqLite {
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM USERS "
-                              + "WHERE USERNAME= " + "'" + username + "'");
+                              + "WHERE USERNAME= " + "'" + username + "' LIMIT 1");
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
@@ -152,7 +152,7 @@ public class SqLite {
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM USERS "
-                              + "WHERE SESSION_ID= " + "'" + sessionId + "'");
+                              + "WHERE SESSION_ID= " + "'" + sessionId + "' LIMIT 1");
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
