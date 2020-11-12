@@ -26,6 +26,7 @@ public class User {
     
     else {
       db.insertUser(email, spotifyToken);
+      db.commit();
     }
     
     this.setSpotifyToken(spotifyToken, true);
@@ -68,6 +69,7 @@ public class User {
     
     if(saveToDb) {
       db.updateUserAttribute("SESSION_ID", sessionId, username);
+      db.commit();
     }
   }
   
@@ -93,6 +95,7 @@ public class User {
     
     if(saveToDb) {
       db.updateUserAttribute("SPOTIFY_TOKEN", spotifyToken, username);
+      db.commit();
     }
   }
   
@@ -115,6 +118,7 @@ public class User {
     
     if(saveToDb) {
       db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN", spotifyRefreshToken, username);
+      db.commit();
     }
   }
   
