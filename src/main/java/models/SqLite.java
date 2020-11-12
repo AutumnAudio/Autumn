@@ -40,9 +40,10 @@ public class SqLite {
       stmt = conn.createStatement();
       String sql = "CREATE TABLE IF NOT EXISTS USERS "
                      + " (USERNAME              VARCHAR PRIMARY KEY NOT NULL, "
-                     + " PASSWORD_HASH          VARCHAR NOT NULL, "
-                     + " SPOTIFY_TOKEN          VARCHAR NOT NULL, "
-                     + " SESSION_ID             INT, "
+                     + " PASSWORD_HASH          VARCHAR, "
+                     + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
+                     + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
+                     + " SESSION_ID             VARCHAR UNIQUE, "
                      + " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS CHATROOMS "
@@ -103,11 +104,30 @@ public class SqLite {
    * @param passwordHash String
    * @param spotifyToken String
    */
-  public void insertUser(final String username, final String passwordHash, final String spotifyToken) {
+  public void insertUser(final String username, final String spotifyToken) {
     try {
       conn.setAutoCommit(false);
-      String sql = "INSERT INTO USERS (USERNAME, PASSWORD_HASH, SPOTIFY_TOKEN) "
-                     + "VALUES (" + "'" + username + "'" + "," + "'" + passwordHash + "'" + "," + "'" + spotifyToken + "'" + ");";
+      String sql = "INSERT INTO USERS (USERNAME, SPOTIFY_TOKEN) "
+                     + "VALUES (" + "'" + username + "','" + spotifyToken + "'" + ");";
+      stmt.executeUpdate(sql);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
+  /**
+   * Update user attribute in Users Table
+   * @param attribute String
+   * @param value String
+   * @param username String
+   */
+  public void updateUserAttribute(final String attribute, final String value, final String username) {
+    
+    try {
+      conn.setAutoCommit(false);
+      String sql = "UPDATE users SET " + attribute + " = '" + value + "'"
+                     + "WHERE USERNAME = '" + username + "';";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -125,12 +145,13 @@ public class SqLite {
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM USERS "
-                              + "WHERE USERNAME= " + "'" + username + "'");
+                              + "WHERE USERNAME = " + "'" + username + "' LIMIT 1");
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
-          user.setPassword_hash(rs.getString("PASSWORD_HASH"));
+          user.setPasswordHash(rs.getString("PASSWORD_HASH"));
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
+          user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
           user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
@@ -154,12 +175,13 @@ public class SqLite {
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM USERS "
-                              + "WHERE SESSION_ID= " + "'" + sessionId + "'");
+                              + "WHERE SESSION_ID= " + "'" + sessionId + "' LIMIT 1");
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
-          user.setPassword_hash(rs.getString("PASSWORD_HASH"));
+          user.setPasswordHash(rs.getString("PASSWORD_HASH"));
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
+          user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
           user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }

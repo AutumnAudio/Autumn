@@ -12,6 +12,7 @@ import java.util.UUID;
 import models.ChatList;
 import models.ChatRoom;
 import models.Genre;
+import models.Login;
 import models.Message;
 import models.User;
 import models.Song;
@@ -91,30 +92,39 @@ public final class StartChat {
     
     app.before(ctx -> {
       
-      boolean loggedIn = false;
-      
       String sessionId = (String)ctx.sessionAttribute("sessionId");
+      
+      //if /auth and code present skip rest
+      if(ctx.url().contains("/process_auth") && ctx.queryParam("code") != null && sessionId != null)
+        return;
+      
       if(sessionId == null) {
-        
         sessionId = UUID.randomUUID().toString();
         ctx.sessionAttribute("sessionId", sessionId);
       }
       
-      if(db.getUserBySessionId(sessionId) == null)
-        ctx.redirect("/login"); //placeholder for get request to spotify
+      if(db.getUserBySessionId(sessionId).getUsername() == null) { 
+        ctx.redirect(Login.getSpotifyAuthUrl()); 
+      }
     });
     
-    
+    //handle spotify authentication
+    app.get("/process_auth", ctx -> {
+      
+      String sessionId = (String)ctx.sessionAttribute("sessionId");
+      
+      Map<String, String> response = Login.getSpotifyTokenFromCode(ctx.queryParam("code"));
+      
+      User user = new User(response.get("access_token"), db);
+      user.setSpotifyRefreshToken(response.get("refresh_token"), true);
+      user.setSessionId(sessionId, true);     
+      
+      ctx.redirect("/chatrooms");
+    });
     
     // Front page
     app.get("/", ctx -> {
-      
-      //check if logged in -> fwd to chatrooms
-      
-      
-      
-      //if not go to login page
-      ctx.redirect("/login");
+      ctx.redirect("/chatrooms");
     });
 	
     // Test Echo Server
@@ -126,12 +136,6 @@ public final class StartChat {
     app.get("/chatrooms", ctx -> {
       chatlist.setChatrooms(db.getAllChatRooms());
       ctx.result(new Gson().toJson(chatlist));
-    });
-
-    app.post("/process_auth", ctx -> {
-      
-      
-      
     });
 
     app.post("/joinroom/:genre", ctx -> {
@@ -209,10 +213,6 @@ public final class StartChat {
       } else {
         ctx.result("You are not in the room");
       }
-    });
-
-    app.after(ctx -> {
-      db.commit();
     });
 
     // Web sockets - DO NOT DELETE or CHANGE
