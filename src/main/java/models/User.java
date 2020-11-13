@@ -1,5 +1,15 @@
 package models;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 public class User {
 
   private String username; //spotify email
@@ -11,6 +21,34 @@ public class User {
   private int lastConnectionTime;
   
   private SqLite db;
+  
+  private String recentlyPlayed;
+  
+  public void refreshRecentlyPlayed() {
+    HttpClient httpClient = HttpClient.newBuilder()
+    .version(HttpClient.Version.HTTP_2)
+    .build();
+
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create("https://api.spotify.com/v1/player/recently-played"))
+        .setHeader("User-Agent", "Java 11 HttpClient Bot")
+        .header("Authorization", "Bearer " + spotifyToken)
+        .build();
+
+    HttpResponse<String> response = null;
+    try {
+      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    } catch (IOException | InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    Gson gson = new Gson();
+    Map<String, String> result = gson.fromJson(response.body(), new TypeToken<Map<String, Object>>() {}.getType());
+    
+    System.out.println(result);
+    
+    //return result.get("email");
+  }
   
   public User(String spotifyToken, SqLite db) {
     
@@ -67,7 +105,8 @@ public class User {
   public void setSessionId(String sessionId, boolean saveToDb) {
     setSessionId(sessionId);
     
-    if(saveToDb && db.getUserCount(username) == 0) {
+    //if(saveToDb && db.getUserCount(username) == 0) {
+   	if(saveToDb) {
       db.updateUserAttribute("SESSION_ID", sessionId, username);
       db.commit();
     }
@@ -92,8 +131,9 @@ public class User {
   public void setSpotifyToken(String spotifyToken, boolean saveToDb) {
     
     setSpotifyToken(spotifyToken);
-    
-    if(saveToDb && db.getUserCount(username) == 0) {
+
+    //if(saveToDb && db.getUserCount(username) == 0) {
+   	if(saveToDb) {
       db.updateUserAttribute("SPOTIFY_TOKEN", spotifyToken, username);
       db.commit();
     }
@@ -116,7 +156,8 @@ public class User {
   public void setSpotifyRefreshToken(String spotifyRefreshToken, boolean saveToDb) {
     setSpotifyRefreshToken(spotifyRefreshToken);
     
-    if(saveToDb && db.getUserCount(username) == 0) {
+    //if(saveToDb && db.getUserCount(username) == 0) {
+   	if(saveToDb) {
       db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN", spotifyRefreshToken, username);
       db.commit();
     }
