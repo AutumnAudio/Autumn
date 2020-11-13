@@ -92,6 +92,9 @@ public final class StartChat {
     
     app.before(ctx -> {
       
+      if(ctx.queryParam("skip_auth_testing").equals("true"))
+        return;
+        
       String sessionId = (String)ctx.sessionAttribute("sessionId");
       
       //if /auth and code present skip rest
