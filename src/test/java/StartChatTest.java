@@ -26,8 +26,7 @@ public class StartChatTest {
   */
   @BeforeAll
   public static void init() {
-    // Start Server
-    //StartChat.main(null);
+
     System.out.println("Before All");
   }
 
@@ -210,7 +209,7 @@ public class StartChatTest {
   public void invalidJoinRoomTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/metal/?skip_auth_testing=true").body("username=ben").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/metal").body("username=ben").asString();
     
     assertEquals("Invalid Room", response.getBody());
   
@@ -225,7 +224,7 @@ public class StartChatTest {
   public void invalidChatroomGenreTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/metal/?user=ben&skip_auth_testing=true").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/metal/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
     assertEquals("Invalid Room", response.getBody());
@@ -241,7 +240,7 @@ public class StartChatTest {
   public void leaveRoomTest() {
 
     // Create HTTP request and get response
-	HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country/?skip_auth_testing=true").body("username=sean").asString();
+	HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").body("username=sean").asString();
 	response = Unirest.get("http://localhost:8080/country/?user=sean&skip_auth_testing=true").asString();  
 	assertEquals(200, response.getStatus());
 
@@ -252,8 +251,8 @@ public class StartChatTest {
     // Check if user is present after joinroom
     assertEquals(true, chatroom.getParticipant().containsKey("sean"));
 	
-    response = Unirest.delete("http://localhost:8080/leaveroom/country/?skip_auth_testing=true").body("username=sean").asString();
-    response = Unirest.get("http://localhost:8080/country/?user=sean&skip_auth_testing=true").asString(); 
+    response = Unirest.delete("http://localhost:8080/leaveroom/country").body("username=sean").asString();
+    response = Unirest.get("http://localhost:8080/country/?user=sean").asString(); 
     assertEquals(200, response.getStatus());
     System.out.println("/leaveroom/[user] Response: " + response.getBody());
 
@@ -274,7 +273,7 @@ public class StartChatTest {
   public void invalidLeaveRoomTest() {
 
     // Create HTTP request and get response
-	HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/?skip_auth_testing=true").body("username=taylor").asString();
+	HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/").body("username=taylor").asString();
 	
 	assertEquals(200, response.getStatus());
     assertEquals("You are not in the room", response.getBody());
@@ -375,13 +374,6 @@ public class StartChatTest {
    */
   @AfterAll
   public static void close() {
-    // Stop Server
-    /*
-    SqLite db = StartChat.getDb();
-    db.clear();
-    db.commit();
-    StartChat.stop();
-    */
     System.out.println("After All");
   }
 }

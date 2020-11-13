@@ -125,8 +125,8 @@ public final class StartChat {
       
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshToken(response.get("refresh_token"), true);
-      // manually access endpoint multiple times causes UNIQUE constraint error
-      user.setSessionId(sessionId, true);     
+      user.setSessionId(sessionId, true);
+      //user.refreshRecentlyPlayed();
       
       ctx.redirect("/chatrooms");
     });
