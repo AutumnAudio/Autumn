@@ -28,7 +28,7 @@ public class SqLiteTest {
 
   @Test
   public void testInsertUser1() {
-    db.insertUser("mary", "spotify_token");
+    db.insertUserWithToken("mary", "spotify_token");
     db.commit();
     assertEquals("mary", db.getUserByName("mary").getUsername());
   }

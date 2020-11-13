@@ -46,6 +46,10 @@ public class SqLite {
                      + " SESSION_ID             VARCHAR UNIQUE, "
                      + " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
+      sql = "CREATE TABLE IF NOT EXISTS SESSIONS "
+              + " (TIME_VISITED         VARCHAR PRIMARY KEY NOT NULL, "
+              + " SESSION_ID            VARCHAR) ";
+      stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS CHATROOMS "
     		         + " (GENRE            VARCHAR PRIMARY KEY NOT NULL, "
     		         + " LINK              VARCHAR NOT NULL, "
@@ -84,6 +88,8 @@ public class SqLite {
       conn.setAutoCommit(false);
       String sql = "DELETE FROM USERS;";
       stmt.executeUpdate(sql);
+      sql = "DELETE FROM SESSIONS;";
+      stmt.executeUpdate(sql);
       sql = "DELETE FROM CHATROOMS;";
       stmt.executeUpdate(sql);
       sql = "DELETE FROM PARTICIPANTS;";
@@ -101,14 +107,30 @@ public class SqLite {
   /**
    * Add user to Users Table
    * @param username String
-   * @param passwordHash String
    * @param spotifyToken String
    */
-  public void insertUser(final String username, final String spotifyToken) {
+  public void insertUserWithToken(final String username, final String spotifyToken) {
     try {
       conn.setAutoCommit(false);
       String sql = "INSERT INTO USERS (USERNAME, SPOTIFY_TOKEN) "
                      + "VALUES (" + "'" + username + "','" + spotifyToken + "'" + ");";
+      stmt.executeUpdate(sql);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Add user to Users Table
+   * @param username String
+   * @param sessionId String
+   */
+  public void insertUserWithSession(final String username, final String sessionId) {
+    try {
+      conn.setAutoCommit(false);
+      String sql = "INSERT INTO USERS (USERNAME, SESSION_ID) "
+                     + "VALUES (" + "'" + username + "','" + sessionId + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -126,8 +148,8 @@ public class SqLite {
     
     try {
       conn.setAutoCommit(false);
-      String sql = "UPDATE users SET " + attribute + " = '" + value + "'"
-                     + "WHERE USERNAME = '" + username + "';";
+      String sql = "UPDATE USERS SET " + attribute + " = '" + value + "'"
+                     + " WHERE USERNAME = '" + username + "';";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -138,7 +160,7 @@ public class SqLite {
   /**
    * Get user by username.
    * @param username String
-   * @return count equals 1 boolean
+   * @return user User Object
    */
   public User getUserByName(final String username) {
     User user = new User();
@@ -163,6 +185,31 @@ public class SqLite {
       e.printStackTrace();
     }
     return user;
+  }
+
+  /**
+   * Get user by username.
+   * @param username String
+   * @return count equals 1 boolean
+   */
+  public int getUserCount(final String username) {
+    int count = 0;
+    try {
+      ResultSet rs;
+      rs = stmt.executeQuery("SELECT * FROM USERS "
+                              + "WHERE USERNAME = " + "'" + username + "' LIMIT 1");
+      try {
+        while (rs.next()) {
+          count++;
+        }
+      } finally {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return count;
   }
   
   /**
@@ -410,6 +457,48 @@ public class SqLite {
       e.printStackTrace();
     }
     return list;
+  }
+  
+  /**
+   * Get sessionId by username.
+   * @param time String
+   * @return count equals 1 boolean
+   */
+  public void insertSession(final String time, final String sessionId) {
+    try {
+        conn.setAutoCommit(false);
+        String sql = "INSERT INTO SESSIONS (TIME_VISITED, SESSION_ID) "
+                       + "VALUES (" + "'" + time + "'" + "," + "'" + sessionId + "'" + ");";
+        stmt.executeUpdate(sql);
+      } catch (SQLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+  /**
+   * Get sessionId by username.
+   * @param username String
+   * @return sessionId
+   */
+  public String getLatestSession() {
+    String sessionId = "";
+    try {
+      ResultSet rs;
+      rs = stmt.executeQuery("SELECT * FROM SESSIONS "
+                              + "ORDER BY TIME_VISITED ASC");
+      try {
+        while (rs.next()) {
+          sessionId = rs.getString("SESSION_ID");
+        }
+      } finally {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return sessionId;
   }
 
   /**

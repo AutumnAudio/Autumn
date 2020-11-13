@@ -3,6 +3,8 @@ package controllers;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +53,10 @@ public final class StartChat {
    */
   private static SqLite db = new SqLite();
 
+  public static SqLite getDb() {
+	  return db;
+  }
+
   /**
    * Create ChatList.
    */
@@ -91,9 +97,6 @@ public final class StartChat {
     //authentication
     
     app.before(ctx -> {
-      
-      if(ctx.queryParam("skip_auth_testing").equals("true"))
-        return;
         
       String sessionId = (String)ctx.sessionAttribute("sessionId");
       
@@ -106,7 +109,9 @@ public final class StartChat {
         ctx.sessionAttribute("sessionId", sessionId);
       }
       
-      if(db.getUserBySessionId(sessionId).getUsername() == null) { 
+      if(db.getUserBySessionId(sessionId).getUsername() == null) {
+        db.insertSession("" + System.currentTimeMillis(), sessionId);
+        db.commit();
         ctx.redirect(Login.getSpotifyAuthUrl()); 
       }
     });
@@ -120,6 +125,7 @@ public final class StartChat {
       
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshToken(response.get("refresh_token"), true);
+      // manually access endpoint multiple times causes UNIQUE constraint error
       user.setSessionId(sessionId, true);     
       
       ctx.redirect("/chatrooms");
@@ -148,7 +154,6 @@ public final class StartChat {
         ctx.redirect("/" + genre + "?user=" + username);
         // add to DB only if participant is new
         Map<String, User> participants = chatlist.getChatroomByGenre(genre).getParticipant();
-        boolean present = false;
         if (!participants.containsKey(username)) {
           // only perform database operation if user is new
           db.insertParticipant(genre, username);

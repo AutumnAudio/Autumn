@@ -25,7 +25,7 @@ public class User {
     }
     
     else {
-      db.insertUser(email, spotifyToken);
+      db.insertUserWithToken(email, spotifyToken);
       db.commit();
     }
     
@@ -67,7 +67,7 @@ public class User {
   public void setSessionId(String sessionId, boolean saveToDb) {
     setSessionId(sessionId);
     
-    if(saveToDb) {
+    if(saveToDb && db.getUserCount(username) == 0) {
       db.updateUserAttribute("SESSION_ID", sessionId, username);
       db.commit();
     }
@@ -93,7 +93,7 @@ public class User {
     
     setSpotifyToken(spotifyToken);
     
-    if(saveToDb) {
+    if(saveToDb && db.getUserCount(username) == 0) {
       db.updateUserAttribute("SPOTIFY_TOKEN", spotifyToken, username);
       db.commit();
     }
@@ -116,7 +116,7 @@ public class User {
   public void setSpotifyRefreshToken(String spotifyRefreshToken, boolean saveToDb) {
     setSpotifyRefreshToken(spotifyRefreshToken);
     
-    if(saveToDb) {
+    if(saveToDb && db.getUserCount(username) == 0) {
       db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN", spotifyRefreshToken, username);
       db.commit();
     }
