@@ -28,7 +28,6 @@ public class User {
   private Song currentTrack;
   
   public void refreshRecentlyPlayed() {
-
 	SpotifyApi spotifyApi = new SpotifyApi.Builder()
 	        .setAccessToken(spotifyToken)
 	        .build();
@@ -59,7 +58,6 @@ public class User {
   }
 
   public void refreshCurrentlyPlaying() {
-
 	SpotifyApi spotifyApi = new SpotifyApi.Builder()
 	        .setAccessToken(spotifyToken)
 	        .build();

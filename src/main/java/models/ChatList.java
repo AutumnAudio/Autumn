@@ -41,4 +41,20 @@ public class ChatList {
     return this.chatrooms.size();
   }
 
+  /**
+   * Refresh Chatlist song data
+   */
+  public void refreshChatList(SqLite db) {
+    for (ChatRoom chatroom : chatrooms.values()) {
+      Map<String, User> participants = chatroom.getParticipant();
+      for (String username : participants.keySet()) {
+    	User user = participants.get(username);
+       	if (!user.getSpotifyToken().equals("")) {          
+          user.refreshRecentlyPlayed();
+          user.refreshCurrentlyPlaying();
+        }
+      }
+    }
+  }
+
 }

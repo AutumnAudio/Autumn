@@ -157,11 +157,13 @@ public final class StartChat {
         Map<String, User> participants = chatlist.getChatroomByGenre(genre).getParticipant();
         if (!participants.containsKey(username)) {
           // only perform database operation if user is new
-          db.insertParticipant(genre, username);
+          db.insertParticipant(genre, username, db.getUserSpotifyToken(username), db.getUserSpotifyRefreshToken(username));
           db.commit();
           chatlist = db.update();
           db.commit();
         }
+        chatlist = db.update();
+        chatlist.refreshChatList(db);
       } else {
         ctx.result("Invalid Room");
       }
@@ -171,8 +173,10 @@ public final class StartChat {
     app.get("/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
+        // TODO use username to check user's permission to enter room
         String username = ctx.queryParam("user");
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+        //chatlist.refreshChatList(db);
         sendChatRoomToAllParticipants(new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
       } else {

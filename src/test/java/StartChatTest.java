@@ -186,6 +186,8 @@ public class StartChatTest {
     ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
     
     // Check if player type is correct
+    System.out.println(chatroom.getParticipant().get("ben"));
+    System.out.println(chatroom.getParticipant().get("mary"));
     assertEquals(2, chatroom.getParticipant().size());
   
     System.out.println("Test rejoining chatroom");

@@ -56,9 +56,11 @@ public class SqLite {
     		         + " SPOTIFY_PLAYLIST  VARCHAR) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS PARTICIPANTS "
-    	             + " (GENRE            VARCHAR NOT NULL, "
-    	             + " USERNAME          INT NOT NULL, "
-    	             + " CONSTRAINT        PARTICIPANT PRIMARY KEY (GENRE, USERNAME) ) ";
+    	             + " (GENRE                 VARCHAR NOT NULL, "
+    	             + " USERNAME               INT NOT NULL, "
+                     + " SPOTIFY_TOKEN          VARCHAR, "
+                     + " SPOTIFY_REFRESH_TOKEN  VARCHAR, "
+    	             + " CONSTRAINT             PARTICIPANT PRIMARY KEY (GENRE, USERNAME) ) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS CHAT "
                      + " (USERNAME         VARCHAR NOT NULL, "
@@ -305,11 +307,11 @@ public class SqLite {
    * @param username String
    */
 
-  public void insertParticipant(final Genre genre, final String username) {
+  public void insertParticipant(final Genre genre, final String username, final String token, final String refreshToken) {
     try {
       conn.setAutoCommit(false);
-      String sql = "INSERT INTO PARTICIPANTS (GENRE, USERNAME) "
-                     + "VALUES (" + "'" + genre.getGenre() + "'" + "," + "'" + username + "'" + ");";
+      String sql = "INSERT INTO PARTICIPANTS (GENRE, USERNAME, SPOTIFY_TOKEN, SPOTIFY_REFRESH_TOKEN) "
+                     + "VALUES (" + "'" + genre.getGenre() + "'" + "," + "'" + username + "'" + "," + "'" + token + "'" + "," + "'" + refreshToken + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -350,6 +352,8 @@ public class SqLite {
         while (rs.next()) {
           User user = new User();
           user.setUsername(rs.getString("USERNAME"));
+          user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
+          user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           list.put(user.getUsername(), user);
         }
       } finally {
@@ -522,7 +526,56 @@ public class SqLite {
     chatlist.setChatrooms(new HashMap<String, ChatRoom>());
     chatlist.setChatrooms(getAllChatRooms());
     return chatlist;
+  }
 
+  /**
+   * Get Spotify token of user
+   * @param username String
+   * @return Spotify token
+   */
+  public String getUserSpotifyToken(final String username) {
+	String token = "";
+    try {
+      ResultSet rs;
+      rs = stmt.executeQuery("SELECT * FROM USERS "
+                              + "WHERE USERNAME= " + "'" + username + "'");
+      try {
+        while (rs.next()) {
+          token = rs.getString("SPOTIFY_TOKEN");
+        }
+      } finally {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return token;
+  }
+
+  /**
+   * Get Spotify refresh token of user
+   * @param username String
+   * @return Spotify refresh token
+   */
+  public String getUserSpotifyRefreshToken(final String username) {
+	String token = "";
+    try {
+      ResultSet rs;
+      rs = stmt.executeQuery("SELECT * FROM USERS "
+                              + "WHERE USERNAME= " + "'" + username + "'");
+      try {
+        while (rs.next()) {
+          token = rs.getString("SPOTIFY_REFRESH_TOKEN");
+        }
+      } finally {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return token;
   }
 
   /**
