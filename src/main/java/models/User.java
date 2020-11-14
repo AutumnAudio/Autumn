@@ -1,14 +1,15 @@
 package models;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Map;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.model_objects.IPlaylistItem;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.PagingCursorbased;
+import com.wrapper.spotify.model_objects.specification.PlayHistory;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.TrackSimplified;
+import com.wrapper.spotify.requests.data.player.GetCurrentUsersRecentlyPlayedTracksRequest;
+import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
 
 public class User {
 
@@ -22,32 +23,74 @@ public class User {
   
   private SqLite db;
   
-  private String recentlyPlayed;
+  private Song[] recentlyPlayed = new Song[10];
+  
+  private Song currentTrack;
   
   public void refreshRecentlyPlayed() {
-    HttpClient httpClient = HttpClient.newBuilder()
-    .version(HttpClient.Version.HTTP_2)
-    .build();
 
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create("https://api.spotify.com/v1/player/recently-played"))
-        .setHeader("User-Agent", "Java 11 HttpClient Bot")
-        .header("Authorization", "Bearer " + spotifyToken)
-        .build();
-
-    HttpResponse<String> response = null;
+	SpotifyApi spotifyApi = new SpotifyApi.Builder()
+	        .setAccessToken(spotifyToken)
+	        .build();
+    final GetCurrentUsersRecentlyPlayedTracksRequest getCurrentUsersRecentlyPlayedTracksRequest = spotifyApi.getCurrentUsersRecentlyPlayedTracks()
+    		.limit(10)
+    		.build();
     try {
-      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    } catch (IOException | InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      final PagingCursorbased<PlayHistory> playHistoryPagingCursorbased = getCurrentUsersRecentlyPlayedTracksRequest.execute();
+   	  PlayHistory[] playHistory = playHistoryPagingCursorbased.getItems();
+   	  for (int i = 0; i < playHistory.length; i++) {
+   		TrackSimplified track = playHistory[i].getTrack();
+   		ArtistSimplified[] artists = track.getArtists();
+   		String[] songArtists = new String[artists.length];
+   		for (int j = 0; j < artists.length; j++) {
+   		  songArtists[j] = artists[j].getName();
+   		  //System.out.println(songArtists[j] + "---");
+   		}
+   		Song song = new Song();
+   		song.setUsername(username);
+   		song.setName(track.getName());
+   		song.setArtists(songArtists);
+   		recentlyPlayed[i] = song;
+   		//System.out.println(track.getName());
+   	  }
+    } catch (Exception e) {
+      System.out.println("Something went wrong!\n" + e.getMessage());
     }
-    Gson gson = new Gson();
-    Map<String, String> result = gson.fromJson(response.body(), new TypeToken<Map<String, Object>>() {}.getType());
-    
-    System.out.println(result);
-    
-    //return result.get("email");
+  }
+
+  public void refreshCurrentlyPlaying() {
+
+	SpotifyApi spotifyApi = new SpotifyApi.Builder()
+	        .setAccessToken(spotifyToken)
+	        .build();
+    final GetUsersCurrentlyPlayingTrackRequest getUsersCurrentlyPlayingTrackRequest = spotifyApi
+    		.getUsersCurrentlyPlayingTrack()
+			.build();
+    try {
+      final CurrentlyPlaying currentlyPlaying = getUsersCurrentlyPlayingTrackRequest.execute();
+   	  if (currentlyPlaying != null) {
+   		IPlaylistItem playlistItem = currentlyPlaying.getItem();
+   	    // assuming participant only play music[Track Object] (not shows[Episode Object]) in this MVP
+   		Track track = (Track) playlistItem;
+   	    ArtistSimplified[] artists = track.getArtists();
+   	    String[] songArtists = new String[artists.length];
+   	    for (int j = 0; j < artists.length; j++) {
+   	      songArtists[j] = artists[j].getName();
+   	      //System.out.println(songArtists[j]);
+   	    }
+   	    Song song = new Song();
+   	    song.setUsername(username);
+   	    song.setName(track.getName());
+   	    song.setArtists(songArtists);
+   	    currentTrack = song;
+   	    //System.out.println(track.getName());
+   	  } else {
+   	    currentTrack = null;
+   	    //System.out.println(currentTrack);
+   	  }
+    } catch (Exception e) {
+      System.out.println("Something went wrong!\n" + e.getMessage());
+    }
   }
   
   public User(String spotifyToken, SqLite db) {
@@ -84,6 +127,22 @@ public class User {
     this.lastConnectionTime = other.lastConnectionTime;
     
     //this.db = other.db;
+  }
+  
+  public Song[] getRecentlyPlayed() {
+    return this.recentlyPlayed;
+  }
+  
+  public void setRecentlyPlayed(Song[] recentlyPlayed) {
+    this.recentlyPlayed = recentlyPlayed;
+  }
+
+  public Song getCurrentTrack() {
+    return this.currentTrack;
+  }
+  
+  public void setCurrentTrack(Song currentTrack) {
+    this.currentTrack = currentTrack;
   }
 
   public String getPassword_hash() {

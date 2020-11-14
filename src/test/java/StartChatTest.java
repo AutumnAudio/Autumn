@@ -133,17 +133,7 @@ public class StartChatTest {
   @Order(3)
   public void joinRoomTest() {
 
-    // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms/").asString();
-    assertEquals(200, response.getStatus());
-    
-    SqLite db = StartChat.getDb();
-    
-    String sessionId = db.getLatestSession();
-    
-    //db.insertUserWithSession("testing3", sessionId);
-    db.commit();
-	response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
     response = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
