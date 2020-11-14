@@ -127,6 +127,7 @@ public final class StartChat {
       user.setSpotifyRefreshToken(response.get("refresh_token"), true);
       user.setSessionId(sessionId, true);
       //user.refreshRecentlyPlayed();
+      //user.refreshCurrentlyPlaying();
       
       ctx.redirect("/chatrooms");
     });
