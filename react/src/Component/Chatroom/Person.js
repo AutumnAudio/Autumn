@@ -40,7 +40,7 @@ const Person = (props) => {
             <PersonIcon className={classes.personIcon}/>
             <div className={classes.nameDiv}>{person.username}</div>
             <AddIcon className={classes.addIcon}/>
-            <div className={classes.currentSongDiv}>Listening: watermelon sugar</div>
+            <div className={classes.currentSongDiv}>{person.recentlyPlayed[0]}</div>
         </div>
     )
     

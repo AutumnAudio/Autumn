@@ -8,12 +8,19 @@ const styles = {
 };
 
 const ChatMessageList = (props) => {
+<<<<<<< HEAD
     const { classes, chat } = props;
     return (
         <div>
             {chat.map((message, index) => {
                 return <ChatMessage message={message}/>
             })}
+=======
+    const { classes } = props;
+    return (
+        <div>
+            <ChatMessage />
+>>>>>>> add react prototype
         </div>
     )
     

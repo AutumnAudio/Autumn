@@ -9,6 +9,7 @@ const styles = {
 };
 
 const PersonList = (props) => {
+<<<<<<< HEAD
     const { classes, participants } = props;
     return (
         <div className={classes.personListDiv}>
@@ -17,13 +18,21 @@ const PersonList = (props) => {
             })}
             
         </div>
+=======
+    const { classes } = props;
+    return (
+        <div className={classes.personListDiv}><Person /></div>
+>>>>>>> add react prototype
     )
     
 }
 
 PersonList.propTypes = {
     classes: PropTypes.object.isRequired,
+<<<<<<< HEAD
     participants: PropTypes.array.isRequired,
+=======
+>>>>>>> add react prototype
 };
 
 export default withStyles(styles)(PersonList)
