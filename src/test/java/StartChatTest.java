@@ -283,18 +283,38 @@ public class StartChatTest {
 	
 	assertEquals(200, response.getStatus());
 	
+	System.out.println("/process-auth Response: " + response.getBody());
+	
+    // Parse the response to JSON object
+    JSONObject jsonObject = new JSONObject(response.getBody());
+
+    // ---------------------------- GSON Parsing -------------------------
+
+    // GSON use to parse data to object
+    Gson gson = new Gson();
+    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);
+    
+    // Check if player type is correct
+    assertEquals(6, chatlist.size());
+	
     StartChat.stop();
     StartChat.main(null);
     
     response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
     
+    System.out.println("/process-auth Response: " + response.getBody());
+    
     assertEquals(200, response.getStatus());
     
     response = Unirest.get("http://localhost:8080/process_auth").asString();
     
+    System.out.println("/process-auth Response: " + response.getBody());
+    
     assertEquals(200, response.getStatus());
   
     System.out.println("Test process authorization");
+    
+    System.out.println("/process-auth Response: " + response.getBody());
   }
   
   /**
