@@ -45,7 +45,7 @@ public class SqLiteTest {
 
   @Test
   public void testInsertParticipant() {
-    db.insertParticipant(Genre.JAZZ, "mary", "", "");
+    db.insertParticipant(Genre.JAZZ, "mary", "", "", "");
     db.commit();
     assertEquals(true, db.getChatRoomParticipant(Genre.JAZZ).containsKey("mary"));
   }

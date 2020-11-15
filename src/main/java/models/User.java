@@ -53,7 +53,16 @@ public class User {
    		//System.out.println(track.getName());
    	  }
     } catch (Exception e) {
-      System.out.println("Something went wrong!\n" + e.getMessage());
+      if (e.getMessage().equals("The access token expired")) {
+        spotifyToken = Login.refreshSpotifyToken(spotifyRefreshToken);
+        //db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN", spotifyRefreshToken, username);
+        //db.commit();
+        //setSpotifyToken(spotifyToken, true);
+        System.out.println("new token: " + spotifyToken);
+        refreshRecentlyPlayed();
+      } else {
+        System.out.println("Something went wrong!\n" + e.getMessage());
+      }
     }
   }
 
@@ -87,7 +96,14 @@ public class User {
    	    //System.out.println(currentTrack);
    	  }
     } catch (Exception e) {
-      System.out.println("Something went wrong!\n" + e.getMessage());
+      if (e.getMessage().equals("The access token expired")) {
+          spotifyToken = Login.refreshSpotifyToken(spotifyRefreshToken);
+          //setSpotifyToken(spotifyToken, true);
+          System.out.println("new token: " + spotifyToken);
+          refreshCurrentlyPlaying();
+        } else {
+          System.out.println("Something went wrong!\n" + e.getMessage());
+        }
     }
   }
   

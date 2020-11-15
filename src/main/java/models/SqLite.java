@@ -43,7 +43,7 @@ public class SqLite {
                      + " PASSWORD_HASH          VARCHAR, "
                      + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
-                     + " SESSION_ID             VARCHAR UNIQUE, "
+                     + " SESSION_ID             VARCHAR, "
                      + " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS SESSIONS "
@@ -60,6 +60,7 @@ public class SqLite {
     	             + " USERNAME               INT NOT NULL, "
                      + " SPOTIFY_TOKEN          VARCHAR, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR, "
+                     + " SESSION_ID             VARCHAR, "
     	             + " CONSTRAINT             PARTICIPANT PRIMARY KEY (GENRE, USERNAME) ) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS CHAT "
@@ -307,11 +308,11 @@ public class SqLite {
    * @param username String
    */
 
-  public void insertParticipant(final Genre genre, final String username, final String token, final String refreshToken) {
+  public void insertParticipant(final Genre genre, final String username, final String token, final String refreshToken, final String sessionId) {
     try {
       conn.setAutoCommit(false);
-      String sql = "INSERT INTO PARTICIPANTS (GENRE, USERNAME, SPOTIFY_TOKEN, SPOTIFY_REFRESH_TOKEN) "
-                     + "VALUES (" + "'" + genre.getGenre() + "'" + "," + "'" + username + "'" + "," + "'" + token + "'" + "," + "'" + refreshToken + "'" + ");";
+      String sql = "INSERT INTO PARTICIPANTS (GENRE, USERNAME, SPOTIFY_TOKEN, SPOTIFY_REFRESH_TOKEN, SESSION_ID) "
+                     + "VALUES (" + "'" + genre.getGenre() + "'" + "," + "'" + username + "'" + "," + "'" + token + "'" + "," + "'" + refreshToken + "'" + "," + "'" + sessionId + "'" + ");";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -354,6 +355,7 @@ public class SqLite {
           user.setUsername(rs.getString("USERNAME"));
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
+          user.setSessionId(rs.getString("SESSION_ID"));
           list.put(user.getUsername(), user);
         }
       } finally {
@@ -529,19 +531,22 @@ public class SqLite {
   }
 
   /**
-   * Get Spotify token of user
+   * Get User object from username
    * @param username String
-   * @return Spotify token
+   * @return User Object
    */
-  public String getUserSpotifyToken(final String username) {
-	String token = "";
+  public User getUserByUsername(final String username) {
+	User user = new User();
     try {
       ResultSet rs;
       rs = stmt.executeQuery("SELECT * FROM USERS "
                               + "WHERE USERNAME= " + "'" + username + "'");
       try {
         while (rs.next()) {
-          token = rs.getString("SPOTIFY_TOKEN");
+          user.setUsername(rs.getString("USERNAME"));
+          user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
+          user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
+          user.setSessionId(rs.getString("SESSION_ID"));
         }
       } finally {
         rs.close();
@@ -550,32 +555,7 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return token;
-  }
-
-  /**
-   * Get Spotify refresh token of user
-   * @param username String
-   * @return Spotify refresh token
-   */
-  public String getUserSpotifyRefreshToken(final String username) {
-	String token = "";
-    try {
-      ResultSet rs;
-      rs = stmt.executeQuery("SELECT * FROM USERS "
-                              + "WHERE USERNAME= " + "'" + username + "'");
-      try {
-        while (rs.next()) {
-          token = rs.getString("SPOTIFY_REFRESH_TOKEN");
-        }
-      } finally {
-        rs.close();
-      }
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return token;
+    return user;
   }
 
   /**

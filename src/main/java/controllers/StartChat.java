@@ -1,15 +1,17 @@
 package controllers;
 
 import com.google.gson.Gson;
+
 import io.javalin.Javalin;
+
 import java.io.IOException;
-import java.sql.Time;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import models.ChatList;
 import models.ChatRoom;
@@ -53,6 +55,10 @@ public final class StartChat {
    */
   private static SqLite db = new SqLite();
 
+  /**
+   * get current database
+   * @return database SqLite
+   */
   public static SqLite getDb() {
 	  return db;
   }
@@ -87,6 +93,18 @@ public final class StartChat {
       }
       chatlist.setChatrooms(map);
     }
+    
+    ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+    exec.scheduleAtFixedRate(new Runnable() {
+      public void run() {
+        chatlist = db.update();
+        chatlist.refreshChatList(db);
+        for (ChatRoom chatroom : chatlist.getChatrooms().values()) {
+          sendChatRoomToAllParticipants(chatroom.getGenre().getGenre(), new Gson().toJson(chatroom));
+        }
+        
+      }
+    }, 0, 30, TimeUnit.SECONDS);
 
     
     app = Javalin.create(config -> {
@@ -126,8 +144,6 @@ public final class StartChat {
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshToken(response.get("refresh_token"), true);
       user.setSessionId(sessionId, true);
-      //user.refreshRecentlyPlayed();
-      //user.refreshCurrentlyPlaying();
       
       ctx.redirect("/chatrooms");
     });
@@ -157,13 +173,12 @@ public final class StartChat {
         Map<String, User> participants = chatlist.getChatroomByGenre(genre).getParticipant();
         if (!participants.containsKey(username)) {
           // only perform database operation if user is new
-          db.insertParticipant(genre, username, db.getUserSpotifyToken(username), db.getUserSpotifyRefreshToken(username));
+          User user = db.getUserByUsername(username);
+          db.insertParticipant(genre, username, user.getSpotifyToken(), user.getSpotifyRefreshToken(), user.getSessionId());
           db.commit();
           chatlist = db.update();
           db.commit();
         }
-        chatlist = db.update();
-        chatlist.refreshChatList(db);
       } else {
         ctx.result("Invalid Room");
       }
@@ -177,7 +192,7 @@ public final class StartChat {
         String username = ctx.queryParam("user");
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         //chatlist.refreshChatList(db);
-        sendChatRoomToAllParticipants(new Gson().toJson(chatroom));
+        sendChatRoomToAllParticipants(genre.getGenre(), new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
       } else {
         ctx.result("Invalid Room");
@@ -210,10 +225,6 @@ public final class StartChat {
       // TODO implement endpoint
       Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
       String username = ctx.formParam("username");
-      // check if participant is currently in room
-      // remove participant from DB
-      // update chatlist
-      // update participant views
       ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
       if (chatroom.getParticipant().containsKey(username)) {
         db.removeParticipant(genre, username);
@@ -221,7 +232,7 @@ public final class StartChat {
         chatlist = db.update();
         db.commit();
         chatroom = chatlist.getChatroomByGenre(genre);
-        sendChatRoomToAllParticipants(new Gson().toJson(chatroom));
+        sendChatRoomToAllParticipants(genre.getGenre(), new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
       } else {
         ctx.result("You are not in the room");
@@ -229,16 +240,19 @@ public final class StartChat {
     });
 
     // Web sockets - DO NOT DELETE or CHANGE
-    app.ws("/chatroom", new UiWebSocket());
+    app.ws("/gameboard", new UiWebSocket());
   }
 
   /** Send message to all players.
    * @param gameBoardJson Gameboard JSON
    * @throws IOException Websocket message send IO Exception
    */
-  private static void sendChatRoomToAllParticipants(final String chatRoomJson) {
+  private static void sendChatRoomToAllParticipants(final String genre, final String chatRoomJson) {
     Queue<Session> sessions = UiWebSocket.getSessions();
+    // check if refreshChatlist update song data
+    //System.out.println(genre + ": " + chatRoomJson);
     for (Session sessionPlayer : sessions) {
+      // TODO: Need extra check for participant in the room
       try {
         sessionPlayer.getRemote().sendString(chatRoomJson);
       } catch (IOException e) {
