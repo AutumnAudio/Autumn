@@ -10,9 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
+import java.util.concurrent.ConcurrentHashMap;
 import models.ChatList;
 import models.ChatRoom;
 import models.Genre;
@@ -137,7 +138,7 @@ public final class StartChat {
     //handle spotify authentication
     app.get("/process_auth", ctx -> {
       
-      String sessionId = (String)ctx.sessionAttribute("sessionId");
+      String sessionId = (String) ctx.sessionAttribute("sessionId");
       
       Map<String, String> response = Login.getSpotifyTokenFromCode(ctx.queryParam("code"));
       
@@ -249,10 +250,14 @@ public final class StartChat {
    */
   private static void sendChatRoomToAllParticipants(final String genre, final String chatRoomJson) {
     Queue<Session> sessions = UiWebSocket.getSessions();
+    Map<Session, String> sessionGenre = UiWebSocket.getGenreMap();
     // check if refreshChatlist update song data
     //System.out.println(genre + ": " + chatRoomJson);
     for (Session sessionPlayer : sessions) {
       // TODO: Need extra check for participant in the room
+      if (!sessionGenre.get(sessionPlayer).equals(genre)) {
+        continue;
+      }
       try {
         sessionPlayer.getRemote().sendString(chatRoomJson);
       } catch (IOException e) {
