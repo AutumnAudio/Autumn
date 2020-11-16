@@ -13,235 +13,377 @@ import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackReq
 
 public class User {
 
-  private String username; //spotify email
+  /**
+   * email associated to spotify account.
+   */
+  private String username;
+
+  /**
+   * hashed password.
+   */
   private String passwordHash;
+
+  /**
+   * sessionId.
+   */
   private String sessionId;
+
+  /**
+   * Spotify access token.
+   */
   private String spotifyToken;
+
+  /**
+   * Spotify Refresh Token.
+   */
   private String spotifyRefreshToken;
-  
+
+  /**
+   * last connection time.
+   */
   private int lastConnectionTime;
-  
+
+  /**
+   * SqLite database.
+   */
   private SqLite db;
-  
-  private Song[] recentlyPlayed = new Song[10];
-  
+
+  /**
+   * Recently played song limit.
+   */
+  private static final int LIMIT = 10;
+
+  /**
+   * Recently Played song list.
+   */
+  private Song[] recentlyPlayed = new Song[LIMIT];
+
+  /**
+   * currently playing track.
+   */
   private Song currentTrack;
-  
+
+  /**
+   * refresh recently playing.
+   */
   public void refreshRecentlyPlayed() {
-	SpotifyApi spotifyApi = new SpotifyApi.Builder()
-	        .setAccessToken(spotifyToken)
-	        .build();
-    final GetCurrentUsersRecentlyPlayedTracksRequest getCurrentUsersRecentlyPlayedTracksRequest = spotifyApi.getCurrentUsersRecentlyPlayedTracks()
-    		.limit(10)
-    		.build();
+    SpotifyApi spotifyApi = new SpotifyApi.Builder()
+            .setAccessToken(spotifyToken)
+            .build();
+    final GetCurrentUsersRecentlyPlayedTracksRequest
+          getCurrentUsersRecentlyPlayedTracksRequest =
+          spotifyApi.getCurrentUsersRecentlyPlayedTracks()
+            .limit(LIMIT)
+            .build();
     try {
-      final PagingCursorbased<PlayHistory> playHistoryPagingCursorbased = getCurrentUsersRecentlyPlayedTracksRequest.execute();
-   	  PlayHistory[] playHistory = playHistoryPagingCursorbased.getItems();
-   	  for (int i = 0; i < playHistory.length; i++) {
-   		TrackSimplified track = playHistory[i].getTrack();
-   		ArtistSimplified[] artists = track.getArtists();
-   		String[] songArtists = new String[artists.length];
-   		for (int j = 0; j < artists.length; j++) {
-   		  songArtists[j] = artists[j].getName();
-   		  //System.out.println(songArtists[j] + "---");
-   		}
-   		Song song = new Song();
-   		song.setUsername(username);
-   		song.setName(track.getName());
-   		song.setArtists(songArtists);
-   		recentlyPlayed[i] = song;
-   		//System.out.println(track.getName());
-   	  }
+      final PagingCursorbased<PlayHistory>
+            playHistoryPagingCursorbased =
+          getCurrentUsersRecentlyPlayedTracksRequest.execute();
+      PlayHistory[] playHistory = playHistoryPagingCursorbased.getItems();
+      for (int i = 0; i < playHistory.length; i++) {
+        TrackSimplified track = playHistory[i].getTrack();
+        ArtistSimplified[] artists = track.getArtists();
+        String[] songArtists = new String[artists.length];
+        for (int j = 0; j < artists.length; j++) {
+          songArtists[j] = artists[j].getName();
+          //System.out.println(songArtists[j] + "---");
+        }
+        Song song = new Song();
+        song.setUsername(username);
+        song.setName(track.getName());
+        song.setArtists(songArtists);
+        recentlyPlayed[i] = song;
+        //System.out.println(track.getName());
+      }
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
-        spotifyToken = Login.refreshSpotifyToken(spotifyRefreshToken);
-        //db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN", spotifyRefreshToken, username);
+        spotifyToken = Login.refreshSpotifyToken(
+                spotifyRefreshToken);
+        //db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
+        //spotifyRefreshToken, username);
         //db.commit();
         //setSpotifyToken(spotifyToken, true);
-        //System.out.println("new token: " + spotifyToken);
+        //System.out.println("new token: " + spotifyToken);----
         refreshRecentlyPlayed();
       } else {
-        System.out.println("Something went wrong!\n" + e.getMessage());
+        System.out.println("Something went wrong!\n"
+            + e.getMessage());
       }
     }
   }
 
+  /**
+   * refresh currently playing.
+   */
   public void refreshCurrentlyPlaying() {
-	SpotifyApi spotifyApi = new SpotifyApi.Builder()
-	        .setAccessToken(spotifyToken)
-	        .build();
-    final GetUsersCurrentlyPlayingTrackRequest getUsersCurrentlyPlayingTrackRequest = spotifyApi
-    		.getUsersCurrentlyPlayingTrack()
-			.build();
+    SpotifyApi spotifyApi = new SpotifyApi.Builder()
+            .setAccessToken(spotifyToken)
+            .build();
+    final GetUsersCurrentlyPlayingTrackRequest
+          getUsersCurrentlyPlayingTrackRequest = spotifyApi
+            .getUsersCurrentlyPlayingTrack()
+            .build();
     try {
-      final CurrentlyPlaying currentlyPlaying = getUsersCurrentlyPlayingTrackRequest.execute();
-   	  if (currentlyPlaying != null) {
-   		IPlaylistItem playlistItem = currentlyPlaying.getItem();
-   	    // assuming participant only play music[Track Object] (not shows[Episode Object]) in this MVP
-   		Track track = (Track) playlistItem;
-   	    ArtistSimplified[] artists = track.getArtists();
-   	    String[] songArtists = new String[artists.length];
-   	    for (int j = 0; j < artists.length; j++) {
-   	      songArtists[j] = artists[j].getName();
-   	      //System.out.println(songArtists[j]);
-   	    }
-   	    Song song = new Song();
-   	    song.setUsername(username);
-   	    song.setName(track.getName());
-   	    song.setArtists(songArtists);
-   	    currentTrack = song;
-   	    //System.out.println(track.getName());
-   	  } else {
-   	    currentTrack = null;
-   	    //System.out.println(currentTrack);
-   	  }
+      final CurrentlyPlaying currentlyPlaying =
+            getUsersCurrentlyPlayingTrackRequest.execute();
+      if (currentlyPlaying != null) {
+        IPlaylistItem playlistItem = currentlyPlaying.getItem();
+        // assuming participant only play music[Track Object]
+        // (not shows[Episode Object]) in this MVP
+        Track track = (Track) playlistItem;
+        ArtistSimplified[] artists = track.getArtists();
+        String[] songArtists = new String[artists.length];
+        for (int j = 0; j < artists.length; j++) {
+          songArtists[j] = artists[j].getName();
+          //System.out.println(songArtists[j]);
+        }
+        Song song = new Song();
+        song.setUsername(username);
+        song.setName(track.getName());
+        song.setArtists(songArtists);
+        currentTrack = song;
+        //System.out.println(track.getName());
+      } else {
+        currentTrack = null;
+        //System.out.println(currentTrack);
+      }
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
-          spotifyToken = Login.refreshSpotifyToken(spotifyRefreshToken);
-          //setSpotifyToken(spotifyToken, true);
-          //System.out.println("new token: " + spotifyToken);
-          refreshCurrentlyPlaying();
-        } else {
-          System.out.println("Something went wrong!\n" + e.getMessage());
-        }
+        spotifyToken =
+                Login.refreshSpotifyToken(spotifyRefreshToken);
+        //setSpotifyToken(spotifyToken, true);
+        //System.out.println("new token: " + spotifyToken);
+        refreshCurrentlyPlaying();
+      } else {
+        System.out.println("Something went wrong!\n"
+            + e.getMessage());
+      }
     }
   }
-  
-  public User(String spotifyToken, SqLite db) {
-    
-    setDb(db);
-    
-    String email = Login.getEmailFromSpotifyToken(spotifyToken);
 
-    User tmpUser = db.getUserByName(email);
-    
-    if(tmpUser.username != null) {
+  /**
+   * Public constructor.
+   * @param token String
+   * @param database SqLite
+   */
+  public User(final String token, final SqLite database) {
+    this.db = database;
+    String email = Login.getEmailFromSpotifyToken(token);
+    User tmpUser = database.getUserByName(email);
+    if (tmpUser.username != null) {
       copyUser(tmpUser);
+    } else {
+      database.insertUserWithToken(email, token);
+      database.commit();
     }
-    
-    else {
-      db.insertUserWithToken(email, spotifyToken);
-      db.commit();
-    }
-    
-    this.setSpotifyToken(spotifyToken, true);
+    this.setSpotifyToken(token, true);
   }
-  
+
+  /**
+   * Public Constructor.
+   */
   public User() {
-    
   }
-  
-  public void copyUser(User other) {
-    
+
+  /**
+   * Copy user object.
+   * @param other User
+   */
+  public void copyUser(final User other) {
     this.username = other.username;
     this.passwordHash = other.passwordHash;
     this.sessionId = other.sessionId;
     this.spotifyToken = other.spotifyToken;
     this.spotifyRefreshToken = other.spotifyRefreshToken;
     this.lastConnectionTime = other.lastConnectionTime;
-    
     //this.db = other.db;
   }
-  
+
+  /**
+   * Get recently played.
+   * @return recentlyPlayed Song[]
+   */
   public Song[] getRecentlyPlayed() {
-    return this.recentlyPlayed;
-  }
-  
-  public void setRecentlyPlayed(Song[] recentlyPlayed) {
-    this.recentlyPlayed = recentlyPlayed;
+    Song[] ret = new Song[LIMIT];
+    for (int i = 0; i < LIMIT; i++) {
+      ret[i] = recentlyPlayed[i];
+    }
+    return ret;
   }
 
+  /**
+   * Set recently played.
+   * @param recentlyPlayedList Song[]
+   */
+  public void setRecentlyPlayed(final Song[] recentlyPlayedList) {
+    for (int i = 0; i < LIMIT; i++) {
+      recentlyPlayed[i] = recentlyPlayedList[i];
+    }
+  }
+
+  /**
+   * Get current track.
+   * @return currentTrack Song
+   */
   public Song getCurrentTrack() {
     return this.currentTrack;
   }
-  
-  public void setCurrentTrack(Song currentTrack) {
-    this.currentTrack = currentTrack;
+
+  /**
+   * set current track.
+   * @param track Song
+   */
+  public void setCurrentTrack(final Song track) {
+    this.currentTrack = track;
   }
 
-  public String getPassword_hash() {
+  /**
+   * get password.
+   * @return passwordHash String
+   */
+  public String getPasswordHash() {
     return passwordHash;
   }
 
-  public void setPasswordHash(String password_hash) {
-    this.passwordHash = password_hash;
+  /**
+   * set password.
+   * @param password String
+   */
+  public void setPasswordHash(final String password) {
+    this.passwordHash = password;
   }
 
+  /**
+   * Get session id.
+   * @return sessionId String
+   */
   public String getSessionId() {
     return sessionId;
   }
 
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
+  /**
+   * set session id.
+   * @param id String
+   */
+  public void setSessionId(final String id) {
+    this.sessionId = id;
   }
-  
-  public void setSessionId(String sessionId, boolean saveToDb) {
-    setSessionId(sessionId);
-    
-    //if(saveToDb && db.getUserCount(username) == 0) {
-   	if(saveToDb) {
-      db.updateUserAttribute("SESSION_ID", sessionId, username);
+
+  /**
+   * set session id.
+   * @param id String
+   * @param saveToDb boolean
+   */
+  public void setSessionId(final String id, final boolean saveToDb) {
+    setSessionId(id);
+    if (saveToDb) {
+      db.updateUserAttribute("SESSION_ID", id, username);
       db.commit();
     }
   }
-  
+
+  /**
+   * get last connection time.
+   * @return time integer
+   */
   public int getLastConnectionTime() {
     return lastConnectionTime;
   }
 
-  public void setLastConnectionTime(int lastConnectionTime) {
-    this.lastConnectionTime = lastConnectionTime;
+  /**
+   * Set last connection time.
+   * @param connectionTime integer
+   */
+  public void setLastConnectionTime(final int connectionTime) {
+    this.lastConnectionTime = connectionTime;
   }
 
+  /**
+   * Get Spotify token.
+   * @return spotifyToken String
+   */
   public String getSpotifyToken() {
     return spotifyToken;
   }
 
-  public void setSpotifyToken(String spotifyToken) {
-    this.spotifyToken = spotifyToken;
+  /**
+   * Set Spotify token.
+   * @param token String
+   */
+  public void setSpotifyToken(final String token) {
+    this.spotifyToken = token;
   }
-  
-  public void setSpotifyToken(String spotifyToken, boolean saveToDb) {
-    
-    setSpotifyToken(spotifyToken);
 
-    //if(saveToDb && db.getUserCount(username) == 0) {
-   	if(saveToDb) {
-      db.updateUserAttribute("SPOTIFY_TOKEN", spotifyToken, username);
+  /**
+   * Set Spotify token.
+   * @param token String
+   * @param saveToDb boolean
+   */
+  public void setSpotifyToken(final String token,
+      final boolean saveToDb) {
+    setSpotifyToken(token);
+    if (saveToDb) {
+      db.updateUserAttribute("SPOTIFY_TOKEN",
+          token, username);
       db.commit();
     }
   }
-  
+
+  /**
+   * get Spotify refresh token.
+   * @return refresh token String
+   */
   public String getSpotifyRefreshToken() {
     return spotifyRefreshToken;
   }
 
+  /**
+   * Refresh Spotify token.
+   * @return token String
+   */
   public String refreshSpotifyToken() {
-    
-    setSpotifyToken(Login.refreshSpotifyToken(spotifyRefreshToken), true);
+    setSpotifyToken(
+        Login.refreshSpotifyToken(spotifyRefreshToken), true);
     return getSpotifyToken();
   }
-  
-  public void setSpotifyRefreshToken(String spotifyRefreshToken) {
-    this.spotifyRefreshToken = spotifyRefreshToken;
+
+  /**
+   * Set Spotify refresh token.
+   * @param refreshToken String
+   */
+  public void setSpotifyRefreshToken(final String refreshToken) {
+    this.spotifyRefreshToken = refreshToken;
   }
-  
-  public void setSpotifyRefreshToken(String spotifyRefreshToken, boolean saveToDb) {
-    setSpotifyRefreshToken(spotifyRefreshToken);
-    
-    //if(saveToDb && db.getUserCount(username) == 0) {
-   	if(saveToDb) {
-      db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN", spotifyRefreshToken, username);
+
+  /**
+   * Set Spotify refresh token.
+   * @param refreshToken String
+   * @param saveToDb boolean
+   */
+  public void setSpotifyRefreshToken(final String refreshToken,
+      final boolean saveToDb) {
+    setSpotifyRefreshToken(refreshToken);
+    if (saveToDb) {
+      db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
+          refreshToken, username);
       db.commit();
     }
   }
-  
+
+  /**
+   * get database.
+   * @return db SqLite
+   */
   public SqLite getDb() {
     return db;
   }
 
-  public void setDb(SqLite db) {
-    this.db = db;
+  /**
+   * set database.
+   * @param database SqLite
+   */
+  public void setDb(final SqLite database) {
+    this.db = database;
   }
 
 
@@ -255,7 +397,7 @@ public class User {
 
   /**
    * Set username for the user.
-   * @param username String
+   * @param name String
    */
   public void setUsername(final String name) {
     this.username = name;

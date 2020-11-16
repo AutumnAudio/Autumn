@@ -14,9 +14,11 @@ import org.eclipse.jetty.websocket.api.Session;
  * @author Shirish Singh
  *
  */
-public class UiWebSocket implements Consumer<WsHandler>  {
+public final class UiWebSocket implements Consumer<WsHandler>  {
 
-  // Store sessions to broadcast a message to all users
+  /**
+   * Store sessions to broadcast a message to all users.
+   */
   private static final Queue<Session> SESSIONS = new ConcurrentLinkedQueue<>();
 
   @Override
@@ -43,6 +45,10 @@ public class UiWebSocket implements Consumer<WsHandler>  {
     });
   }
 
+  /**
+   * Get all sessions.
+   * @return sessions
+   */
   public static Queue<Session> getSessions() {
     return SESSIONS;
   }

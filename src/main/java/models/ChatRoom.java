@@ -8,31 +8,31 @@ public class ChatRoom {
   /**
    * Participant in chatroom.
    */
-  Map<String, User> participants;
+  private Map<String, User> participants;
 
   /**
    * Participant in chatroom.
    */
-  List<Message> chat;
+  private List<Message> chat;
 
   /**
    * Participant in chatroom.
    */
-  List<Song> playlist;
+  private List<Song> playlist;
 
   /**
-   * Genre of chatroom
+   * Genre of chatroom.
    */
-  Genre genre;
+  private Genre genre;
 
   /**
-   * link chatroom
+   * link chatroom.
    */
-  String link;
+  private String link;
 
   /**
    * Get participant list.
-   * @return participant List<User>.
+   * @return participant List
    */
   public Map<String, User> getParticipant() {
     return this.participants;
@@ -40,9 +40,9 @@ public class ChatRoom {
 
   /**
    * Set participant list.
-   * @param participant List<User>.
+   * @param participantList List
    */
-  public void setParticipant(Map<String, User> participantList) {
+  public void setParticipant(final Map<String, User> participantList) {
     this.participants = participantList;
   }
 
@@ -56,7 +56,7 @@ public class ChatRoom {
 
   /**
    * Get chat history.
-   * @return chat List<Message>.
+   * @return chat List
    */
   public List<Message> getChat() {
     return this.chat;
@@ -64,10 +64,10 @@ public class ChatRoom {
 
   /**
    * Set chat history.
-   * @param chat List<Message>.
+   * @param newChat List
    */
-  public void setChat(List<Message> chat) {
-    this.chat = chat;
+  public void setChat(final List<Message> newChat) {
+    this.chat = newChat;
   }
 
   /**
@@ -75,13 +75,13 @@ public class ChatRoom {
    * @param message Message Object
    */
   public void addMessage(final Message message) {
-	// call sql query to add message
+    // call sql query to add message
     this.chat.add(message);
   }
 
   /**
    * Get shared songs.
-   * @return songs List<Song>.
+   * @return songs List
    */
   public List<Song> getPlaylist() {
     return this.playlist;
@@ -89,9 +89,9 @@ public class ChatRoom {
 
   /**
    * Set shared songs.
-   * @param shared songs List<Song>.
+   * @param songList List
    */
-  public void setPlaylist(List<Song> songList) {
+  public void setPlaylist(final List<Song> songList) {
     this.playlist = songList;
   }
 
@@ -100,7 +100,7 @@ public class ChatRoom {
    * @param song Song Object
    */
   public void addsong(final Song song) {
-	// call sql query to add song
+    // call sql query to add song
     this.playlist.add(song);
   }
 
@@ -114,11 +114,11 @@ public class ChatRoom {
 
   /**
    * Set chatroom genre.
-   * @param genre String.
+   * @param newGenre String.
    */
-  public void setGenre(Genre genre) {
-    this.genre = genre;
-  }  
+  public void setGenre(final Genre newGenre) {
+    this.genre = newGenre;
+  }
 
   /**
    * Get link to chatroom.
@@ -130,9 +130,9 @@ public class ChatRoom {
 
   /**
    * Set link to chatroom.
-   * @param link String.
+   * @param newLink String.
    */
-  public void setLink(String link) {
-    this.link = link;
+  public void setLink(final String newLink) {
+    this.link = newLink;
   }
 }
