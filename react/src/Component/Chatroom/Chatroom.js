@@ -42,7 +42,6 @@ const Chatroom = (props) => {
             <div className={classes.personPanelStyle}><PersonPanel participants={participants}/></div>
             
             <ChatBoard chat={chat}/>
-
             <TextBox />
         </div>
     )

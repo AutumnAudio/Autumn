@@ -26,6 +26,7 @@ const styles = {
 
 const ChatMessage = (props) => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     const { classes, message } = props;
     return (
         <div className={classes.chatMessageList}>
@@ -52,6 +53,14 @@ const ChatMessage = (props) => {
                 <div className={classes.textDiv}>Questions explained agreeable preferred strangers too him her son. Set put shyness offices his females him distant. Improve has message besides shy himself cheered however how son. Quick judge other leave ask first chief her. Indeed or remark always silent seemed narrow be. Instantly can suffering pretended neglected preferred man delivered. Perhaps fertile brandon do imagine to cordial cottage. </div>
             </div>
 >>>>>>> add react prototype
+=======
+    const { classes, message } = props;
+    return (
+        <div className={classes.chatMessageList}>
+            <PersonIcon className={classes.personIcon}/>
+            <div className={classes.nameDiv}>{message.username}</div>
+            <div className={classes.textDiv}>{message.message}</div>
+>>>>>>> add websocket connection
         </div>
     )
     
