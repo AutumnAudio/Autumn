@@ -34,27 +34,13 @@ const styles = {
 };
 
 const Person = (props) => {
-    const { classes } = props;
+    const { classes, person } = props
     return (
-        <div>
-            <div className={classes.personDiv}>
-                <PersonIcon className={classes.personIcon}/>
-                <div className={classes.nameDiv}>John Smith</div>
-                <AddIcon className={classes.addIcon}/>
-                <div className={classes.currentSongDiv}>Listening: watermelon sugar</div>
-            </div>
-            <div className={classes.personDiv}>
-                <PersonIcon className={classes.personIcon}/>
-                <div className={classes.nameDiv}>John Smith</div>
-                <AddIcon className={classes.addIcon}/>
-                <div className={classes.currentSongDiv}>Listening: watermelon sugar</div>
-            </div>
-            <div className={classes.personDiv}>
-                <PersonIcon className={classes.personIcon}/>
-                <div className={classes.nameDiv}>John Smith</div>
-                <AddIcon className={classes.addIcon}/>
-                <div className={classes.currentSongDiv}>Listening: watermelon sugar</div>
-            </div>
+        <div className={classes.personDiv}>
+            <PersonIcon className={classes.personIcon}/>
+            <div className={classes.nameDiv}>{person.username}</div>
+            <AddIcon className={classes.addIcon}/>
+            <div className={classes.currentSongDiv}>Listening: watermelon sugar</div>
         </div>
     )
     
@@ -62,6 +48,7 @@ const Person = (props) => {
 
 Person.propTypes = {
     classes: PropTypes.object.isRequired,
+    person: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Person)

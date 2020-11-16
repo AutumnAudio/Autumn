@@ -14,10 +14,10 @@ const styles = {
 };
 
 const ChatBoard = (props) => {
-    const { classes } = props;
+    const { classes, chat } = props;
     return (
         <div className={classes.chatBoardDiv}>
-            <ChatMessageList />
+            <ChatMessageList chat={chat}/>
         </div>
     )
 }

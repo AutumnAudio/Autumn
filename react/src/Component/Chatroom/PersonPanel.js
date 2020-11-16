@@ -17,12 +17,13 @@ const styles = {
 };
 
 const PersonPanel = (props) => {
-    const { classes } = props;
+    
+    const { classes, participants } = props
     return (
         <div>
             <ArrowBackIcon className={classes.arrowBack}/>
             <h1 className={classes.roomHeader}>Pop</h1>
-            <PersonList />
+            <PersonList participants={participants}/>
         </div>
     )
     
@@ -30,6 +31,7 @@ const PersonPanel = (props) => {
 
 PersonPanel.propTypes = {
     classes: PropTypes.object.isRequired,
+    participants: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(PersonPanel)

@@ -9,15 +9,21 @@ const styles = {
 };
 
 const PersonList = (props) => {
-    const { classes } = props;
+    const { classes, participants } = props;
     return (
-        <div className={classes.personListDiv}><Person /></div>
+        <div className={classes.personListDiv}>
+            {participants.map((participant, index) => {
+                return (<Person key={participant.username} person={participant}/>)
+            })}
+            
+        </div>
     )
     
 }
 
 PersonList.propTypes = {
     classes: PropTypes.object.isRequired,
+    participants: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(PersonList)

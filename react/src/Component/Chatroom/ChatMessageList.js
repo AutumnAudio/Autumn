@@ -8,10 +8,12 @@ const styles = {
 };
 
 const ChatMessageList = (props) => {
-    const { classes } = props;
+    const { classes, chat } = props;
     return (
         <div>
-            <ChatMessage />
+            {chat.map((message, index) => {
+                return <ChatMessage message={message}/>
+            })}
         </div>
     )
     
