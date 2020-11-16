@@ -11,56 +11,62 @@ public class Song {
    * Song that is being shared.
    */
   private String song;
-  
-  /*
-   * Name of the song
+
+  /**
+   * Name of the song.
    */
   private String name;
-  
-  /*
-   * Artist who performs the song
+
+  /**
+   * Artist who performs the song.
    */
   private String[] artists;
 
-  
   /**
    * Set name of the song.
-   * @param name String
+   * @param songName String
    */
-  public void setName(final String name) {
-	this.name = name;
+  public void setName(final String songName) {
+    this.name = songName;
   }
-  
+
   /**
    * Get name of song.
    * @return name String
    */
   public String getName() {
-	return this.name;
+    return this.name;
   }
-  
+
   /**
    * set artists of the song.
-   * @param artists
+   * @param songArtists String[]
    */
-  public void setArtists(String[] artists) {
-    this.artists = artists;
+  public void setArtists(final String[] songArtists) {
+    artists = new String[songArtists.length];
+    for (int i = 0; i < songArtists.length; i++) {
+      artists[i] = songArtists[i];
+    }
   }
-  
+
   /**
    * get artists of the song.
    * @return artists String[]
    */
   public String[] getArtists() {
-	return this.artists;
+    String[] ret = new String[artists.length];
+    for (int i = 0; i < artists.length; i++) {
+      ret[i] = artists[i];
+    }
+    return ret;
   }
-  
+
   /**
    * Set user for a song.
-   * @param username String
+   * @param userName String
    */
-  public void setUsername(final String username) {
-    this.username = username;
+  public void setUsername(final String userName) {
+    this.username = userName;
   }
 
   /**
@@ -73,10 +79,10 @@ public class Song {
 
   /**
    * Set song.
-   * @param song String
+   * @param spotifySong String
    */
-  public void setSong(final String song) {
-    this.song = song;
+  public void setSong(final String spotifySong) {
+    this.song = spotifySong;
   }
 
   /**

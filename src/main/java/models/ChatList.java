@@ -11,7 +11,7 @@ public class ChatList {
 
   /**
    * Get chatrooms.
-   * @return chatrooms List<Chatroom>.
+   * @return chatrooms
    */
   public Map<String, ChatRoom> getChatrooms() {
     return this.chatrooms;
@@ -19,22 +19,23 @@ public class ChatList {
 
   /**
    * Set chatroom list.
-   * @param chatrooms List<ChatRoom>.
+   * @param newChatrooms Map
    */
-  public void setChatrooms(Map<String, ChatRoom> map) {
-    this.chatrooms = map;
+  public void setChatrooms(final Map<String, ChatRoom> newChatrooms) {
+    this.chatrooms = newChatrooms;
   }
 
   /**
    * Get chatrooms by genre.
+   * @param genre Genre
    * @return chatroom Chatroom.
    */
-  public ChatRoom getChatroomByGenre(Genre genre) {
+  public ChatRoom getChatroomByGenre(final Genre genre) {
     return chatrooms.get(genre.getGenre());
   }
 
   /**
-   * Return size of ArrayList
+   * Return size of ArrayList.
    * @return size integer
    */
   public int size() {
@@ -42,14 +43,14 @@ public class ChatList {
   }
 
   /**
-   * Refresh Chatlist song data
+   * Refresh Chatlist song data.
    */
-  public void refreshChatList(SqLite db) {
+  public void refreshChatList() {
     for (ChatRoom chatroom : chatrooms.values()) {
       Map<String, User> participants = chatroom.getParticipant();
-      for (String username : participants.keySet()) {
-    	User user = participants.get(username);
-       	if (!user.getSpotifyToken().equals("")) {    
+      for (Map.Entry<String, User> entry : participants.entrySet()) {
+        User user = entry.getValue();
+        if (!user.getSpotifyToken().equals("")) {
           user.refreshRecentlyPlayed();
           user.refreshCurrentlyPlaying();
         }

@@ -14,10 +14,10 @@ public class Message {
 
   /**
    * Set user of a message.
-   * @param username String
+   * @param name String
    */
-  public void setUsername(final String username) {
-    this.username = username;
+  public void setUsername(final String name) {
+    this.username = name;
   }
 
   /**
@@ -32,8 +32,8 @@ public class Message {
    * Set message.
    * @param msg String
    */
-  public void setMessage(final String message) {
-    this.message = message;
+  public void setMessage(final String msg) {
+    this.message = msg;
   }
 
   /**
