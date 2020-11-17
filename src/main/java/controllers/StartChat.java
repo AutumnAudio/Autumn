@@ -239,10 +239,12 @@ public final class StartChat {
       message.setMessage(text);
       Genre genre = userGenre.get(username);
       if (genre != null) {
+        System.out.println(genre);
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         chatroom.addMessage(message);
         sendChatRoomToAllParticipants(genre.getGenre(),
                 new Gson().toJson(chatroom));
+        ctx.redirect("/" + genre + "?user=" + username);
       } else {
         ctx.result("User not in any chatroom");
       }

@@ -7,6 +7,7 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import models.ChatList;
 import models.ChatRoom;
+import models.Message;
 import models.SqLite;
 
 import org.junit.jupiter.api.AfterAll;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -401,6 +403,29 @@ public class StartChatTest {
   
   @Test
   @Order(13)
+  public void sendMessageTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
+    response = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
+    assertEquals(200, response.getStatus());
+	
+	HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send/ben/").body("text=hello").asString();
+	response1 = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
+	System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
+	// Parse the response to JSON object
+    JSONObject jsonObject = new JSONObject(response1.getBody());
+
+    // GSON use to parse data to object
+	Gson gson = new Gson();
+	ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+	List<Message> msgList = chatroom.getChat();
+	assertEquals(1, msgList.size());
+	Message msg = msgList.get(0);
+	assertEquals("ben", msg.getUsername());
+	assertEquals("hello", msg.getMessage());
+  }
+  
+  @Test
+  @Order(14)
   public void webSocketTest() {
 	
     WebSocketClient client = new WebSocketClient();
