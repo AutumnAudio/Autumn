@@ -65,7 +65,9 @@ public enum Genre {
    * @param newGenre String
    */
   public void setGenre(final String newGenre) {
-    this.genre = newGenre;
+    if (isValidGenre(newGenre)) {
+      this.genre = newGenre;
+    }
   }
 
   /**
