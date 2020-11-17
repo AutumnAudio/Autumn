@@ -42,7 +42,7 @@ public enum Genre {
   /**
    * genre of object.
    */
-  private final String genre;
+  private String genre;
 
   /**
    * Constructor of genre object.
@@ -58,6 +58,14 @@ public enum Genre {
    */
   public String getGenre() {
     return this.genre;
+  }
+
+  /**
+   * set genre.
+   * @param newGenre String
+   */
+  public void setGenre(final String newGenre) {
+    this.genre = newGenre;
   }
 
   /**

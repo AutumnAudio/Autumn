@@ -99,7 +99,7 @@ public class ChatRoom {
    * Add song to shared songs.
    * @param song Song Object
    */
-  public void addsong(final Song song) {
+  public void addSong(final Song song) {
     // call sql query to add song
     this.playlist.add(song);
   }

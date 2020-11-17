@@ -368,6 +368,27 @@ public class StartChatTest {
   
     System.out.println("Test front page");
   }
+
+  /**
+  * This is a test case to evaluate initializeChatlist function.
+  */
+  @Test
+  @Order(12)
+  public void initializeChatListTest() {
+
+    SqLite db = StartChat.getDb();
+    db.clear();
+    db.commit();
+    ChatList chatlist = new ChatList();
+    assertEquals(0, chatlist.size());
+    StartChat.setChatlist(chatlist);
+    StartChat.initializeChatlist();
+    chatlist = StartChat.getChatlist();
+    
+    assertEquals(6, chatlist.size());
+  
+    System.out.println("Test initializeChatlist function");
+  }
   
   /**
   * This will run every time after a test has finished.
