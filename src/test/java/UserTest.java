@@ -68,7 +68,7 @@ public class UserTest {
   @Test
   public void testRefreshSpotifyToken() {
     User user = new User(spotifyToken, db);
-    user.setSpotifyRefreshToken(spotifyRefreshToken, true);
+    user.setSpotifyRefreshTokenDb(spotifyRefreshToken);
     user.refreshSpotifyToken();
     assertNotEquals(spotifyToken, user.getSpotifyToken());
   }
@@ -81,7 +81,7 @@ public class UserTest {
     assertEquals("session", db.getUserByName("cherry").getSessionId());
     user.setDb(db);
     user.setUsername("cherry");
-    user.setSessionId("new_session", true);
+    user.setSessionIdDb("new_session");
     assertEquals("new_session", db.getUserByName("cherry").getSessionId());
   }
 
@@ -93,7 +93,7 @@ public class UserTest {
     assertEquals("token", db.getUserByName("cherry").getSpotifyToken());
     user.setDb(db);
     user.setUsername("cherry");
-    user.setSpotifyToken("new_token", true);
+    user.setSpotifyTokenDb("new_token");
     assertEquals("new_token", db.getUserByName("cherry").getSpotifyToken());
   }
 
@@ -105,7 +105,7 @@ public class UserTest {
     assertNull(db.getUserByName("cherry").getSpotifyRefreshToken());
     user.setDb(db);
     user.setUsername("cherry");
-    user.setSpotifyRefreshToken("new_refresh_token", true);
+    user.setSpotifyRefreshTokenDb("new_refresh_token");
     assertEquals("new_refresh_token", db.getUserByName("cherry").getSpotifyRefreshToken());
   }
 

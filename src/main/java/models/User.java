@@ -181,7 +181,7 @@ public class User {
       database.insertUserWithToken(email, token);
       database.commit();
     }
-    this.setSpotifyToken(token, true);
+    this.setSpotifyTokenDb(token);
   }
 
   /**
@@ -261,16 +261,13 @@ public class User {
   }
 
   /**
-   * set session id.
+   * set session id and save to DB.
    * @param id String
-   * @param saveToDb boolean
    */
-  public void setSessionId(final String id, final boolean saveToDb) {
+  public void setSessionIdDb(final String id) {
     setSessionId(id);
-    if (saveToDb) {
-      db.updateUserAttribute("SESSION_ID", id, username);
-      db.commit();
-    }
+    db.updateUserAttribute("SESSION_ID", id, username);
+    db.commit();
   }
 
   /**
@@ -306,18 +303,14 @@ public class User {
   }
 
   /**
-   * Set Spotify token.
+   * Set Spotify token and save to DB.
    * @param token String
-   * @param saveToDb boolean
    */
-  public void setSpotifyToken(final String token,
-      final boolean saveToDb) {
+  public void setSpotifyTokenDb(final String token) {
     setSpotifyToken(token);
-    if (saveToDb) {
-      db.updateUserAttribute("SPOTIFY_TOKEN",
-          token, username);
-      db.commit();
-    }
+    db.updateUserAttribute("SPOTIFY_TOKEN",
+        token, username);
+    db.commit();
   }
 
   /**
@@ -334,7 +327,7 @@ public class User {
    */
   public String refreshSpotifyToken() {
     setSpotifyToken(
-        Login.refreshSpotifyToken(spotifyRefreshToken), true);
+        Login.refreshSpotifyToken(spotifyRefreshToken));
     return getSpotifyToken();
   }
 
@@ -347,18 +340,14 @@ public class User {
   }
 
   /**
-   * Set Spotify refresh token.
+   * Set Spotify refresh token and save to DB.
    * @param refreshToken String
-   * @param saveToDb boolean
    */
-  public void setSpotifyRefreshToken(final String refreshToken,
-      final boolean saveToDb) {
+  public void setSpotifyRefreshTokenDb(final String refreshToken) {
     setSpotifyRefreshToken(refreshToken);
-    if (saveToDb) {
-      db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
-          refreshToken, username);
-      db.commit();
-    }
+    db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
+        refreshToken, username);
+    db.commit();
   }
 
   /**
