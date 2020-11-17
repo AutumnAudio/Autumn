@@ -19,6 +19,7 @@ import models.Song;
 import models.SqLite;
 import models.User;
 import org.eclipse.jetty.websocket.api.Session;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public final class StartChat {
@@ -56,6 +57,11 @@ public final class StartChat {
    * Create database instance.
    */
   private static SqLite db = new SqLite();
+  
+  /**
+   * Map username to genre
+   */
+  private static Map<String, Genre> userGenre = new ConcurrentHashMap<>();
 
   /**
    * get current database.
@@ -193,6 +199,7 @@ public final class StartChat {
         // add to DB only if participant is new
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
+        userGenre.put(username, genre);
         if (!participants.containsKey(username)) {
           User user = db.getUserByName(username);
           db.insertParticipant(genre, username, user.getSpotifyToken(),
@@ -225,13 +232,22 @@ public final class StartChat {
       // TODO implement endpoint
       // add message to chatroom DB
       // update participant views
-      /*
       String username = ctx.pathParam("username");
       String text = ctx.formParam("text");
       Message message = new Message();
       message.setUsername(username);
       message.setMessage(text);
-      */
+      Genre genre = userGenre.get(username);
+      if (genre != null) {
+        ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+        chatroom.addMessage(message);
+        sendChatRoomToAllParticipants(genre.getGenre(),
+                new Gson().toJson(chatroom));
+      } else {
+        ctx.result("User not in any chatroom");
+      }
+      
+      
     });
 
     app.post("/share/:username", ctx -> {
@@ -251,6 +267,9 @@ public final class StartChat {
       Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
       String username = ctx.formParam("username");
       ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+      if (userGenre.get(username) != null) {
+        userGenre.remove(username);
+      }
       if (chatroom.getParticipant().containsKey(username)) {
         db.removeParticipant(genre, username);
         db.commit();
