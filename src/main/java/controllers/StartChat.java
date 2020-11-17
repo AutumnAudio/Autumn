@@ -177,8 +177,8 @@ public final class StartChat {
       Map<String, String> response =
          Login.getSpotifyTokenFromCode(ctx.queryParam("code"));
       User user = new User(response.get("access_token"), db);
-      user.setSpotifyRefreshToken(response.get("refresh_token"), true);
-      user.setSessionId(sessionId, true);
+      user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
+      user.setSessionIdDb(sessionId);
       ctx.redirect("/chatrooms");
     });
 
