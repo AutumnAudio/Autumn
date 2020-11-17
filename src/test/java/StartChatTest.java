@@ -18,6 +18,15 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.net.URI;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
+
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.api.Session;
+
+
 @TestMethodOrder(OrderAnnotation.class) 
 public class StartChatTest {
 
@@ -388,6 +397,42 @@ public class StartChatTest {
     assertEquals(6, chatlist.size());
   
     System.out.println("Test initializeChatlist function");
+  }
+  
+  @Test
+  @Order(13)
+  public void webSocketTest() {
+	
+    WebSocketClient client = new WebSocketClient();
+    SimpleWebSocket socket = new SimpleWebSocket();
+    try {
+      client.start();
+      URI uri = new URI("ws://localhost:8080/gameboard");
+      //ClientUpgradeRequest request = new ClientUpgradeRequest();
+      Future<Session> future = client.connect(socket, uri);
+      System.out.printf("Connecting to : %s%n", uri);
+      Session session = future.get();
+      session.getRemote().sendString("hi");
+      session.close();
+
+      // wait for closed socket connection.
+      socket.awaitClose(5, TimeUnit.SECONDS);
+      }
+      catch (Throwable t)
+      {
+          t.printStackTrace();
+      }
+      finally
+      {
+          try
+          {
+              client.stop();
+          }
+          catch (Exception e)
+          {
+              e.printStackTrace();
+          }
+      }
   }
   
   /**
