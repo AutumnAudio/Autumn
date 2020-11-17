@@ -171,7 +171,12 @@ public class User {
     String email = Login.getEmailFromSpotifyToken(token);
     User tmpUser = database.getUserByName(email);
     if (tmpUser.username != null) {
-      copyUser(tmpUser);
+      this.username = tmpUser.username;
+      this.passwordHash = tmpUser.passwordHash;
+      this.sessionId = tmpUser.sessionId;
+      this.spotifyToken = tmpUser.spotifyToken;
+      this.spotifyRefreshToken = tmpUser.spotifyRefreshToken;
+      this.lastConnectionTime = tmpUser.lastConnectionTime;
     } else {
       database.insertUserWithToken(email, token);
       database.commit();
@@ -183,20 +188,6 @@ public class User {
    * Public Constructor.
    */
   public User() {
-  }
-
-  /**
-   * Copy user object.
-   * @param other User
-   */
-  public void copyUser(final User other) {
-    this.username = other.username;
-    this.passwordHash = other.passwordHash;
-    this.sessionId = other.sessionId;
-    this.spotifyToken = other.spotifyToken;
-    this.spotifyRefreshToken = other.spotifyRefreshToken;
-    this.lastConnectionTime = other.lastConnectionTime;
-    //this.db = other.db;
   }
 
   /**

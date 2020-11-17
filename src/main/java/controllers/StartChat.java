@@ -66,14 +66,38 @@ public final class StartChat {
   }
 
   /**
+   * set current database.
+   * @param database SqLite
+   */
+  public static void setDb(final SqLite database) {
+    db = database;
+  }
+
+  /**
    * Create ChatList.
    */
   private static ChatList chatlist = new ChatList();
 
   /**
+   * get chatlist.
+   * @return chatlist ChatList
+   */
+  public static ChatList getChatlist() {
+    return chatlist;
+  }
+
+  /**
+   * set chatlist.
+   * @param list ChatList
+   */
+  public static void setChatlist(final ChatList list) {
+    chatlist = list;
+  }
+
+  /**
    * Initialize Chatrooms.
    */
-  private static void initializeChatlist() {
+  public static void initializeChatlist() {
     Map<String, ChatRoom> map = new HashMap<>();
     Genre[] genres = Genre.class.getEnumConstants();
     for (Genre genre : genres) {
@@ -170,7 +194,7 @@ public final class StartChat {
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
         if (!participants.containsKey(username)) {
-          User user = db.getUserByUsername(username);
+          User user = db.getUserByName(username);
           db.insertParticipant(genre, username, user.getSpotifyToken(),
               user.getSpotifyRefreshToken(), user.getSessionId());
           db.commit();

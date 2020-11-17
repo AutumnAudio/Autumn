@@ -231,7 +231,7 @@ public class SqLite {
     try {
       ResultSet rs;
       String sql = String.format("SELECT * FROM USERS "
-              + "WHERE SESSION_ID = '%s' LIMIT 1", sessionId);
+              + "WHERE SESSION_ID = '%s'", sessionId);
       rs = stmt.executeQuery(sql);
       try {
         while (rs.next()) {
@@ -550,35 +550,6 @@ public class SqLite {
     chatlist.setChatrooms(new HashMap<String, ChatRoom>());
     chatlist.setChatrooms(getAllChatRooms());
     return chatlist;
-  }
-
-  /**
-   * Get User object from username.
-   * @param username String
-   * @return User Object
-   */
-  public User getUserByUsername(final String username) {
-    User user = new User();
-    try {
-      ResultSet rs;
-      String sql = String.format("SELECT * FROM USERS "
-              + "WHERE USERNAME = '%s'", username);
-      rs = stmt.executeQuery(sql);
-      try {
-        while (rs.next()) {
-          user.setUsername(rs.getString("USERNAME"));
-          user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
-          user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
-          user.setSessionId(rs.getString("SESSION_ID"));
-        }
-      } finally {
-        rs.close();
-      }
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return user;
   }
 
   /**

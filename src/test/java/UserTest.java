@@ -1,4 +1,6 @@
+import models.Login;
 import models.Song;
+import models.SqLite;
 import models.User;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -48,6 +50,74 @@ public class UserTest {
 	assertEquals(song, user.getCurrentTrack());
 	user.refreshCurrentlyPlaying();
 	assertNotEquals(song, user.getCurrentTrack());
+  }
+
+  @Test
+  public void testUserConstructor() {
+    SqLite db = new SqLite();
+    db.start();
+    db.commit();
+    String token = Login.refreshSpotifyToken(spotifyRefreshToken);
+    User user = new User(token, db);
+    assertNotNull(user.getSpotifyToken());
+    assertEquals(1, db.getUserCount("cherrychu_120@hotmail.com"));
+    db.clear();
+    db.close();
+  }
+
+  @Test
+  public void testRefreshSpotifyToken() {
+    SqLite db = new SqLite();
+    db.start();
+    db.commit();
+    User user = new User(spotifyToken, db);
+    user.setSpotifyRefreshToken(spotifyRefreshToken, true);
+    user.refreshSpotifyToken();
+    assertNotEquals(spotifyToken, user.getSpotifyToken());
+    db.clear();
+    db.close();
+  }
+
+  @Test
+  public void testSetSessionId() {
+    User user = new User();
+    SqLite db = new SqLite();
+    db.start();
+    db.commit();
+    user.setDb(db);
+    user.setUsername("cherry");
+    user.setSessionId("new_session", true);
+    assertEquals("new_session", db.getUserByName("cherry").getSessionId());
+    db.clear();
+    db.close();
+  }
+
+  @Test
+  public void testSetSpotifyToken() {
+    User user = new User();
+    SqLite db = new SqLite();
+    db.start();
+    db.commit();
+    user.setDb(db);
+    user.setUsername("cherry");
+    user.setSpotifyToken("new_token", true);
+    assertEquals("new_token", db.getUserByName("cherry").getSpotifyToken());
+    db.clear();
+    db.close();
+  }
+
+  @Test
+  public void testSetSpotifyRefreshToken() {
+    User user = new User();
+    SqLite db = new SqLite();
+    db.start();
+    db.commit();
+    user.setDb(db);
+    user.setUsername("cherry");
+    user.setSpotifyRefreshToken("new_refresh_token", true);
+    assertEquals("new_refresh_token", db.getUserByName("cherry").getSpotifyRefreshToken());
+    db.clear();
+    db.close();
   }
 
   @AfterEach
