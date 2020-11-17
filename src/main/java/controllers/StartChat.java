@@ -57,9 +57,9 @@ public final class StartChat {
    * Create database instance.
    */
   private static SqLite db = new SqLite();
-  
+
   /**
-   * Map username to genre
+   * Map username to genre.
    */
   private static Map<String, Genre> userGenre = new ConcurrentHashMap<>();
 
@@ -121,17 +121,7 @@ public final class StartChat {
     chatlist.setChatrooms(map);
   }
 
-  /** Main method of the application.
-   * @param args Command line arguments
-   */
-  public static void main(final String[] args) {
-    db.start();
-    chatlist = db.update();
-    db.commit();
-    if (chatlist.size() == 0) {
-      initializeChatlist();
-    }
-
+  private static void refreshSongDataRepeatly() {
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     exec.scheduleAtFixedRate(new Runnable() {
       public void run() {
@@ -144,7 +134,19 @@ public final class StartChat {
         }
       }
     }, 0, INTERVAL, TimeUnit.SECONDS);
+  }
 
+  /** Main method of the application.
+   * @param args Command line arguments
+   */
+  public static void main(final String[] args) {
+    db.start();
+    chatlist = db.update();
+    db.commit();
+    if (chatlist.size() == 0) {
+      initializeChatlist();
+    }
+    refreshSongDataRepeatly();
 
     app = Javalin.create(config -> {
       config.addStaticFiles("/public");
@@ -229,9 +231,6 @@ public final class StartChat {
     });
 
     app.post("/send/:username", ctx -> {
-      // TODO implement endpoint
-      // add message to chatroom DB
-      // update participant views
       String username = ctx.pathParam("username");
       String text = ctx.formParam("text");
       Message message = new Message();
@@ -248,8 +247,6 @@ public final class StartChat {
       } else {
         ctx.result("User not in any chatroom");
       }
-      
-      
     });
 
     app.post("/share/:username", ctx -> {
