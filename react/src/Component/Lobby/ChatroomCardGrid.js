@@ -13,22 +13,15 @@ const styles = {
 };
 
 const ChatroomCardGrid = (props) => {
-    const { classes } = props;
+    const { classes, chatrooms } = props;
     return (
         <div>
             <Grid container className={classes.root} spacing={2}>
                 <Grid item xs={12}>
                     <Grid container justify="center" spacing={6}>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
-                        <ChatroomCard/>
+                        {chatrooms.map((chatroom, index) => {
+                            return <ChatroomCard chatroom={chatroom}/>
+                        })}
                     </Grid>
                 </Grid>
             </Grid>
@@ -38,6 +31,7 @@ const ChatroomCardGrid = (props) => {
 }
 ChatroomCardGrid.propTypes = {
     classes: PropTypes.object.isRequired,
+    chatrooms: PropTypes.array.isRequired,
 };
 
 export default withStyles(styles)(ChatroomCardGrid)

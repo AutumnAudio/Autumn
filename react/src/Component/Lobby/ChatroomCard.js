@@ -21,11 +21,11 @@ const styles = {
 };
 
 const ChatroomCard = (props) => {
-    const { classes } = props;
+    const { classes, chatroom } = props;
     return (
         <Grid item>
             <Paper className={classes.paper}>
-                <div className={classes.chatroomName}>Pop</div>
+                <div className={classes.chatroomName}>{chatroom.genre}</div>
             </Paper>
         </Grid>
     )
@@ -33,6 +33,7 @@ const ChatroomCard = (props) => {
 }
 ChatroomCard.propTypes = {
     classes: PropTypes.object.isRequired,
+    chatroom: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(ChatroomCard)
