@@ -173,9 +173,8 @@ public class StartChatTest {
   public void rejoinRoomTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/jazz/").body("username=ben").asString();
-    response = Unirest.post("http://localhost:8080/joinroom/jazz/").body("username=mary").asString();
-    response = Unirest.post("http://localhost:8080/joinroom/jazz/").body("username=ben").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/jazz/").asString();
+    response = Unirest.post("http://localhost:8080/joinroom/jazz/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/jazz/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
@@ -192,11 +191,8 @@ public class StartChatTest {
     // GSON use to parse data to object
     Gson gson = new Gson();
     ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
-    
-    // Check if player type is correct
-    System.out.println(chatroom.getParticipant().get("ben"));
-    System.out.println(chatroom.getParticipant().get("mary"));
-    assertEquals(2, chatroom.getParticipant().size());
+
+    assertEquals(1, chatroom.getParticipant().size());
   
     System.out.println("Test rejoining chatroom");
   }
@@ -209,7 +205,7 @@ public class StartChatTest {
   public void invalidJoinRoomTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/metal").body("username=ben").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/metal").asString();
     
     assertEquals("Invalid Room", response.getBody());
   
@@ -240,7 +236,7 @@ public class StartChatTest {
   public void leaveRoomTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").body("username=sean").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").asString();
     response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean&skip_auth_testing=true").asString();  
     assertEquals(200, response.getStatus());
 
@@ -249,7 +245,7 @@ public class StartChatTest {
     ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
     
     // Check if user is present after joinroom
-    assertEquals(true, chatroom.getParticipant().containsKey("sean"));
+    assertEquals(1, chatroom.getParticipant().size());
 	
     response = Unirest.delete("http://localhost:8080/leaveroom/country").body("username=sean").asString();
     response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean").asString(); 
@@ -260,7 +256,7 @@ public class StartChatTest {
     chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
     
     // Check if user is not present after leaveroom
-    assertEquals(false, chatroom.getParticipant().containsKey("sean"));
+    assertEquals(0, chatroom.getParticipant().size());
   
     System.out.println("Test leave chatroom");
   }
@@ -273,7 +269,7 @@ public class StartChatTest {
   public void invalidLeaveRoomTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/").body("username=taylor").asString();
+    HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/").asString();
 	
     assertEquals(200, response.getStatus());
     assertEquals("You are not in the room", response.getBody());
@@ -373,7 +369,9 @@ public class StartChatTest {
   @Test
   @Order(13)
   public void sendMessageTest() {
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    SqLite db = StartChat.getDb();
+    db.insertUserwithGenre("ben", "blues");
     response = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
     assertEquals(200, response.getStatus());
 

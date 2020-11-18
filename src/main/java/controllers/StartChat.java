@@ -194,7 +194,8 @@ public final class StartChat {
     app.post("/joinroom/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
-        String username = ctx.formParam("username");
+        String username = db.getUserBySessionId(
+                (String) ctx.sessionAttribute("sessionId")).getUsername();
         ctx.redirect("/chatroom/" + genre + "?user=" + username);
         // add to DB only if participant is new
         Map<String, User> participants =
@@ -271,7 +272,8 @@ public final class StartChat {
 
     app.delete("/leaveroom/:genre", ctx -> {
       Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
-      String username = ctx.formParam("username");
+      String username = db.getUserBySessionId(
+              (String) ctx.sessionAttribute("sessionId")).getUsername();
       ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
       if (chatroom.getParticipant().containsKey(username)) {
         db.removeUserGenre(username);
