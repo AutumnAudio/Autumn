@@ -201,7 +201,7 @@ public final class StartChat {
         // add to DB only if participant is new
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
-//        userGenre.put(username, genre);
+        userGenre.put(username, genre);
         if (!participants.containsKey(username)) {
           User user = db.getUserByName(username);
           db.insertParticipant(genre, username, user.getSpotifyToken(),
