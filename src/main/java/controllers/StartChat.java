@@ -214,9 +214,9 @@ public final class StartChat {
         ctx.result("Invalid Room");
       }
     });
-    
-//     user chatroom view
-    app.get("/genre/:genre", ctx -> {
+
+   // user chatroom view
+    app.get("/chatroom/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         // TODO use username to check user's permission to enter room
