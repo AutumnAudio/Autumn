@@ -80,8 +80,8 @@ public class SqLite {
                      + "(USERNAME, TIME_SHARED) ) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS USERGENRE "
-    		  + "(USERNAME VARCHAR NOT NULL, "
-    		  + " GENRE     VARCHAR NOT NULL)";
+            + "(USERNAME VARCHAR NOT NULL, "
+            + " GENRE     VARCHAR NOT NULL)";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -150,7 +150,7 @@ public class SqLite {
       e.printStackTrace();
     }
   }
-  
+
   /**
    * Add user name and genre pair.
    * @param username String
@@ -160,12 +160,12 @@ public class SqLite {
     try {
       conn.setAutoCommit(false);
       String sql = String.format("INSERT INTO USERGENRE (USERNAME, GENRE) "
-	              + "VALUES ('%s','%s');", username, genre);
-	  stmt.executeUpdate(sql);
+                  + "VALUES ('%s','%s');", username, genre);
+      stmt.executeUpdate(sql);
     } catch (SQLException e) {
-	  // TODO Auto-generated catch block
-	  e.printStackTrace();
-	} 
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -243,7 +243,7 @@ public class SqLite {
     }
     return count;
   }
-  
+
   /**
    * Get genre by username.
    * @param username String
@@ -404,22 +404,22 @@ public class SqLite {
   }
 
   /**
-   * Remove user from USERGENRE
+   * Remove user from USERGENRE.
    * @param username String
    */
   public void removeUserGenre(final String username) {
-	    try {
-	      conn.setAutoCommit(false);
-	      String sql = String.format("DELETE FROM USERGENRE "
-	                   + "WHERE USERNAME = '%s';",
-	                   username);
-	      stmt.executeUpdate(sql);
-	    } catch (SQLException e) {
-	      // TODO Auto-generated catch block
-	      e.printStackTrace();
-	    }
-	  }
-  
+    try {
+      conn.setAutoCommit(false);
+      String sql = String.format("DELETE FROM USERGENRE "
+                   + "WHERE USERNAME = '%s';",
+                   username);
+      stmt.executeUpdate(sql);
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
   /**
    * get participant of a chatroom.
    * @param genre String

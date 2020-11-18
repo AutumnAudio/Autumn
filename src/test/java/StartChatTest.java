@@ -2,6 +2,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.gson.Gson;
 import controllers.StartChat;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
@@ -9,7 +13,8 @@ import models.ChatList;
 import models.ChatRoom;
 import models.Message;
 import models.SqLite;
-
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,14 +24,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.net.URI;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
-import java.util.concurrent.Future;
-
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.eclipse.jetty.websocket.api.Session;
 
 
 @TestMethodOrder(OrderAnnotation.class) 
@@ -49,7 +46,7 @@ public class StartChatTest {
     // Test if server is running. You need to have an endpoint /
     // If you do not wish to have this end point, it is okay to not have anything in this method.
     // Create HTTP request and get response
-	StartChat.main(null);
+    StartChat.main(null);
     HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms/").asString();
     assertEquals(200, response.getStatus());
     
@@ -243,9 +240,9 @@ public class StartChatTest {
   public void leaveRoomTest() {
 
     // Create HTTP request and get response
-	HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").body("username=sean").asString();
-	response = Unirest.get("http://localhost:8080/country/?user=sean&skip_auth_testing=true").asString();  
-	assertEquals(200, response.getStatus());
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").body("username=sean").asString();
+    response = Unirest.get("http://localhost:8080/country/?user=sean&skip_auth_testing=true").asString();  
+    assertEquals(200, response.getStatus());
 
     JSONObject jsonObject = new JSONObject(response.getBody());
     Gson gson = new Gson();
@@ -276,9 +273,9 @@ public class StartChatTest {
   public void invalidLeaveRoomTest() {
 
     // Create HTTP request and get response
-	HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/").body("username=taylor").asString();
+    HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/").body("username=taylor").asString();
 	
-	assertEquals(200, response.getStatus());
+    assertEquals(200, response.getStatus());
     assertEquals("You are not in the room", response.getBody());
   
     System.out.println("Test invalid leave chatroom");
@@ -292,11 +289,11 @@ public class StartChatTest {
   public void processAuthTest() {
 
     // Create HTTP request and get response
-	HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
 	
-	assertEquals(200, response.getStatus());
+    assertEquals(200, response.getStatus());
 	
-	System.out.println("/process-auth Response: " + response.getBody());
+    System.out.println("/process-auth Response: " + response.getBody());
 	
     // Parse the response to JSON object
     JSONObject jsonObject = new JSONObject(response.getBody());
@@ -341,12 +338,10 @@ public class StartChatTest {
     StartChat.stop();
     StartChat.main(null);
     
-	HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
+    assertEquals(200, response.getStatus());
 	
-	assertEquals(200, response.getStatus());
-	
-	System.out.println("/ Response: " + response.getBody());
-  
+    System.out.println("/ Response: " + response.getBody());
     System.out.println("Test Login Redirection");
   }
 
@@ -407,21 +402,21 @@ public class StartChatTest {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
     response = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
     assertEquals(200, response.getStatus());
-	
-	HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send/ben/").body("text=hello").asString();
-	response1 = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
-	System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
-	// Parse the response to JSON object
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send/ben/").body("text=hello").asString();
+    response1 = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
+    System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
+    // Parse the response to JSON object
     JSONObject jsonObject = new JSONObject(response1.getBody());
 
     // GSON use to parse data to object
-	Gson gson = new Gson();
-	ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
-	List<Message> msgList = chatroom.getChat();
-	assertEquals(1, msgList.size());
-	Message msg = msgList.get(0);
-	assertEquals("ben", msg.getUsername());
-	assertEquals("hello", msg.getMessage());
+    Gson gson = new Gson();
+    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    List<Message> msgList = chatroom.getChat();
+    assertEquals(1, msgList.size());
+    Message msg = msgList.get(0);
+    assertEquals("ben", msg.getUsername());
+    assertEquals("hello", msg.getMessage());
   }
   
   @Test
@@ -442,22 +437,15 @@ public class StartChatTest {
 
       // wait for closed socket connection.
       socket.awaitClose(5, TimeUnit.SECONDS);
+    } catch (Throwable t) {
+      t.printStackTrace();
+    } finally {
+      try {
+        client.stop();
+      } catch (Exception e) {
+        e.printStackTrace();
       }
-      catch (Throwable t)
-      {
-          t.printStackTrace();
-      }
-      finally
-      {
-          try
-          {
-              client.stop();
-          }
-          catch (Exception e)
-          {
-              e.printStackTrace();
-          }
-      }
+    }
   }
   
   /**

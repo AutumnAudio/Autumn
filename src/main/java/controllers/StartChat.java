@@ -19,7 +19,6 @@ import models.Song;
 import models.SqLite;
 import models.User;
 import org.eclipse.jetty.websocket.api.Session;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 public final class StartChat {
@@ -169,8 +168,8 @@ public final class StartChat {
     //handle spotify authentication
     app.get("/process_auth", ctx -> {
       String sessionId = (String) ctx.sessionAttribute("sessionId");
-      Map<String, String> response =
-         Login.getSpotifyTokenFromCode(ctx.queryParam("code"));
+      Map<String, String> response = Login.getSpotifyTokenFromCode(
+                                     ctx.queryParam("code"));
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
       user.setSessionIdDb(sessionId);
@@ -215,7 +214,7 @@ public final class StartChat {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         // TODO use username to check user's permission to enter room
-        String username = ctx.queryParam("user");
+        // String username = ctx.queryParam("user");
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         sendChatRoomToAllParticipants(genre.getGenre(),
                      new Gson().toJson(chatroom));
