@@ -22,6 +22,23 @@ public class SqLite {
    * database statement for execution.
    */
   private Statement stmt = null;
+  
+  public void connect() {
+  try {
+      Class.forName("org.sqlite.JDBC");
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      conn = DriverManager.getConnection("jdbc:sqlite:autumn.db");
+      conn.setAutoCommit(false);
+      stmt = conn.createStatement();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 
   /**
    * Start database.
