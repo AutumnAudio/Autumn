@@ -14,24 +14,10 @@ const styles = {
 };
 
 const ChatBoard = (props) => {
-<<<<<<< HEAD
-<<<<<<< HEAD
     const { classes, chat } = props;
     return (
         <div className={classes.chatBoardDiv}>
             <ChatMessageList chat={chat}/>
-=======
-    const { classes } = props;
-    return (
-        <div className={classes.chatBoardDiv}>
-            <ChatMessageList />
->>>>>>> add react prototype
-=======
-    const { classes, chat } = props;
-    return (
-        <div className={classes.chatBoardDiv}>
-            <ChatMessageList chat={chat}/>
->>>>>>> add websocket connection
         </div>
     )
 }
