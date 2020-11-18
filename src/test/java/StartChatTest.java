@@ -370,13 +370,11 @@ public class StartChatTest {
   @Order(13)
   public void sendMessageTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
-    SqLite db = StartChat.getDb();
-    db.insertUserwithGenre("ben", "blues");
-    response = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
     assertEquals(200, response.getStatus());
 
-    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send/ben/").body("text=hello").asString();
-    response1 = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
+    response1 = Unirest.get("http://localhost:8080/chatroom/blues").asString();
     System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
     // Parse the response to JSON object
     JSONObject jsonObject = new JSONObject(response1.getBody());
@@ -387,7 +385,8 @@ public class StartChatTest {
     List<Message> msgList = chatroom.getChat();
     assertEquals(1, msgList.size());
     Message msg = msgList.get(0);
-    assertEquals("ben", msg.getUsername());
+    System.out.println(msg.getUsername());
+    assertEquals("testing1", msg.getUsername());
     assertEquals("hello", msg.getMessage());
   }
   

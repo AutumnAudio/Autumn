@@ -238,8 +238,9 @@ public final class StartChat {
       ctx.redirect("index.html?place=lobby");
     });
 
-    app.post("/send/:username", ctx -> {
-      String username = ctx.pathParam("username");
+    app.post("/send", ctx -> {
+      String username = db.getUserBySessionId(
+                (String) ctx.sessionAttribute("sessionId")).getUsername();
       String text = ctx.formParam("text");
       Message message = new Message();
       message.setUsername(username);
