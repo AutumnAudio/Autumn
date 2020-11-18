@@ -126,10 +126,8 @@ public final class StartChat {
         chatlist.refreshChatList();
         for (ChatRoom chatroom : chatlist.getChatrooms().values()) {
           String genre = chatroom.getGenre().getGenre();
-          if (genre.equals("pop")) {
-        	  	sendChatRoomToAllParticipants(genre,
-                    new Gson().toJson(chatroom));
-          }
+        	 sendChatRoomToAllParticipants(genre,
+                  new Gson().toJson(chatroom));
         }
       }
     }, 0, INTERVAL, TimeUnit.SECONDS);
@@ -197,7 +195,7 @@ public final class StartChat {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         String username = ctx.formParam("username");
-        ctx.redirect("/" + genre + "?user=" + username);
+        ctx.redirect("/chatroom/" + genre + "?user=" + username);
         // add to DB only if participant is new
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
