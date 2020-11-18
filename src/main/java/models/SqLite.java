@@ -79,6 +79,10 @@ public class SqLite {
                      + " CONSTRAINT        MESSAGE_ID PRIMARY KEY "
                      + "(USERNAME, TIME_SHARED) ) ";
       stmt.executeUpdate(sql);
+      sql = "CREATE TABLE IF NOT EXISTS USERGENRE "
+    		  + "(USERNAME VARCHAR NOT NULL, "
+    		  + " GENRE     VARCHAR NOT NULL)";
+      stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -102,6 +106,8 @@ public class SqLite {
       sql = "DELETE FROM CHAT;";
       stmt.executeUpdate(sql);
       sql = "DELETE FROM PLAYLIST;";
+      stmt.executeUpdate(sql);
+      sql = "DELETE FROM USERGENRE";
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -143,6 +149,23 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+  
+  /**
+   * Add user name and genre pair.
+   * @param username String
+   * @param genre String
+   */
+  public void insertUserwithGenre(final String username, final String genre) {
+    try {
+      conn.setAutoCommit(false);
+      String sql = String.format("INSERT INTO USERGENRE (USERNAME, GENRE) "
+	              + "VALUES ('%s','%s');", username, genre);
+	  stmt.executeUpdate(sql);
+    } catch (SQLException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+	} 
   }
 
   /**
@@ -219,6 +242,32 @@ public class SqLite {
       e.printStackTrace();
     }
     return count;
+  }
+  
+  /**
+   * Get genre by username.
+   * @param username String
+   * @return count equals 1 boolean
+   */
+  public String getGenreUser(final String username) {
+    String gen = null;
+    try {
+      ResultSet rs;
+      String sql = String.format("SELECT * FROM USERGENRE "
+              + "WHERE USERNAME = '%s' LIMIT 1", username);
+      rs = stmt.executeQuery(sql);
+      try {
+        while (rs.next()) {
+          gen = rs.getString("GENRE");
+        }
+      } finally {
+        rs.close();
+      }
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return gen;
   }
 
   /**
@@ -354,6 +403,23 @@ public class SqLite {
     }
   }
 
+  /**
+   * Remove user from USERGENRE
+   * @param username String
+   */
+  public void removeUserGenre(final String username) {
+	    try {
+	      conn.setAutoCommit(false);
+	      String sql = String.format("DELETE FROM USERGENRE "
+	                   + "WHERE USERNAME = '%s';",
+	                   username);
+	      stmt.executeUpdate(sql);
+	    } catch (SQLException e) {
+	      // TODO Auto-generated catch block
+	      e.printStackTrace();
+	    }
+	  }
+  
   /**
    * get participant of a chatroom.
    * @param genre String

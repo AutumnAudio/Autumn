@@ -59,11 +59,6 @@ public final class StartChat {
   private static SqLite db = new SqLite();
 
   /**
-   * Map username to genre.
-   */
-  private static Map<String, Genre> userGenre = new ConcurrentHashMap<>();
-
-  /**
    * get current database.
    * @return database SqLite
    */
@@ -201,11 +196,11 @@ public final class StartChat {
         // add to DB only if participant is new
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
-        userGenre.put(username, genre);
         if (!participants.containsKey(username)) {
           User user = db.getUserByName(username);
           db.insertParticipant(genre, username, user.getSpotifyToken(),
               user.getSpotifyRefreshToken(), user.getSessionId());
+          db.insertUserwithGenre(username, genre.getGenre());
           db.commit();
           chatlist = db.update();
           db.commit();
@@ -236,9 +231,9 @@ public final class StartChat {
       Message message = new Message();
       message.setUsername(username);
       message.setMessage(text);
-      Genre genre = userGenre.get(username);
-      if (genre != null) {
-        System.out.println(genre);
+      String genreStr = db.getGenreUser(username);
+      if (genreStr != null) {
+        Genre genre = Genre.valueOf(genreStr.toUpperCase());
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         chatroom.addMessage(message);
         sendChatRoomToAllParticipants(genre.getGenre(),
@@ -266,10 +261,8 @@ public final class StartChat {
       Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
       String username = ctx.formParam("username");
       ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
-      if (userGenre.get(username) != null) {
-        userGenre.remove(username);
-      }
       if (chatroom.getParticipant().containsKey(username)) {
+        db.removeUserGenre(username);
         db.removeParticipant(genre, username);
         db.commit();
         chatlist = db.update();
