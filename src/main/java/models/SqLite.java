@@ -43,7 +43,7 @@ public class SqLite {
                      + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
                      + " SESSION_ID             VARCHAR, "
-                     + " LAST_CONNECTION_TIME   TIME) ";
+                     //+ " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS SESSIONS "
               + " (TIME_VISITED         VARCHAR PRIMARY KEY NOT NULL, "
@@ -206,7 +206,7 @@ public class SqLite {
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
-          user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
+          //user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
       } finally {
         rs.close();
@@ -289,7 +289,7 @@ public class SqLite {
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
-          user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
+         // user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
       } finally {
         rs.close();
