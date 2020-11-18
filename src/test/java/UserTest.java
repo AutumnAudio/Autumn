@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 public class UserTest {
   
   String spotifyToken = "BQCRMQoge3BUYgzoM05a0KdxcLcHENyDn90zgE4pwq5Cl-ykDV1sZIVmbWOdsubDbyvmLLNApaWbSrmadtCK4XRMw4q0Og0YLOh-6aDylQBnWRlJHRxIb7-0-09kyYq7XjKJEzrnqG0sz9J6U3OuJw5Al2G21kVh64D0Xyt0zuwAg7KAF_3SJRhfdtTlAgw0E6SkgJsZYM4kvI0EGhWv0qseUfrE8Im53S9jf7U4WpQ";
-  String spotifyRefreshToken = "AQC4PDMZlGf7HXG5OZV82LDcnjLyzSCv74HGw4pL8QrsSyvVYMYlkErQ6N5nu_99J_l4E9ScIq7cW5knr4mFBm6b3sHMEclSk9c4F1-TAKffO8ds2JgJj9uOC00-LcqTS1E";
+  String spotifyRefreshToken = "AQCDFdBbzda1H17Vcv3FMIFR5hvFEZjrNGhkCnjDXpDHHohCvp_vX2cvXyg0XpJ2SC69M9A4EOMCUVCgBjcUYMJYZZsbcUysqzf-kUrDev0LE0Wxi283o2l3k13JdXUiShc";
   
   SqLite db = new SqLite();
   

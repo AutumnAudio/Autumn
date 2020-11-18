@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import models.Login;
 
 public class LoginTest {
-  String refreshToken = "AQC4PDMZlGf7HXG5OZV82LDcnjLyzSCv74HGw4pL8QrsSyvVYMYlkErQ6N5nu_99J_l4E9ScIq7cW5knr4mFBm6b3sHMEclSk9c4F1-TAKffO8ds2JgJj9uOC00-LcqTS1E";
+  String refreshToken = "AQCDFdBbzda1H17Vcv3FMIFR5hvFEZjrNGhkCnjDXpDHHohCvp_vX2cvXyg0XpJ2SC69M9A4EOMCUVCgBjcUYMJYZZsbcUysqzf-kUrDev0LE0Wxi283o2l3k13JdXUiShc";
 
   @Test
   public void getSpotifyAuthUrlTest() {
