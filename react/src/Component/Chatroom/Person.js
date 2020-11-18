@@ -35,12 +35,18 @@ const styles = {
 
 const Person = (props) => {
     const { classes, person } = props
+    var recentlyPlayedSong = ''
+    var recentlyPlayedArtist = ''
+    if (person['recentlyPlayed'][0] != null) {
+        recentlyPlayedSong = person['recentlyPlayed'][0]['name']
+        recentlyPlayedArtist = person['recentlyPlayed'][0]['artists'][0]
+    }
     return (
         <div className={classes.personDiv}>
             <PersonIcon className={classes.personIcon}/>
             <div className={classes.nameDiv}>{person.username}</div>
             <AddIcon className={classes.addIcon}/>
-            <div className={classes.currentSongDiv}>{person.recentlyPlayed[0]}</div>
+            <div className={classes.currentSongDiv}>{recentlyPlayedSong} - {recentlyPlayedArtist}</div>
         </div>
     )
     
