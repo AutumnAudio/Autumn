@@ -42,7 +42,7 @@ public class SqLite {
                      + " PASSWORD_HASH          VARCHAR, "
                      + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
-                     + " SESSION_ID             VARCHAR, "
+                     + " SESSION_ID             VARCHAR) ";
                      //+ " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS SESSIONS "

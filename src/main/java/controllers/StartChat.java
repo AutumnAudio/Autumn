@@ -213,7 +213,7 @@ public final class StartChat {
       }
     });
 
-   // user chatroom view
+    // user chatroom view
     app.get("/chatroom/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
@@ -227,12 +227,16 @@ public final class StartChat {
         ctx.result("Invalid Room");
       }
     });
+
+    // redirect to home
     app.get("/home", ctx -> {
-    	ctx.redirect("index.html");
+      ctx.redirect("index.html");
     });
+
     app.get("/lobby", ctx -> {
       ctx.redirect("index.html?place=lobby");
   });
+
     app.post("/send/:username", ctx -> {
       String username = ctx.pathParam("username");
       String text = ctx.formParam("text");
