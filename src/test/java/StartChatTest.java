@@ -341,20 +341,6 @@ public class StartChatTest {
     HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
     
     assertEquals(200, response.getStatus());
-    
-    System.out.println("/chatrooms Response: " + response.getBody());
-
-    // Parse the response to JSON object
-    JSONObject jsonObject = new JSONObject(response.getBody());
-
-    // ---------------------------- GSON Parsing -------------------------
-
-    // GSON use to parse data to object
-    Gson gson = new Gson();
-    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);
-    
-    // Check if player type is correct
-    assertEquals(6, chatlist.size());
   
     System.out.println("Test front page");
   }

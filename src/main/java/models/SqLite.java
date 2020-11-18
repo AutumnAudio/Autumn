@@ -42,8 +42,8 @@ public class SqLite {
                      + " PASSWORD_HASH          VARCHAR, "
                      + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
-                     + " SESSION_ID             VARCHAR, "
-                     + " LAST_CONNECTION_TIME   TIME) ";
+                     + " SESSION_ID             VARCHAR) ";
+                     //+ " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS SESSIONS "
               + " (TIME_VISITED         VARCHAR PRIMARY KEY NOT NULL, "
@@ -206,7 +206,7 @@ public class SqLite {
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
-          user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
+          //user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
       } finally {
         rs.close();
@@ -289,7 +289,7 @@ public class SqLite {
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
-          user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
+         // user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
       } finally {
         rs.close();
@@ -561,7 +561,10 @@ public class SqLite {
   public void insertSession(final String time, final String sessionId) {
     try {
       conn.setAutoCommit(false);
-      String sql = String.format("INSERT INTO SESSIONS "
+      String sql = String.format("DELETE FROM SESSIONS "
+              + "WHERE SESSION_ID = '%s'", sessionId);
+      stmt.executeUpdate(sql);
+      sql = String.format("INSERT INTO SESSIONS "
                    + "(TIME_VISITED, SESSION_ID) "
                    + "VALUES ('%s','%s');", time, sessionId);
       stmt.executeUpdate(sql);

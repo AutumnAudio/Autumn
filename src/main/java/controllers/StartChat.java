@@ -119,12 +119,15 @@ public final class StartChat {
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     exec.scheduleAtFixedRate(new Runnable() {
       public void run() {
-        chatlist = db.update();
+        
+        SqLite db2 = new SqLite();
+        
+        chatlist = db2.update();
         chatlist.refreshChatList();
         for (ChatRoom chatroom : chatlist.getChatrooms().values()) {
           String genre = chatroom.getGenre().getGenre();
-          sendChatRoomToAllParticipants(genre,
-                    new Gson().toJson(chatroom));
+        	 sendChatRoomToAllParticipants(genre,
+                  new Gson().toJson(chatroom));
         }
       }
     }, 0, INTERVAL, TimeUnit.SECONDS);
@@ -137,6 +140,7 @@ public final class StartChat {
     db.start();
     chatlist = db.update();
     db.commit();
+    
     if (chatlist.size() == 0) {
       initializeChatlist();
     }
@@ -178,7 +182,7 @@ public final class StartChat {
 
     // Front page
     app.get("/", ctx -> {
-      ctx.redirect("/chatrooms");
+      ctx.redirect("/home");
     });
 
     // Send Chatroom List
@@ -217,8 +221,8 @@ public final class StartChat {
         // TODO use username to check user's permission to enter room
         // String username = ctx.queryParam("user");
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
-        sendChatRoomToAllParticipants(genre.getGenre(),
-                     new Gson().toJson(chatroom));
+        //sendChatRoomToAllParticipants(genre.getGenre(),
+                     //new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
       } else {
         ctx.result("Invalid Room");
@@ -229,6 +233,10 @@ public final class StartChat {
     app.get("/home", ctx -> {
       ctx.redirect("index.html");
     });
+
+    app.get("/lobby", ctx -> {
+      ctx.redirect("index.html?place=lobby");
+  });
 
     app.post("/send/:username", ctx -> {
       String username = ctx.pathParam("username");
