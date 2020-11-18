@@ -121,7 +121,7 @@ public final class StartChat {
       public void run() {
         
         SqLite db2 = new SqLite();
-        
+        db2.connect();
         chatlist = db2.update();
         chatlist.refreshChatList();
         for (ChatRoom chatroom : chatlist.getChatrooms().values()) {
@@ -129,6 +129,7 @@ public final class StartChat {
         	 sendChatRoomToAllParticipants(genre,
                   new Gson().toJson(chatroom));
         }
+        db2.close();
       }
     }, 0, INTERVAL, TimeUnit.SECONDS);
   }
