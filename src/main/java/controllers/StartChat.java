@@ -115,18 +115,21 @@ public final class StartChat {
     chatlist.setChatrooms(map);
   }
 
+  /**
+   * Start a thread that read DB periodically.
+   */
   private static void refreshSongDataRepeatly() {
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     exec.scheduleAtFixedRate(new Runnable() {
       public void run() {
-        
+
         SqLite db2 = new SqLite();
         db2.connect();
-        chatlist = db2.update();
-        chatlist.refreshChatList();
-        for (ChatRoom chatroom : chatlist.getChatrooms().values()) {
+        ChatList chatListData = db2.update();
+        chatListData.refreshChatList();
+        for (ChatRoom chatroom : chatListData.getChatrooms().values()) {
           String genre = chatroom.getGenre().getGenre();
-        	 sendChatRoomToAllParticipants(genre,
+            sendChatRoomToAllParticipants(genre,
                   new Gson().toJson(chatroom));
         }
         db2.close();
@@ -141,7 +144,7 @@ public final class StartChat {
     db.start();
     chatlist = db.update();
     db.commit();
-    
+
     if (chatlist.size() == 0) {
       initializeChatlist();
     }

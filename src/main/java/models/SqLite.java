@@ -22,7 +22,10 @@ public class SqLite {
    * database statement for execution.
    */
   private Statement stmt = null;
-  
+
+  /**
+   * connect to autumn database
+   */
   public void connect() {
   try {
       Class.forName("org.sqlite.JDBC");
