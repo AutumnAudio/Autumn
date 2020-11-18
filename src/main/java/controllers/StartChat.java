@@ -173,7 +173,7 @@ public final class StartChat {
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
       user.setSessionIdDb(sessionId);
-      ctx.redirect("/chatrooms");
+      ctx.redirect("/home");
     });
 
     // Front page
@@ -209,8 +209,8 @@ public final class StartChat {
       }
     });
 
-    // user chatroom view
-    app.get("/:genre", ctx -> {
+   // user chatroom view
+    app.get("/chatroom/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         // TODO use username to check user's permission to enter room
@@ -223,7 +223,9 @@ public final class StartChat {
         ctx.result("Invalid Room");
       }
     });
-
+    app.get("/home", ctx -> {
+    	ctx.redirect("index.html");
+    });
     app.post("/send/:username", ctx -> {
       String username = ctx.pathParam("username");
       String text = ctx.formParam("text");
@@ -276,7 +278,7 @@ public final class StartChat {
     });
 
     // Web sockets - DO NOT DELETE or CHANGE
-    app.ws("/gameboard", new UiWebSocket());
+    app.ws("/chatroom", new UiWebSocket());
   }
 
   /**
