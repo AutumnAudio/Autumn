@@ -236,10 +236,11 @@ public final class StartChat {
 
     app.get("/lobby", ctx -> {
       ctx.redirect("index.html?place=lobby");
-  });
+    });
 
-    app.post("/send/:username", ctx -> {
-      String username = ctx.pathParam("username");
+    app.post("/send", ctx -> {
+      String username = db.getUserBySessionId(
+                (String) ctx.sessionAttribute("sessionId")).getUsername();
       String text = ctx.formParam("text");
       Message message = new Message();
       message.setUsername(username);
@@ -249,8 +250,8 @@ public final class StartChat {
         Genre genre = Genre.valueOf(genreStr.toUpperCase());
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         chatroom.addMessage(message);
-        sendChatRoomToAllParticipants(genre.getGenre(),
-                new Gson().toJson(chatroom));
+        sendChatMsgToAllParticipants(genre.getGenre(),
+                new Gson().toJson(message));
         ctx.redirect("/" + genre + "?user=" + username);
       } else {
         ctx.result("User not in any chatroom");
@@ -308,6 +309,17 @@ public final class StartChat {
       // TODO Need extra check for participant in the room
       try {
         sessionPlayer.getRemote().sendString(chatRoomJson);
+      } catch (IOException e) {
+        // Add logger here
+      }
+    }
+  }
+  
+  private static void sendChatMsgToAllParticipants(final String genre, final String msg) {
+    Queue<Session> sessions = UiWebSocket.getSessions();
+    for (Session sessionPlayer : sessions) {
+      try {
+        sessionPlayer.getRemote().sendString(msg);
       } catch (IOException e) {
         // Add logger here
       }
