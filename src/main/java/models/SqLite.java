@@ -561,7 +561,10 @@ public class SqLite {
   public void insertSession(final String time, final String sessionId) {
     try {
       conn.setAutoCommit(false);
-      String sql = String.format("INSERT INTO SESSIONS "
+      String sql = String.format("DELETE FROM SESSIONS "
+              + "WHERE SESSION_ID = '%s'", sessionId);
+      stmt.executeUpdate(sql);
+      sql = String.format("INSERT INTO SESSIONS "
                    + "(TIME_VISITED, SESSION_ID) "
                    + "VALUES ('%s','%s');", time, sessionId);
       stmt.executeUpdate(sql);

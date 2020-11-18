@@ -126,8 +126,10 @@ public final class StartChat {
         chatlist.refreshChatList();
         for (ChatRoom chatroom : chatlist.getChatrooms().values()) {
           String genre = chatroom.getGenre().getGenre();
-          sendChatRoomToAllParticipants(genre,
+          if (genre.equals("pop")) {
+        	  	sendChatRoomToAllParticipants(genre,
                     new Gson().toJson(chatroom));
+          }
         }
       }
     }, 0, INTERVAL, TimeUnit.SECONDS);
@@ -163,8 +165,8 @@ public final class StartChat {
         ctx.sessionAttribute("sessionId", sessionId);
       }
       if (db.getUserBySessionId(sessionId).getUsername() == null) {
-       // db.insertSession("" + System.currentTimeMillis(), sessionId);
-       // db.commit();
+        db.insertSession("" + System.currentTimeMillis(), sessionId);
+        db.commit();
         ctx.redirect(Login.getSpotifyAuthUrl());
       }
     });

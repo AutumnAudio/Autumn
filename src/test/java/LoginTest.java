@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import models.Login;
 
 public class LoginTest {
-  String refreshToken = "AQCDFdBbzda1H17Vcv3FMIFR5hvFEZjrNGhkCnjDXpDHHohCvp_vX2cvXyg0XpJ2SC69M9A4EOMCUVCgBjcUYMJYZZsbcUysqzf-kUrDev0LE0Wxi283o2l3k13JdXUiShc";
+  String refreshToken = SpotifyAccount.getRefreshToken();
 
   @Test
   public void getSpotifyAuthUrlTest() {
