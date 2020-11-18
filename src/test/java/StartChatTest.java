@@ -142,7 +142,7 @@ public class StartChatTest {
   public void joinRoomTest() {
 
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
-    response = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
 
@@ -176,7 +176,7 @@ public class StartChatTest {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/jazz/").body("username=ben").asString();
     response = Unirest.post("http://localhost:8080/joinroom/jazz/").body("username=mary").asString();
     response = Unirest.post("http://localhost:8080/joinroom/jazz/").body("username=ben").asString();
-    response = Unirest.get("http://localhost:8080/jazz/?user=ben").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/jazz/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
 
@@ -224,7 +224,7 @@ public class StartChatTest {
   public void invalidChatroomGenreTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/metal/?user=ben").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/chatroom/metal/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
     assertEquals("Invalid Room", response.getBody());
@@ -241,7 +241,7 @@ public class StartChatTest {
 
     // Create HTTP request and get response
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").body("username=sean").asString();
-    response = Unirest.get("http://localhost:8080/country/?user=sean&skip_auth_testing=true").asString();  
+    response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean&skip_auth_testing=true").asString();  
     assertEquals(200, response.getStatus());
 
     JSONObject jsonObject = new JSONObject(response.getBody());
@@ -252,7 +252,7 @@ public class StartChatTest {
     assertEquals(true, chatroom.getParticipant().containsKey("sean"));
 	
     response = Unirest.delete("http://localhost:8080/leaveroom/country").body("username=sean").asString();
-    response = Unirest.get("http://localhost:8080/country/?user=sean").asString(); 
+    response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean").asString(); 
     assertEquals(200, response.getStatus());
     System.out.println("/leaveroom/[user] Response: " + response.getBody());
 
@@ -294,18 +294,6 @@ public class StartChatTest {
     assertEquals(200, response.getStatus());
 	
     System.out.println("/process-auth Response: " + response.getBody());
-	
-    // Parse the response to JSON object
-    JSONObject jsonObject = new JSONObject(response.getBody());
-
-    // ---------------------------- GSON Parsing -------------------------
-
-    // GSON use to parse data to object
-    Gson gson = new Gson();
-    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);
-    
-    // Check if player type is correct
-    assertEquals(6, chatlist.size());
 	
     StartChat.stop();
     StartChat.main(null);
@@ -400,11 +388,11 @@ public class StartChatTest {
   @Order(13)
   public void sendMessageTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
-    response = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
     assertEquals(200, response.getStatus());
 
     HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send/ben/").body("text=hello").asString();
-    response1 = Unirest.get("http://localhost:8080/blues/?user=ben").asString();
+    response1 = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
     System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
     // Parse the response to JSON object
     JSONObject jsonObject = new JSONObject(response1.getBody());
@@ -427,7 +415,7 @@ public class StartChatTest {
     SimpleWebSocket socket = new SimpleWebSocket();
     try {
       client.start();
-      URI uri = new URI("ws://localhost:8080/gameboard");
+      URI uri = new URI("ws://localhost:8080/chatroom");
       //ClientUpgradeRequest request = new ClientUpgradeRequest();
       Future<Session> future = client.connect(socket, uri);
       System.out.printf("Connecting to : %s%n", uri);
