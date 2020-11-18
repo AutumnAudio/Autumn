@@ -223,7 +223,7 @@ public final class StartChat {
         ctx.result("Invalid Room");
       }
     });
-    
+
     // redirect to home
     app.get("/home", ctx -> {
       ctx.redirect("index.html");
