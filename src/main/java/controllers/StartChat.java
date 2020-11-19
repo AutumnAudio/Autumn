@@ -182,7 +182,6 @@ public final class StartChat {
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
       user.setSessionIdDb(sessionId);
-//      ctx.redirect("/home");
     });
 
     // Front page
@@ -201,8 +200,6 @@ public final class StartChat {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
-//        ctx.redirect("/chatroom/" + genre + "?user=" + username);
-        // add to DB only if participant is new
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
         if (!participants.containsKey(username)) {
@@ -227,18 +224,13 @@ public final class StartChat {
     app.get("/chatroom/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
-        // TODO use username to check user's permission to enter room
-        // String username = ctx.queryParam("user");
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
-        //sendChatRoomToAllParticipants(genre.getGenre(),
-                     //new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
       } else {
         ctx.result("Invalid Room");
       }
     });
 
-    // redirect to home
     app.get("/home", ctx -> {
       ctx.redirect("index.html");
     });
@@ -261,24 +253,14 @@ public final class StartChat {
         chatroom.addMessage(message);
         sendChatMsgToAllParticipants(genre.getGenre(),
                 new Gson().toJson(message));
-//        ctx.redirect("/" + genre + "?user=" + username);
         ctx.result("chat sent");
       } else {
         ctx.result("User not in any chatroom");
       }
     });
 
-    app.post("/share/:username", ctx -> {
-      // TODO implement endpoint
-      // add song to DB
-      // update participant views
-      /*
-      String username = ctx.pathParam("username");
-      String spotifySong = ctx.formParam("song");
-      Song song = new Song();
-      song.setUsername(username);
-      song.setSong(spotifySong);
-      */
+    app.post("/share", ctx -> {
+      // TODO implement endpoint for iteration 2
     });
 
     app.delete("/leaveroom/:genre", ctx -> {
@@ -324,13 +306,14 @@ public final class StartChat {
       }
     }
   }
-  
-  private static void sendChatMsgToAllParticipants(final String genre, final String msg) {
+
+  private static void sendChatMsgToAllParticipants(
+      final String genre, final String msg) {
     Queue<Session> sessions = UiWebSocket.getSessions();
     for (Session sessionPlayer : sessions) {
       try {
-    	  System.out.println(genre);
-    	  System.out.println(msg);
+        System.out.println(genre);
+        System.out.println(msg);
         sessionPlayer.getRemote().sendString(msg);
       } catch (IOException e) {
         // Add logger here

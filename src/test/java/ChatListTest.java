@@ -70,7 +70,7 @@ public class ChatListTest {
   }
 
   @Test
-  public void geChatroomByGenreTest() {
+  public void getChatroomByGenreTest() {
     ChatList chatlist = new ChatList();
     ChatRoom chatroom = new ChatRoom();
     chatroom.setGenre(Genre.BLUES);

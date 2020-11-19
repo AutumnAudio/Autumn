@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Time;
 import java.time.LocalTime;
@@ -121,6 +122,38 @@ public class SqLiteTest {
     db.commit();
     chatlist = db.update();
     assertEquals(1, chatlist.size());
+  }
+
+  @Test
+  public void testConnect() {
+    ChatList chatlist = db.update();
+    assertEquals(0, chatlist.size());
+    db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
+    db.commit();
+    chatlist = db.update();
+    assertEquals(1, chatlist.size());
+    SqLite db2 = new SqLite();
+    db2.connect();
+    ChatList chatlist2 = db2.update();
+    assertEquals(1, chatlist2.size());
+    db2.close();
+  }
+
+  @Test
+  public void testInsertUserwithGenre() {
+    db.insertUserwithGenre("mary", "blues");
+    db.commit();
+    assertEquals("blues", db.getGenreUser("mary"));
+  }
+
+  @Test
+  public void testRemoveUserGenre() {
+    db.insertUserwithGenre("mary", "blues");
+    db.commit();
+    assertEquals("blues", db.getGenreUser("mary"));
+    db.removeUserGenre("mary");
+    db.commit();
+    assertNull(db.getGenreUser("mary"));
   }
 
   @AfterEach
