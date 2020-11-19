@@ -169,6 +169,7 @@ public final class StartChat {
       if (db.getUserBySessionId(sessionId).getUsername() == null) {
         db.insertSession("" + System.currentTimeMillis(), sessionId);
         db.commit();
+        System.out.println(Login.getSpotifyAuthUrl());
         ctx.redirect(Login.getSpotifyAuthUrl());
       }
     });
@@ -181,7 +182,7 @@ public final class StartChat {
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
       user.setSessionIdDb(sessionId);
-      ctx.redirect("/home");
+//      ctx.redirect("/home");
     });
 
     // Front page
@@ -200,7 +201,7 @@ public final class StartChat {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
-        ctx.redirect("/chatroom/" + genre + "?user=" + username);
+//        ctx.redirect("/chatroom/" + genre + "?user=" + username);
         // add to DB only if participant is new
         Map<String, User> participants =
               chatlist.getChatroomByGenre(genre).getParticipant();
@@ -213,6 +214,10 @@ public final class StartChat {
           chatlist = db.update();
           db.commit();
         }
+        ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+        sendChatRoomToAllParticipants(genre.getGenre(),
+              new Gson().toJson(chatroom));
+        ctx.result("success");
       } else {
         ctx.result("Invalid Room");
       }
@@ -256,7 +261,8 @@ public final class StartChat {
         chatroom.addMessage(message);
         sendChatMsgToAllParticipants(genre.getGenre(),
                 new Gson().toJson(message));
-        ctx.redirect("/" + genre + "?user=" + username);
+//        ctx.redirect("/" + genre + "?user=" + username);
+        ctx.result("chat sent");
       } else {
         ctx.result("User not in any chatroom");
       }
@@ -323,6 +329,8 @@ public final class StartChat {
     Queue<Session> sessions = UiWebSocket.getSessions();
     for (Session sessionPlayer : sessions) {
       try {
+    	  System.out.println(genre);
+    	  System.out.println(msg);
         sessionPlayer.getRemote().sendString(msg);
       } catch (IOException e) {
         // Add logger here

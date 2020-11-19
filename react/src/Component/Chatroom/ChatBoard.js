@@ -10,6 +10,7 @@ const styles = {
         width: '70%',
         height: '90%',
         background: '#F3F2FF',
+        overflow: 'scroll',
     }
 };
 

@@ -5,7 +5,16 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { withTheme } from '@material-ui/styles';
-
+import { joinRoom } from '../AutumnApi/AutumnApi'
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useRouteMatch,
+    useParams,
+    useHistory,
+  } from "react-router-dom"
 const styles = {
     paper: {
         height: 180,
@@ -13,18 +22,40 @@ const styles = {
         background: 'pink',
     },
     chatroomName: {
-        paddingTop: '75%',
-        paddingLeft: '65%',
+        paddingTop: '65%',
+        paddingRight: '10px',
         fontSize: '25px',
         color: 'white',
+        textAlign: 'right',
     }
-};
-
+}
+const joinChatroom = (genre, history) => {
+    console.log(genre)
+    joinRoom(genre).then((response) => {
+        return response.text()
+    }).then((text) => {
+        console.log(text)
+        history.push('/chatroom', {genre: genre})
+    })
+    
+}
+const getLengthOfObject = (object) => {
+    let total = 0
+    for (let i in object) {
+        total++
+    }
+    return total
+}
 const ChatroomCard = (props) => {
     const { classes, chatroom } = props;
+    const genre = chatroom.genre
+    const history = useHistory()
+    console.log(chatroom.participants)
+    const participantsNumber = getLengthOfObject(chatroom.participants)
     return (
         <Grid item>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} onClick={() => joinChatroom(genre, history)}>
+                <div>Online: {participantsNumber}</div> 
                 <div className={classes.chatroomName}>{chatroom.genre}</div>
             </Paper>
         </Grid>

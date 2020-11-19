@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PersonPanel from './PersonPanel';
 import ChatBoard from './ChatBoard';
 import TextBox from './TextBox'
+import { useLocation } from "react-router-dom";
 
 const styles = {
     personPanelStyle: {
@@ -14,32 +15,62 @@ const styles = {
         position: 'absolute',
     },
 };
-const updateprops = (msg, setParticipants, setChat) => {
-    let chatroom = JSON.parse(msg['data'])
-    let participants = chatroom['participants']
-    let chat = chatroom['chat']
+let chatHistory = []
+let participants = []
+const updateprops = (msg, setParticipants, setChat, genre) => {
+    let jsonData = JSON.parse(msg['data'])
+    
+    if ('username' in jsonData) {
+        console.log(chatHistory)
+        // it is a chat message
+        console.log(participants)
+        if (jsonData['username'] in participants) {
+            console.log('handle')
+            chatHistory.push(jsonData)
+            const newChatHistory = [...chatHistory]
+            setChat(newChatHistory)
+        }
+        return
+    }
+    if (genre != jsonData['genre']) {
+        return
+    }
+    
+    participants = jsonData['participants']
+    let chat = jsonData['chat']
     let participantsArray = []
+    console.log(participants)
     for (let i in participants) {
         participantsArray.push(participants[i])
     }
     setParticipants(participantsArray)
-    setChat(chat)
+    
 }
 const Chatroom = (props) => {
     const { classes } = props;
     const [participants, setParticipants] = useState([])
     const [chat, setChat] = useState([])
+    const location = useLocation();
+    console.log(location)
+    const genre  = location.state.genre
+    const username = location.state.username
     let hostname = 'localhost'
     let port = '8080'
     useEffect(() => {
+        chatHistory = []
         let ws = new WebSocket('ws://' + hostname + ':' + port + '/chatroom')
-        ws.onmessage = msg => updateprops(msg, setParticipants, setChat);
+        ws.onmessage = msg => updateprops(msg, setParticipants, setChat, genre);
         ws.onclose = () => console.log("WebSocket connection closed")
+        return () => {
+            console.log('close')
+            ws.close()
+            chatHistory = []
+        }
     }, []);
     
     return (
         <div>
-            <div className={classes.personPanelStyle}><PersonPanel participants={participants}/></div>
+            <div className={classes.personPanelStyle}><PersonPanel genre={genre} participants={participants}/></div>
             
             <ChatBoard chat={chat}/>
             <TextBox />

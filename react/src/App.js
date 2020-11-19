@@ -1,14 +1,16 @@
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Chatroom from './Component/Chatroom/Chatroom'
 import Lobby from './Component/Lobby/Lobby'
+import Home from './Home'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Link,
   useRouteMatch,
-  useParams
+  useParams,
 } from "react-router-dom";
 
 function App() {
@@ -27,8 +29,7 @@ function App() {
       </Switch>
       <Switch>
         <Route path="/">
-          <Link to="/chatroom">chatroom</Link><br />
-          <Link to="/lobby">lobby</Link>
+          <Home />
         </Route>
       </Switch>
     </Router>
