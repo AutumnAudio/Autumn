@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types'
+import React from 'react'
 import ChatMessage from './ChatMessage'
 
 
@@ -8,15 +7,12 @@ const ChatMessageList = (props) => {
     return (
         <div>
             {chat.map((message, index) => {
-                return <ChatMessage message={message}/>
+                return <ChatMessage message={message} key={index}/>
             })}
         </div>
     )
     
 }
 
-ChatMessageList.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default ChatMessageList
