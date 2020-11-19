@@ -47,7 +47,7 @@ public class StartChatTest {
     // If you do not wish to have this end point, it is okay to not have anything in this method.
     // Create HTTP request and get response
     StartChat.main(null);
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms/").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/lobby").asString();
     assertEquals(200, response.getStatus());
     
     SqLite db = StartChat.getDb();
@@ -389,9 +389,16 @@ public class StartChatTest {
     assertEquals("testing1", msg.getUsername());
     assertEquals("hello", msg.getMessage());
   }
-  
+
   @Test
   @Order(14)
+  public void sendMessageInvalidUserTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
+    assertEquals("User not in any chatroom", response.getBody());
+  }
+  
+  @Test
+  @Order(15)
   public void webSocketTest() {
 	
     WebSocketClient client = new WebSocketClient();

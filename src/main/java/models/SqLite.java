@@ -24,7 +24,7 @@ public class SqLite {
   private Statement stmt = null;
 
   /**
-   * connect to autumn database
+   * connect to autumn database.
    */
   public void connect() {
   try {
