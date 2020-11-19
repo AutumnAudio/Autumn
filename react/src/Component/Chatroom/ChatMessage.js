@@ -18,6 +18,7 @@ const styles = {
         marginLeft: '55px',
         marginTop: '5px',
         fontWeight: '300',
+        wordWrap: 'break-word',
     },
     chatMessageList: {
         margin: '20px',

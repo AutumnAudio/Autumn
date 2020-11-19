@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import ChatMessage from './ChatMessage';
 
 const styles = {
-    
 };
 
 const ChatMessageList = (props) => {
