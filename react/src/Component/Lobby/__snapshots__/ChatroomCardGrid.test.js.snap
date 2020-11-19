@@ -1,0 +1,54 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should be able to render chatroom card grid 1`] = `
+<div>
+  <div
+    className="MuiGrid-root ChatroomCardGrid-root-1 MuiGrid-container MuiGrid-spacing-xs-2"
+  >
+    <div
+      className="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <div
+        className="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-6 MuiGrid-justify-xs-center"
+      >
+        <div
+          className="MuiGrid-root MuiGrid-item"
+        >
+          <div
+            className="MuiPaper-root ChatroomCard-paper-2 MuiPaper-elevation1 MuiPaper-rounded"
+            onClick={[Function]}
+          >
+            <div>
+              Online: 
+              1
+            </div>
+            <div
+              className="ChatroomCard-chatroomName-3"
+            >
+              JAZZ
+            </div>
+          </div>
+        </div>
+        <div
+          className="MuiGrid-root MuiGrid-item"
+        >
+          <div
+            className="MuiPaper-root ChatroomCard-paper-2 MuiPaper-elevation1 MuiPaper-rounded"
+            onClick={[Function]}
+          >
+            <div>
+              Online: 
+              1
+            </div>
+            <div
+              className="ChatroomCard-chatroomName-3"
+            >
+              POP
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -5,17 +5,10 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import PersonList from './PersonList';
 import { leaveRoom } from '../AutumnApi/AutumnApi'
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useRouteMatch,
-    useParams,
     useHistory,
   } from "react-router-dom"
 const styles = {
     roomHeader: {
-        margin: '25px',
         color: 'white',
         margin: '35px auto 0px 160px',
         display: 'inline-block',

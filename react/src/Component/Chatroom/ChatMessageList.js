@@ -1,13 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import ChatMessage from './ChatMessage';
+import PropTypes from 'prop-types'
+import ChatMessage from './ChatMessage'
 
-const styles = {
-};
 
 const ChatMessageList = (props) => {
-    const { classes, chat } = props;
+    const { chat } = props;
     return (
         <div>
             {chat.map((message, index) => {
@@ -22,4 +19,4 @@ ChatMessageList.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(ChatMessageList)
+export default ChatMessageList

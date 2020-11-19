@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should be able to render person panel 1`] = `
+<div>
+  <svg
+    aria-hidden={true}
+    className="MuiSvgIcon-root PersonPanel-arrowBack-2"
+    focusable="false"
+    onClick={[Function]}
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+    />
+  </svg>
+  <h1
+    className="PersonPanel-roomHeader-1"
+  >
+    POP
+  </h1>
+  <div
+    className="PersonList-personListDiv-3"
+  >
+    <div
+      className="Person-personDiv-7"
+    >
+      <svg
+        aria-hidden={true}
+        className="MuiSvgIcon-root Person-personIcon-4"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+      <div
+        className="Person-nameDiv-5"
+      >
+        testUser
+      </div>
+      <svg
+        aria-hidden={true}
+        className="MuiSvgIcon-root Person-addIcon-8"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+        />
+      </svg>
+      <div
+        className="Person-currentSongDiv-6"
+      >
+        song name
+         - 
+        testArtist
+      </div>
+    </div>
+    <div
+      className="Person-personDiv-7"
+    >
+      <svg
+        aria-hidden={true}
+        className="MuiSvgIcon-root Person-personIcon-4"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+      <div
+        className="Person-nameDiv-5"
+      >
+        testUser2
+      </div>
+      <svg
+        aria-hidden={true}
+        className="MuiSvgIcon-root Person-addIcon-8"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+        />
+      </svg>
+      <div
+        className="Person-currentSongDiv-6"
+      >
+        another song
+         - 
+        testArtist2
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,18 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
 
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { withTheme } from '@material-ui/styles';
+import Paper from '@material-ui/core/Paper'
 import { joinRoom } from '../AutumnApi/AutumnApi'
 import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useRouteMatch,
-    useParams,
     useHistory,
   } from "react-router-dom"
 const styles = {
@@ -20,7 +13,6 @@ const styles = {
         height: 180,
         width: 180,
         background: 'pink',
-        cursor: 'pointer'
     },
     chatroomName: {
         paddingTop: '65%',
@@ -51,7 +43,7 @@ const ChatroomCard = (props) => {
     const { classes, chatroom } = props;
     const genre = chatroom.genre
     const history = useHistory()
-    console.log(chatroom.participants)
+    console.log(chatroom)
     const participantsNumber = getLengthOfObject(chatroom.participants)
     return (
         <Grid item>

@@ -21,7 +21,7 @@ const styles = {
 }
 
 const sendTextChat = (event, value, setValue) => {
-    if (event.key == 'Enter') {
+    if (event.key === 'Enter') {
         sendChat(value)
         setValue('')
     }
