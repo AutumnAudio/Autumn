@@ -20,6 +20,7 @@ const styles = {
         height: 180,
         width: 180,
         background: 'pink',
+        cursor: 'pointer'
     },
     chatroomName: {
         paddingTop: '65%',
