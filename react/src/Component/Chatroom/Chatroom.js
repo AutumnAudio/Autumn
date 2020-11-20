@@ -32,14 +32,12 @@ const updateprops = (msg, setParticipants, setChat, genre) => {
         }
         return
     }
-    if (genre != jsonData['genre']) {
+    if (genre !== jsonData['genre']) {
         return
     }
     
     participants = jsonData['participants']
-    let chat = jsonData['chat']
     let participantsArray = []
-    console.log(participants)
     for (let i in participants) {
         participantsArray.push(participants[i])
     }
@@ -50,13 +48,12 @@ const Chatroom = (props) => {
     const { classes } = props;
     const [participants, setParticipants] = useState([])
     const [chat, setChat] = useState([])
-    const location = useLocation();
-    console.log(location)
+    const location = useLocation()
     const genre  = location.state.genre
-    const username = location.state.username
-    let hostname = 'localhost'
-    let port = '8080'
     useEffect(() => {
+        
+        let hostname = 'localhost'
+        let port = '8080'
         chatHistory = []
         let ws = new WebSocket('ws://' + hostname + ':' + port + '/chatroom')
         ws.onmessage = msg => updateprops(msg, setParticipants, setChat, genre);

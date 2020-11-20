@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
 import Chatroom from './Component/Chatroom/Chatroom'
 import Lobby from './Component/Lobby/Lobby'
@@ -8,9 +7,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
-  useRouteMatch,
-  useParams,
 } from "react-router-dom";
 
 function App() {

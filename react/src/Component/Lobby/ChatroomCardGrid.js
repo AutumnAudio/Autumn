@@ -20,7 +20,7 @@ const ChatroomCardGrid = (props) => {
                 <Grid item xs={12}>
                     <Grid container justify="center" spacing={6}>
                         {chatrooms.map((chatroom, index) => {
-                            return <ChatroomCard chatroom={chatroom}/>
+                            return <ChatroomCard chatroom={chatroom} key={index}/>
                         })}
                     </Grid>
                 </Grid>

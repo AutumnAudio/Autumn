@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should be able to render chatroom card 1`] = `
+<div
+  className="MuiGrid-root MuiGrid-item"
+>
+  <div
+    className="MuiPaper-root ChatroomCard-paper-1 MuiPaper-elevation1 MuiPaper-rounded"
+    onClick={[Function]}
+  >
+    <div>
+      Online: 
+      1
+    </div>
+    <div
+      className="ChatroomCard-chatroomName-2"
+    >
+      JAZZ
+    </div>
+  </div>
+</div>
+`;
