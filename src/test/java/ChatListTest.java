@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import models.ChatList;
 import models.ChatRoom;
 import models.Genre;
+import models.Login;
 import models.Song;
 import models.User;
 
 public class ChatListTest {
 
-  String spotifyToken = "BQCRMQoge3BUYgzoM05a0KdxcLcHENyDn90zgE4pwq5Cl-ykDV1sZIVmbWOdsubDbyvmLLNApaWbSrmadtCK4XRMw4q0Og0YLOh-6aDylQBnWRlJHRxIb7-0-09kyYq7XjKJEzrnqG0sz9J6U3OuJw5Al2G21kVh64D0Xyt0zuwAg7KAF_3SJRhfdtTlAgw0E6SkgJsZYM4kvI0EGhWv0qseUfrE8Im53S9jf7U4WpQ";
-  String spotifyRefreshToken = "AQCDFdBbzda1H17Vcv3FMIFR5hvFEZjrNGhkCnjDXpDHHohCvp_vX2cvXyg0XpJ2SC69M9A4EOMCUVCgBjcUYMJYZZsbcUysqzf-kUrDev0LE0Wxi283o2l3k13JdXUiShc";
+  String refreshToken = SpotifyAccount.getRefreshToken();
 
   @Test
   public void refreshChatListTestWithToken() {
@@ -29,8 +29,8 @@ public class ChatListTest {
     chatroom.setParticipant(participants);
     User user = new User();
 	user.setUsername("test");
-	user.setSpotifyToken(spotifyToken);
-	user.setSpotifyRefreshToken(spotifyRefreshToken);
+	user.setSpotifyToken(Login.refreshSpotifyToken(refreshToken));
+	user.setSpotifyRefreshToken(refreshToken);
     chatroom.addParticipant(user);
     chatlist.refreshChatList();
 	assertEquals(10, user.getRecentlyPlayed().length);
