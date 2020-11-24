@@ -1,6 +1,6 @@
 
 public class SpotifyAccount {
-  private static String refreshToken = "AQAzaKoqmgkV6gEwad5vZV7rWh_YlxCVCeDK-L-9TeyFpHPd4Zlb_NQ_2tgf6yxcXS1NqiaGWxO7tbTNqClrwDaz_pKrsH5sr3MGNhJvwPEjgKWt5tu1B__orcad8J9PX6E";
+  private static String refreshToken = "AQCwgtkeyzzl2wyxW-mw6iXGm8FSNQOObyDY1XXPehwEfW0jxL6RebLut4VStJNyKc7wXK52i0CpS5w1nmi91amOb19IidLXDPH53bWOf-c5bogb148Qedj44eWBV-9gl6k";
 
   public static String getRefreshToken() {
     return refreshToken;
