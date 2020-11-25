@@ -3,6 +3,8 @@ package models;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.wrapper.spotify.SpotifyApi;
+
 public class ChatList {
   /**
    * Player who starts the game.
@@ -50,7 +52,8 @@ public class ChatList {
       Map<String, User> participants = chatroom.getParticipant();
       for (Map.Entry<String, User> entry : participants.entrySet()) {
         User user = entry.getValue();
-        if (!user.getSpotifyToken().equals("")) {
+        String token = user.getSpotifyToken();
+        if (!token.equals("")) {
           user.refreshRecentlyPlayed();
           user.refreshCurrentlyPlaying();
         }

@@ -5,6 +5,8 @@ import models.User;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
+import com.wrapper.spotify.SpotifyApi;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,8 +21,11 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestMethodOrder(OrderAnnotation.class) 
 public class UserTest {
   
-  String spotifyToken = "BQCRMQoge3BUYgzoM05a0KdxcLcHENyDn90zgE4pwq5Cl-ykDV1sZIVmbWOdsubDbyvmLLNApaWbSrmadtCK4XRMw4q0Og0YLOh-6aDylQBnWRlJHRxIb7-0-09kyYq7XjKJEzrnqG0sz9J6U3OuJw5Al2G21kVh64D0Xyt0zuwAg7KAF_3SJRhfdtTlAgw0E6SkgJsZYM4kvI0EGhWv0qseUfrE8Im53S9jf7U4WpQ";
-  String spotifyRefreshToken = SpotifyAccount.getRefreshToken();
+  String refreshToken = SpotifyAccount.getRefreshToken();
+  String token = Login.refreshSpotifyToken(refreshToken);
+  SpotifyApi api = new SpotifyApi.Builder()
+          .setAccessToken(Login.refreshSpotifyToken(refreshToken))
+          .build();
   
   SqLite db = new SqLite();
   
@@ -32,10 +37,10 @@ public class UserTest {
 
   @Test
   public void testResfreshRecentlyPlayed() {
-	User user = new User();
+	User user = new User(api);
 	user.setUsername("test");
-	user.setSpotifyToken(spotifyToken);
-	user.setSpotifyRefreshToken(spotifyRefreshToken);
+	user.setSpotifyToken(token);
+	user.setSpotifyRefreshToken(refreshToken);
 	user.refreshRecentlyPlayed();
 	assertEquals(10, user.getRecentlyPlayed().length);
 	for (Song song : user.getRecentlyPlayed()) {
@@ -45,10 +50,10 @@ public class UserTest {
 
   @Test
   public void testResfreshCurrentlyPlaying() {
-	User user = new User();
+	User user = new User(api);
 	user.setUsername("test");
-	user.setSpotifyToken(spotifyToken);
-	user.setSpotifyRefreshToken(spotifyRefreshToken);
+	user.setSpotifyToken(token);
+	user.setSpotifyRefreshToken(refreshToken);
 	user.refreshCurrentlyPlaying();
 	Song song = new Song();
 	user.setCurrentTrack(song);
@@ -59,7 +64,7 @@ public class UserTest {
 
   @Test
   public void testUserConstructor() {
-    String token = Login.refreshSpotifyToken(spotifyRefreshToken);
+    String token = Login.refreshSpotifyToken(refreshToken);
     User user = new User(token, db);
     assertNotNull(user.getSpotifyToken());
     assertEquals(1, db.getUserCount("cherrychu_120@hotmail.com"));
@@ -67,10 +72,10 @@ public class UserTest {
 
   @Test
   public void testRefreshSpotifyToken() {
-    User user = new User(spotifyToken, db);
-    user.setSpotifyRefreshTokenDb(spotifyRefreshToken);
+    User user = new User(token, db);
+    user.setSpotifyRefreshTokenDb(refreshToken);
     user.refreshSpotifyToken();
-    assertNotEquals(spotifyToken, user.getSpotifyToken());
+    assertNotEquals(token, user.getSpotifyToken());
   }
 
   @Test

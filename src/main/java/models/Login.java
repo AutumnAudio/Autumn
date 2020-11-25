@@ -50,9 +50,10 @@ public final class Login {
             + URLEncoder.encode(redirectURI, StandardCharsets.UTF_8)
             + "&scope=" + URLEncoder.encode("user-read-email"
             + " user-read-recently-played"
-            + " user-read-currently-playing "
-            + "playlist-modify-public "
-            + "playlist-modify-private", StandardCharsets.UTF_8);
+            + " user-read-currently-playing"
+            + " user-modify-playback-state"
+            + " playlist-modify-public"
+            + " playlist-modify-private", StandardCharsets.UTF_8);
     return url;
   }
 

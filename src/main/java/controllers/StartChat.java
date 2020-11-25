@@ -122,7 +122,7 @@ public final class StartChat {
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     exec.scheduleAtFixedRate(new Runnable() {
       public void run() {
-
+    	// TODO check if participants is in chatrooms
         SqLite db2 = new SqLite();
         db2.connect();
         ChatList chatListData = db2.update();
@@ -259,8 +259,27 @@ public final class StartChat {
       }
     });
 
-    app.post("/share", ctx -> {
+    app.get("/share", ctx -> {
       // TODO implement endpoint for iteration 2
+      System.out.println("in /share");
+      String username = db.getUserBySessionId(
+                (String) ctx.sessionAttribute("sessionId")).getUsername();
+      User sharer = db.getUserByName(username);
+      
+      sharer.refreshCurrentlyPlaying();
+      String uri = sharer.getCurrentTrack().getUri();
+      String genreStr = db.getGenreUser(username);
+      if (genreStr != null) {
+        Genre genre = Genre.valueOf(genreStr.toUpperCase());
+        ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+        for (User sharee : chatroom.getParticipant().values()) {
+          System.out.println("add song to sharee");
+          sharee.addToQueue(uri);
+        }
+        ctx.result("song shared");
+      } else {
+        ctx.result("User not in any chatroom");
+      }
     });
 
     app.delete("/leaveroom/:genre", ctx -> {
