@@ -261,21 +261,26 @@ public final class StartChat {
 
     app.get("/share", ctx -> {
       // TODO implement endpoint for iteration 2
-      System.out.println("in /share");
       String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
       User sharer = db.getUserByName(username);
-      
       sharer.refreshCurrentlyPlaying();
       String uri = sharer.getCurrentTrack().getUri();
+      String songName = sharer.getCurrentTrack().getName();
+      String artist = sharer.getCurrentTrack().getArtists()[0];
       String genreStr = db.getGenreUser(username);
       if (genreStr != null) {
         Genre genre = Genre.valueOf(genreStr.toUpperCase());
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         for (User sharee : chatroom.getParticipant().values()) {
-          System.out.println("add song to sharee");
+          // TODO skip sharer
           sharee.addToQueue(uri);
         }
+        Message message = new Message();
+        message.setUsername(username);
+        message.setMessage("I just shared " + songName + " by " + artist);
+        sendChatMsgToAllParticipants(genre.getGenre(),
+                new Gson().toJson(message));
         ctx.result("song shared");
       } else {
         ctx.result("User not in any chatroom");
