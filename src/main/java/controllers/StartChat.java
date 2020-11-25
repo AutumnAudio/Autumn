@@ -169,8 +169,8 @@ public final class StartChat {
       if (db.getUserBySessionId(sessionId).getUsername() == null) {
         db.insertSession("" + System.currentTimeMillis(), sessionId);
         db.commit();
-        System.out.println(Login.getSpotifyAuthUrl());
-        ctx.redirect(Login.getSpotifyAuthUrl());
+        
+        ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}".replaceAll("\"","\\\\\"").replaceAll("\\","\\\\\\"));
       }
     });
 
@@ -182,11 +182,21 @@ public final class StartChat {
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
       user.setSessionIdDb(sessionId);
+      
+      ctx.redirect("http://localhost:3000"); //TODO: change to HOME constant (runtime arg or external config?)
     });
 
-    // Front page
+    // Front pages
     app.get("/", ctx -> {
       ctx.redirect("/home");
+    });
+    
+    app.get("/home", ctx -> {
+      ctx.redirect("index.html");
+    });
+
+    app.get("/lobby", ctx -> {
+      ctx.redirect("index.html?place=lobby");
     });
 
     // Send Chatroom List
@@ -231,13 +241,6 @@ public final class StartChat {
       }
     });
 
-    app.get("/home", ctx -> {
-      ctx.redirect("index.html");
-    });
-
-    app.get("/lobby", ctx -> {
-      ctx.redirect("index.html?place=lobby");
-    });
 
     app.post("/send", ctx -> {
       String username = db.getUserBySessionId(
