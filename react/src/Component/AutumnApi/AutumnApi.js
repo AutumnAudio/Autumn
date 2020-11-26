@@ -19,3 +19,6 @@ export function sendChat(text) {
         method: 'POST'
     })
 }
+export function authenticate() {
+    return fetch('/auth')
+}

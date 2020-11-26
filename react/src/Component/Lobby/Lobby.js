@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import ChatroomCardGrid from './ChatroomCardGrid'
 import { getChatrooms } from '../AutumnApi/AutumnApi'
-
+import { authenticate } from '../AutumnApi/AutumnApi'
 const styles = {
     lobby: {
         position: 'absolute',
@@ -25,6 +25,14 @@ const Lobby = (props) => {
     const { classes } = props
     const [chatrooms, setChatrooms] = useState([])
     useEffect(() => {
+        authenticate().then((response) => {
+            return response.json()
+        }).then((data) => {
+            if ('error' in data) {
+                const authURL = data['auth_url']
+                window.open(authURL,"_self")
+            }
+        })
         getChatrooms().then((response) => {
             return response.json()
         }).then((data) => {

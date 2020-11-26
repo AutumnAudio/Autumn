@@ -154,6 +154,28 @@ public final class StartChat {
       config.addStaticFiles("/public");
     }).start(PORT_NUMBER);
 
+    app.get("/auth", ctx -> {
+        String sessionId = (String) ctx.sessionAttribute("sessionId");
+        //if /auth and code present skip rest
+        if (ctx.url().contains("/process_auth")
+               && ctx.queryParam("code") != null && sessionId != null) {
+          return;
+        }
+        if (sessionId == null) {
+          sessionId = UUID.randomUUID().toString();
+          ctx.sessionAttribute("sessionId", sessionId);
+        }
+        if (db.getUserBySessionId(sessionId).getUsername() == null) {
+          db.insertSession("" + System.currentTimeMillis(), sessionId);
+          db.commit();
+          System.out.println(Login.getSpotifyAuthUrl());
+//          ctx.redirect(Login.getSpotifyAuthUrl());
+          ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
+        } else {
+          ctx.result("{}");
+        }
+    });
+    
     //authentication
     app.before(ctx -> {
       String sessionId = (String) ctx.sessionAttribute("sessionId");
@@ -170,7 +192,7 @@ public final class StartChat {
         db.insertSession("" + System.currentTimeMillis(), sessionId);
         db.commit();
         
-        ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}".replaceAll("\"","\\\\\"").replaceAll("\\","\\\\\\"));
+        ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
       }
     });
 
