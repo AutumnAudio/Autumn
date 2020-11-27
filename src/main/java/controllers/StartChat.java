@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import models.ChatList;
@@ -118,11 +119,17 @@ public final class StartChat {
   /**
    * Start a thread that read DB periodically.
    */
+  static ScheduledFuture<?> RefreshDataInterval;
   private static void refreshSongDataRepeatly() {
+    
+    if(RefreshDataInterval != null && !RefreshDataInterval.isCancelled())
+      return;
+    
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-    exec.scheduleAtFixedRate(new Runnable() {
+    RefreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
+      
       public void run() {
-
+System.out.println("scheduled run");
         SqLite db2 = new SqLite();
         db2.connect();
         ChatList chatListData = db2.update();
@@ -148,7 +155,6 @@ public final class StartChat {
     if (chatlist.size() == 0) {
       initializeChatlist();
     }
-    refreshSongDataRepeatly();
 
     app = Javalin.create(config -> {
       config.addStaticFiles("/public");
@@ -170,7 +176,7 @@ public final class StartChat {
         db.insertSession("" + System.currentTimeMillis(), sessionId);
         db.commit();
         
-        ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}".replaceAll("\"","\\\\\"").replaceAll("\\","\\\\\\"));
+        ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
       }
     });
 
@@ -225,6 +231,8 @@ public final class StartChat {
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatroom));
         ctx.result("success");
+        
+        refreshSongDataRepeatly();
       } else {
         ctx.result("Invalid Room");
       }
@@ -281,6 +289,10 @@ public final class StartChat {
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
+        
+        if(chatlist.getTotalParticpants() == 0) {
+          RefreshDataInterval.cancel(false);
+        }
       } else {
         ctx.result("You are not in the room");
       }
