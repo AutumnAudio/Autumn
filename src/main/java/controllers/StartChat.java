@@ -3,6 +3,8 @@ package controllers;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -259,26 +261,36 @@ public final class StartChat {
       }
     });
 
-    app.get("/share", ctx -> {
-      // TODO implement endpoint for iteration 2
+    app.post("/share", ctx -> {
       String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
       User sharer = db.getUserByName(username);
       sharer.refreshCurrentlyPlaying();
-      String uri = sharer.getCurrentTrack().getUri();
-      String songName = sharer.getCurrentTrack().getName();
-      String artist = sharer.getCurrentTrack().getArtists()[0];
+      Song song = new Song();
+      song.setUsername(username);
+      song.setName(sharer.getCurrentTrack().getName());
+      song.setArtists(sharer.getCurrentTrack().getArtists());
+      song.setUri(sharer.getCurrentTrack().getUri());
       String genreStr = db.getGenreUser(username);
       if (genreStr != null) {
         Genre genre = Genre.valueOf(genreStr.toUpperCase());
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+        // share song with participants
         for (User sharee : chatroom.getParticipant().values()) {
-          // TODO skip sharer
-          sharee.addToQueue(uri);
+          if (!sharer.getUsername().equals(sharee.getUsername())) {
+            sharee.addToQueue(song.getUri());
+          }
         }
+        // add song to group playlist
+        chatroom.addSong(song);
+        db.insertSong(username, Time.valueOf(LocalTime.now()),
+                genre, new Gson().toJson(song));
+        db.commit();
+        // send message to chat
         Message message = new Message();
         message.setUsername(username);
-        message.setMessage("I just shared " + songName + " by " + artist);
+        message.setMessage("I just shared " + song.getName()
+                + " by " + song.getArtists()[0]);
         sendChatMsgToAllParticipants(genre.getGenre(),
                 new Gson().toJson(message));
         ctx.result("song shared");
