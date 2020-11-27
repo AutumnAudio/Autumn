@@ -37,6 +37,14 @@ public class ChatRoom {
   public Map<String, User> getParticipant() {
     return this.participants;
   }
+  
+  /**
+   * Get number of participants in chatroom.
+   * @return num Participants
+  */
+  public int getNumParticipants() {
+    return getParticipant().size();
+  }
 
   /**
    * Set participant list.

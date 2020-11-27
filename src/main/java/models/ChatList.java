@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ChatList {
   /**
-   * Player who starts the game.
+   * Chatrooms data structure.
    */
   private Map<String, ChatRoom> chatrooms = new HashMap<>();
 
@@ -40,6 +40,21 @@ public class ChatList {
    */
   public int size() {
     return this.chatrooms.size();
+  }
+ 
+  /**
+   * Return total people currently in all chatrooms.
+   * @return numPeopleChatting integer
+   */
+  public int getTotalParticpants() {
+    
+    int numPeopleChatting = 0;
+    
+    for (Map.Entry<String,ChatRoom> chatEntry : this.chatrooms.entrySet()) {
+      numPeopleChatting += chatEntry.getValue().getNumParticipants();
+    }
+    
+    return numPeopleChatting;
   }
 
   /**
