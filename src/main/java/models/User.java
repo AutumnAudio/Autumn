@@ -96,6 +96,8 @@ public class User {
         song.setUsername(username);
         song.setName(track.getName());
         song.setArtists(songArtists);
+        song.setUri(track.getUri());
+        System.out.println(track.getUri());
         recentlyPlayed[i] = song;
         //System.out.println(track.getName());
       }
