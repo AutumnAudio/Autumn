@@ -315,8 +315,7 @@ public class StartChatTest {
     assertEquals(500, response.getStatus());
   
     System.out.println("Test process authorization");
-    
-    System.out.println("/process-auth Response: " + response.getBody());
+
   }
   
   /**
