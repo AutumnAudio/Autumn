@@ -271,15 +271,14 @@ public final class StartChat {
         ctx.result("User not in any chatroom");
       }
     });
-    
-    //app.post("/add", ctx -> {
-    app.get("/add/:uri", ctx -> {
-      //String uri = ctx.formParam("uri");
-      String uri = ctx.pathParam("uri");
+
+    app.post("/add", ctx -> {
+      String uri = ctx.formParam("uri");
       String username = db.getUserBySessionId(
               (String) ctx.sessionAttribute("sessionId")).getUsername();
       User user = db.getUserByName(username);
       user.addToQueue(uri);
+      ctx.result("song added to your queue");
     });
     
     app.post("/share", ctx -> {

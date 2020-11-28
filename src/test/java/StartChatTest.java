@@ -552,6 +552,36 @@ public class StartChatTest {
     StartChat.setDb(origDb);
   }
 
+  @Test
+  @Order(19)
+  public void addSongTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    assertEquals(200, response.getStatus());
+    
+    SqLite mockDb = mock(SqLite.class);
+    User mockUser = mock(User.class);
+    when(mockUser.getUsername()).thenReturn("testing1");
+    doNothing().when(mockUser).addToQueue("hello");
+    
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    
+    
+    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
+    when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
+    
+    StartChat.setDb(mockDb);
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/add").body("uri=hello").asString();
+    System.out.println("/add Response: " + response1.getBody());
+
+    assertEquals("song added to your queue", response1.getBody());
+    
+    StartChat.setDb(origDb);
+  }
+  
+
   /**
   * This will run every time after a test has finished.
   */
