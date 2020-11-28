@@ -266,37 +266,42 @@ public final class StartChat {
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
       User sharer = db.getUserByName(username);
       sharer.refreshCurrentlyPlaying();
+      if (sharer.getCurrentTrack() == null) {
+        ctx.result("no song playing");
+        return;
+      }
+      String genreStr = db.getGenreUser(username);
+      if (genreStr == null) {
+        ctx.result("User not in any chatroom");
+        return;
+      }
       Song song = new Song();
       song.setUsername(username);
       song.setName(sharer.getCurrentTrack().getName());
       song.setArtists(sharer.getCurrentTrack().getArtists());
       song.setUri(sharer.getCurrentTrack().getUri());
-      String genreStr = db.getGenreUser(username);
-      if (genreStr != null) {
-        Genre genre = Genre.valueOf(genreStr.toUpperCase());
-        ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
-        // share song with participants
-        for (User sharee : chatroom.getParticipant().values()) {
-          if (!sharer.getUsername().equals(sharee.getUsername())) {
-            sharee.addToQueue(song.getUri());
-          }
+      
+      Genre genre = Genre.valueOf(genreStr.toUpperCase());
+      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+      // share song with participants
+      for (User sharee : chatroom.getParticipant().values()) {
+        if (!sharer.getUsername().equals(sharee.getUsername())) {
+          sharee.addToQueue(song.getUri());
         }
-        // add song to group playlist
-        chatroom.addSong(song);
-        db.insertSong(username, Time.valueOf(LocalTime.now()),
-                genre, new Gson().toJson(song));
-        db.commit();
-        // send message to chat
-        Message message = new Message();
-        message.setUsername(username);
-        message.setMessage("I just shared " + song.getName()
-                + " by " + song.getArtists()[0]);
-        sendChatMsgToAllParticipants(genre.getGenre(),
-                new Gson().toJson(message));
-        ctx.result("song shared");
-      } else {
-        ctx.result("User not in any chatroom");
       }
+      // add song to group playlist
+      chatroom.addSong(song);
+      db.insertSong(username, Time.valueOf(LocalTime.now()),
+              genre, new Gson().toJson(song));
+      db.commit();
+      // send message to chat
+      Message message = new Message();
+      message.setUsername(username);
+      message.setMessage("I just shared " + song.getName()
+              + " by " + song.getArtists()[0]);
+      sendChatMsgToAllParticipants(genre.getGenre(),
+              new Gson().toJson(message));
+      ctx.result("song shared");
     });
 
     app.delete("/leaveroom/:genre", ctx -> {

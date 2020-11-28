@@ -3,8 +3,6 @@ package models;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wrapper.spotify.SpotifyApi;
-
 public class ChatList {
   /**
    * Player who starts the game.
