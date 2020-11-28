@@ -24,7 +24,7 @@ const Home = (props) => {
     return (
         <div>
           <Link to='/lobby'>lobby</Link><br />
-          <a target="_blank" rel="noreferrer" href='https://accounts.spotify.com/authorize?response_type=code&client_id=17b185367b7d45a8b8cb068eda7787cf&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fprocess_auth&scope=user-read-email+user-read-recently-played+user-read-currently-playing+playlist-modify-public+playlist-modify-private'>
+          <a target="_blank" rel="noreferrer" href='https://accounts.spotify.com/authorize?response_type=code&client_id=17b185367b7d45a8b8cb068eda7787cf&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fprocess_auth&scope=user-read-email+user-read-recently-played+user-read-currently-playing+user-modify-playback-state+playlist-modify-public+playlist-modify-private'>
               Authentication with spotify
           </a>
         </div>

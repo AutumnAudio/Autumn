@@ -3,6 +3,8 @@ package controllers;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,7 +131,7 @@ public final class StartChat {
     RefreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
       
       public void run() {
-System.out.println("scheduled run");
+        System.out.println("scheduled run");
         SqLite db2 = new SqLite();
         db2.connect();
         ChatList chatListData = db2.update();
@@ -270,8 +272,56 @@ System.out.println("scheduled run");
       }
     });
 
+    app.post("/add", ctx -> {
+      String uri = ctx.formParam("uri");
+      String username = db.getUserBySessionId(
+              (String) ctx.sessionAttribute("sessionId")).getUsername();
+      User user = db.getUserByName(username);
+      user.addToQueue(uri);
+      ctx.result("song added to your queue");
+    });
+    
     app.post("/share", ctx -> {
-      // TODO implement endpoint for iteration 2
+      String username = db.getUserBySessionId(
+                (String) ctx.sessionAttribute("sessionId")).getUsername();
+      User sharer = db.getUserByName(username);
+      sharer.refreshCurrentlyPlaying();
+      if (sharer.getCurrentTrack() == null) {
+        ctx.result("no song playing");
+        return;
+      }
+      String genreStr = db.getGenreUser(username);
+      if (genreStr == null) {
+        ctx.result("User not in any chatroom");
+        return;
+      }
+      Song song = new Song();
+      song.setUsername(username);
+      song.setName(sharer.getCurrentTrack().getName());
+      song.setArtists(sharer.getCurrentTrack().getArtists());
+      song.setUri(sharer.getCurrentTrack().getUri());
+      
+      Genre genre = Genre.valueOf(genreStr.toUpperCase());
+      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+      // share song with participants
+      for (User sharee : chatroom.getParticipant().values()) {
+        if (!sharer.getUsername().equals(sharee.getUsername())) {
+          sharee.addToQueue(song.getUri());
+        }
+      }
+      // add song to group playlist
+      chatroom.addSong(song);
+      db.insertSong(username, Time.valueOf(LocalTime.now()),
+              genre, new Gson().toJson(song));
+      db.commit();
+      // send message to chat
+      Message message = new Message();
+      message.setUsername(username);
+      message.setMessage("I just shared " + song.getName()
+              + " by " + song.getArtists()[0]);
+      sendChatMsgToAllParticipants(genre.getGenre(),
+              new Gson().toJson(message));
+      ctx.result("song shared");
     });
 
     app.delete("/leaveroom/:genre", ctx -> {

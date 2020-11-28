@@ -23,6 +23,11 @@ public class Song {
   private String[] artists;
 
   /**
+   * uri that contains the song context
+   */
+  private String uri;
+
+  /**
    * Set name of the song.
    * @param songName String
    */
@@ -91,6 +96,22 @@ public class Song {
    */
   public String getSong() {
     return this.song;
+  }
+
+  /**
+   * Get uri.
+   * @return uri String
+   */
+  public String getUri() {
+    return this.uri;
+  }
+
+  /**
+   * Set uri.
+   * @param songUri String
+   */
+  public void setUri(String songUri) {
+    this.uri = songUri;
   }
 
 }
