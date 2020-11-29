@@ -1,2 +1,8 @@
-language: java
+matrix:
+  include:
+    - language: java
 
+    - language: node_js
+      node_js:
+      - 12
+      script: cd react/ && npm install && CI=false npm run build
