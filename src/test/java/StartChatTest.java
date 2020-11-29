@@ -288,6 +288,7 @@ public class StartChatTest {
   /**
   * This is a test case to evaluate the process_auth endpoint.
   */
+  /*
   @Test
   @Order(9)
   public void processAuthTest() {
@@ -317,6 +318,7 @@ public class StartChatTest {
     System.out.println("Test process authorization");
 
   }
+  */
   
   /**
   * This is a test case to evaluate the before endpoint.
