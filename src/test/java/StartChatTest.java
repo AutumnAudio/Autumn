@@ -296,26 +296,53 @@ public class StartChatTest {
     // Create HTTP request and get response
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
+    
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
+    
+    response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
 	
     assertEquals(302, response.getStatus());
 	
     System.out.println("/process-auth Response: " + response.getBody());
-	
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
+  }
+  
+  @Test
+  @Order(10)
+  public void processAuthTestNoCodeAndSessionId() {
     StartChat.stop();
     StartChat.main(null);
     
-    response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+    
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
     
     System.out.println("/process-auth Response: " + response.getBody());
     
     assertEquals(302, response.getStatus());
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
+  }
+  
+  @Test
+  @Order(11)
+  public void processAuthTestNoCode() {
+    StartChat.stop();
+    StartChat.main(null);
     
-    response = Unirest.get("http://localhost:8080/process_auth").asString();
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+    
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
     System.out.println("/process-auth Response: " + response.getBody());
     
     assertEquals(500, response.getStatus());
+    
+    response = Unirest.get("http://localhost:8080/").asString();
   
     System.out.println("Test process authorization");
     
@@ -328,7 +355,7 @@ public class StartChatTest {
   * This is a test case to evaluate the before endpoint.
   */
   @Test
-  @Order(10)
+  @Order(12)
   public void LoginRedirectionTest() {
 
     // reset sessionId to enable redirection
@@ -346,7 +373,7 @@ public class StartChatTest {
   * This is a test case to evaluate the / endpoint.
   */
   @Test
-  @Order(11)
+  @Order(13)
   public void frontPageTest() {
 
     // Create HTTP request and get response
@@ -362,7 +389,7 @@ public class StartChatTest {
   * This is a test case to evaluate initializeChatlist function.
   */
   @Test
-  @Order(12)
+  @Order(14)
   public void initializeChatListTest() {
 
     SqLite db = StartChat.getDb();
@@ -380,7 +407,7 @@ public class StartChatTest {
   }
   
   @Test
-  @Order(13)
+  @Order(15)
   public void sendMessageTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -404,14 +431,14 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(14)
+  @Order(16)
   public void sendMessageInvalidUserTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
     assertEquals("User not in any chatroom", response.getBody());
   }
   
   @Test
-  @Order(15)
+  @Order(17)
   public void webSocketTest() {
 	
     WebSocketClient client = new WebSocketClient();
@@ -440,7 +467,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(16)
+  @Order(18)
   public void shareSongNullTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -470,7 +497,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(17)
+  @Order(19)
   public void shareSongNoGenreTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -506,7 +533,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(18)
+  @Order(20)
   public void shareSongNotNullTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -558,7 +585,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(19)
+  @Order(21)
   public void addSongTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
