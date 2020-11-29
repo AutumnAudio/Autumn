@@ -46,7 +46,7 @@ public class ChatList {
    * Return total people currently in all chatrooms.
    * @return numPeopleChatting integer
    */
-  public int getTotalParticpants() {
+  public int getTotalParticipants() {
     
     int numPeopleChatting = 0;
     
@@ -70,6 +70,7 @@ public class ChatList {
           user.refreshRecentlyPlayed();
           user.refreshCurrentlyPlaying();
         }
+        // SpotifyAPI object cannot be serialize by Gson
         user.setApi(null);
       }
     }
