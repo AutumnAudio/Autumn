@@ -1,3 +1,5 @@
 language: java
 
+before_script: cd react/ && npm install
+
 after_script: ls
