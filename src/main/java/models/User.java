@@ -71,11 +71,10 @@ public class User {
   public void refreshRecentlyPlayed() {
     PlayHistory[] playHistory = null;
 	try {
-		//api = new SpotifyAPI();
-	    api.setApi(new SpotifyApi.Builder()
-	            .setAccessToken(spotifyToken)
-	            .build());
-		playHistory = api.recentlyPlayed();
+      api.setApi(new SpotifyApi.Builder()
+            .setAccessToken(spotifyToken)
+            .build());
+      playHistory = api.recentlyPlayed();
 	} catch (Exception e) {
       // TODO Auto-generated catch block
       if (e.getMessage().equals("The access token expired")) {
@@ -101,18 +100,13 @@ public class User {
       song.setUri(track.getUri());
       recentlyPlayed[i] = song;
     }
-    // SpotifyAPI cannot be serialized.
-    // Need to set to null to avoid Gson hangs.
-    //api = null;
   }
 
   /**
    * refresh currently playing.
    */
   public void refreshCurrentlyPlaying() {
-	
     CurrentlyPlaying currentlyPlaying = null;
-    //api = new SpotifyAPI();
     try {
       api.setApi(new SpotifyApi.Builder()
 	            .setAccessToken(spotifyToken)
@@ -146,18 +140,15 @@ public class User {
             + e.getMessage());
       }
     }
-    //api = null;
   }
 
-  public void addToQueue(String uri) {
-    SpotifyApi spotifyApi = new SpotifyApi.Builder()
-            .setAccessToken(spotifyToken)
-            .build();
+  public String addToQueue(String uri) {
+    String ret = "";
     try {
-    	spotifyApi
-        .addItemToUsersPlaybackQueue(uri)
-        .build().execute();
-      //System.out.println("Null: " + uri);
+      api.setApi(new SpotifyApi.Builder()
+         .setAccessToken(spotifyToken)
+            .build());
+      ret = api.addSong(uri);
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
         spotifyToken =
@@ -168,6 +159,7 @@ public class User {
             + e.getMessage());
       }
     }
+    return ret;
   }
 
   /**

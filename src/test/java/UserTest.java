@@ -109,6 +109,14 @@ public class UserTest {
   }
 
   @Test
+  public void testAddToQueue() throws ParseException, SpotifyWebApiException, IOException {
+    SpotifyAPI mockAPI = mock(SpotifyAPI.class);
+    when(mockAPI.addSong("song uri")).thenReturn("song added");
+    User user = new User(mockAPI);
+	assertEquals("song added", user.addToQueue("song uri"));
+  }
+
+  @Test
   public void testUserConstructor() {
     String token = Login.refreshSpotifyToken(refreshToken);
     User user = new User(token, db);

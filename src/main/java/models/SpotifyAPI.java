@@ -41,4 +41,12 @@ public class SpotifyAPI {
       .execute();
     return currentTrack;
   }
+
+  public String addSong(String uri) throws ParseException, SpotifyWebApiException, IOException {
+    String ret = api
+          .addItemToUsersPlaybackQueue(uri)
+          .build()
+          .execute();
+    return ret;
+  }
 }
