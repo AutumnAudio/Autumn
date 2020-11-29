@@ -124,8 +124,9 @@ public final class StartChat {
   static ScheduledFuture<?> RefreshDataInterval;
   private static void refreshSongDataRepeatly() {
     
-    if(RefreshDataInterval != null && !RefreshDataInterval.isCancelled())
+    if(RefreshDataInterval != null && !RefreshDataInterval.isCancelled()) {
       return;
+    }
     
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     RefreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
@@ -138,7 +139,7 @@ public final class StartChat {
         chatListData.refreshChatList();
         for (ChatRoom chatroom : chatListData.getChatrooms().values()) {
           String genre = chatroom.getGenre().getGenre();
-            sendChatRoomToAllParticipants(genre,
+          sendChatRoomToAllParticipants(genre,
                   new Gson().toJson(chatroom));
         }
         db2.close();

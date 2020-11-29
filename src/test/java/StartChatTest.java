@@ -579,7 +579,6 @@ public class StartChatTest {
     
     StartChat.setDb(origDb);
   }
-  
 
   /**
   * This will run every time after a test has finished.

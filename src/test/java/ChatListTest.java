@@ -50,7 +50,7 @@ public class ChatListTest {
     chatroom.setParticipant(participants);
     User user = new User();
 	user.setUsername("test");
-	user.setSpotifyToken("");
+	user.setSpotifyToken("null");
     chatroom.addParticipant(user);
     chatlist.refreshChatList();
 	assertEquals(10, user.getRecentlyPlayed().length);

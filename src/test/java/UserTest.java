@@ -1,21 +1,36 @@
 import models.Login;
 import models.Song;
+import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.IPlaylistItem;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.PagingCursorbased;
+import com.wrapper.spotify.model_objects.specification.PlayHistory;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.TrackSimplified;
+import com.wrapper.spotify.requests.data.player.GetCurrentUsersRecentlyPlayedTracksRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.*;
 
+import java.io.IOException;
+
+import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mock;
 
 
 @TestMethodOrder(OrderAnnotation.class) 
@@ -29,6 +44,9 @@ public class UserTest {
   
   SqLite db = new SqLite();
   
+  @Mock
+  PagingCursorbased<PlayHistory> pcb;
+  
   @BeforeEach
   public void beforeEach() {
     db.start();
@@ -36,30 +54,58 @@ public class UserTest {
   }
 
   @Test
-  public void testResfreshRecentlyPlayed() {
-	User user = new User(api);
-	user.setUsername("test");
-	user.setSpotifyToken(token);
-	user.setSpotifyRefreshToken(refreshToken);
-	user.refreshRecentlyPlayed();
-	assertEquals(10, user.getRecentlyPlayed().length);
+  public void testResfreshRecentlyPlayed() throws ParseException, SpotifyWebApiException, IOException {
+    SpotifyAPI mockAPI = mock(SpotifyAPI.class);
+	PlayHistory[] history = new PlayHistory[10];
+	for (int i = 0; i < history.length; i++) {
+      TrackSimplified mockTrack = mock(TrackSimplified.class);
+      when(mockTrack.getName()).thenReturn("song" + i);
+      ArtistSimplified[] artistList = new ArtistSimplified[1];
+      ArtistSimplified artist = mock(ArtistSimplified.class);
+      when(artist.getName()).thenReturn("test artist");
+      artistList[0] = artist;
+      when(mockTrack.getArtists()).thenReturn(artistList);
+      when(mockTrack.getUri()).thenReturn("song uri");
+      
+      PlayHistory mockHistory = mock(PlayHistory.class);
+      when(mockHistory.getTrack()).thenReturn(mockTrack);
+      history[i] = mockHistory;
+    }
+    when(mockAPI.recentlyPlayed()).thenReturn(history);
+    User user = new User(mockAPI);
+    user.refreshRecentlyPlayed();
+    assertEquals(10, user.getRecentlyPlayed().length);
 	for (Song song : user.getRecentlyPlayed()) {
 	  assertNotNull(song.getName());
 	}
   }
 
   @Test
-  public void testResfreshCurrentlyPlaying() {
-	User user = new User(api);
-	user.setUsername("test");
-	user.setSpotifyToken(token);
-	user.setSpotifyRefreshToken(refreshToken);
+  public void testResfreshCurrentlyPlayingNull() throws ParseException, SpotifyWebApiException, IOException {
+    SpotifyAPI mockAPI = mock(SpotifyAPI.class);
+    when(mockAPI.currentlyPlaying()).thenReturn(null);
+    User user = new User(mockAPI);
 	user.refreshCurrentlyPlaying();
-	Song song = new Song();
-	user.setCurrentTrack(song);
-	assertEquals(song, user.getCurrentTrack());
+	assertNull(user.getCurrentTrack());
+  }
+
+  @Test
+  public void testResfreshCurrentlyPlayingNotNull() throws ParseException, SpotifyWebApiException, IOException {
+    SpotifyAPI mockAPI = mock(SpotifyAPI.class);
+    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);
+    when(mockAPI.currentlyPlaying()).thenReturn(currentlyPlaying);
+    Track mockTrack = mock(Track.class);
+    when(currentlyPlaying.getItem()).thenReturn(mockTrack);
+    when(mockTrack.getName()).thenReturn("song name");
+    ArtistSimplified[] artistList = new ArtistSimplified[1];
+    ArtistSimplified artist = mock(ArtistSimplified.class);
+    when(artist.getName()).thenReturn("test artist");
+    artistList[0] = artist;
+    when(mockTrack.getArtists()).thenReturn(artistList);
+    when(mockTrack.getUri()).thenReturn("song uri");
+    User user = new User(mockAPI);
 	user.refreshCurrentlyPlaying();
-	assertNotEquals(song, user.getCurrentTrack());
+	assertEquals("song name", user.getCurrentTrack().getName());
   }
 
   @Test
