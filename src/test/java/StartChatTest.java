@@ -241,11 +241,11 @@ public class StartChatTest {
   */
   @Test
   @Order(7)
-  public void leaveRoomTest() {
+  public void lasttoleaveRoomTest() {
 
     // Create HTTP request and get response
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").asString();
-    response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean&skip_auth_testing=true").asString();  
+    response = Unirest.get("http://localhost:8080/chatroom/country").asString();  
     assertEquals(200, response.getStatus());
 
     JSONObject jsonObject = new JSONObject(response.getBody());
@@ -274,6 +274,50 @@ public class StartChatTest {
   */
   @Test
   @Order(8)
+  public void notLasttoleaveRoomTest() {
+
+    // Create HTTP request and get response
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/country/").asString();  
+    assertEquals(200, response.getStatus());
+    
+    JSONObject jsonObject = new JSONObject(response.getBody());
+    Gson gson = new Gson();
+    ChatRoom countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is present after joinroom
+    assertEquals(1, countryChatroom.getParticipant().size());
+    
+    response = Unirest.post("http://localhost:8080/joinroom/pop").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/pop").asString();  
+    assertEquals(200, response.getStatus());
+
+    jsonObject = new JSONObject(response.getBody());
+    gson = new Gson();
+    ChatRoom popChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is present after joinroom
+    assertEquals(1, popChatroom.getParticipant().size());
+	
+    response = Unirest.delete("http://localhost:8080/leaveroom/country").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/country").asString(); 
+    assertEquals(200, response.getStatus());
+    System.out.println("/leaveroom/[user] Response: " + response.getBody());
+
+    jsonObject = new JSONObject(response.getBody());
+    countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is not present after leaveroom
+    assertEquals(0, countryChatroom.getParticipant().size());
+  
+    System.out.println("Test leave chatroom");
+  }
+
+  /**
+  * This is a test case to evaluate the leaveroom endpoint.
+  */
+  @Test
+  @Order(9)
   public void invalidLeaveRoomTest() {
 
     // Create HTTP request and get response
@@ -290,7 +334,7 @@ public class StartChatTest {
   */
   
   @Test
-  @Order(9)
+  @Order(10)
   public void processAuthTest() {
 
     // Create HTTP request and get response
@@ -310,7 +354,7 @@ public class StartChatTest {
   }
   
   @Test
-  @Order(10)
+  @Order(11)
   public void processAuthTestNoCodeAndSessionId() {
     StartChat.stop();
     StartChat.main(null);
@@ -328,7 +372,7 @@ public class StartChatTest {
   }
   
   @Test
-  @Order(11)
+  @Order(12)
   public void processAuthTestNoCode() {
     StartChat.stop();
     StartChat.main(null);
@@ -355,7 +399,7 @@ public class StartChatTest {
   * This is a test case to evaluate the before endpoint.
   */
   @Test
-  @Order(12)
+  @Order(13)
   public void LoginRedirectionTest() {
 
     // reset sessionId to enable redirection
@@ -373,7 +417,7 @@ public class StartChatTest {
   * This is a test case to evaluate the / endpoint.
   */
   @Test
-  @Order(13)
+  @Order(14)
   public void frontPageTest() {
 
     // Create HTTP request and get response
@@ -389,7 +433,7 @@ public class StartChatTest {
   * This is a test case to evaluate initializeChatlist function.
   */
   @Test
-  @Order(14)
+  @Order(15)
   public void initializeChatListTest() {
 
     SqLite db = StartChat.getDb();
@@ -407,7 +451,7 @@ public class StartChatTest {
   }
   
   @Test
-  @Order(15)
+  @Order(16)
   public void sendMessageTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -431,14 +475,14 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(16)
+  @Order(17)
   public void sendMessageInvalidUserTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
     assertEquals("User not in any chatroom", response.getBody());
   }
   
   @Test
-  @Order(17)
+  @Order(18)
   public void webSocketTest() {
 	
     WebSocketClient client = new WebSocketClient();
@@ -467,7 +511,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(18)
+  @Order(19)
   public void shareSongNullTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -497,7 +541,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(19)
+  @Order(20)
   public void shareSongNoGenreTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -533,7 +577,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(20)
+  @Order(21)
   public void shareSongNotNullTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -585,7 +629,7 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(21)
+  @Order(22)
   public void addSongTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
