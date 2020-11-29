@@ -252,7 +252,6 @@ public final class StartChat {
       }
     });
 
-
     app.post("/send", ctx -> {
       String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
