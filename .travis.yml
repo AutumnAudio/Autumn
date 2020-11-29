@@ -1,5 +1,5 @@
 language: java
 
-before_script: cd react/ && npm install
+before_script: cd react/ && npm install && npm start || exit 0
 
 after_script: ls
