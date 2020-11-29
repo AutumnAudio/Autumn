@@ -1,9 +1,7 @@
 matrix:
   include:
-    - language: node_js
+    - language: java
       node_js:
       - 12
-      before_script: cd react/ && npm install && npm start
-      
-    - language: java
+      before_script: cd react/ && npm install && npm start && cd ../
 
