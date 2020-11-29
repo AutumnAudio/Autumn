@@ -1,5 +1,10 @@
-language: java
+matrix:
+  include:
+    - language: java
+      after_script: ls
 
-before_script: cd react/ && npm install && npm start || exit 0
+    - language: node_js
+      node_js:
+      - 12
+      before_script: cd react/ && npm install && npm start || exit 0
 
-after_script: ls
