@@ -520,7 +520,7 @@ public class StartChatTest {
     
     User mockUser2 = mock(User.class);
     when(mockUser2.getUsername()).thenReturn("testing2");
-    doNothing().when(mockUser2).addToQueue(song.getUri());
+    when(mockUser2.addToQueue(song.getUri())).thenReturn("song added");
     
     SqLite origDb = StartChat.getDb();
     String sessionId = origDb.getLatestSession();
@@ -561,7 +561,7 @@ public class StartChatTest {
     SqLite mockDb = mock(SqLite.class);
     User mockUser = mock(User.class);
     when(mockUser.getUsername()).thenReturn("testing1");
-    doNothing().when(mockUser).addToQueue("hello");
+    when(mockUser.addToQueue("hello")).thenReturn("song added");
     
     SqLite origDb = StartChat.getDb();
     String sessionId = origDb.getLatestSession();
@@ -579,7 +579,6 @@ public class StartChatTest {
     
     StartChat.setDb(origDb);
   }
-  
 
   /**
   * This will run every time after a test has finished.

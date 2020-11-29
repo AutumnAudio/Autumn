@@ -66,10 +66,11 @@ public class ChatList {
       for (Map.Entry<String, User> entry : participants.entrySet()) {
         User user = entry.getValue();
         String token = user.getSpotifyToken();
-        if (!token.equals("")) {
+        if (!token.equals("null")) {
           user.refreshRecentlyPlayed();
           user.refreshCurrentlyPlaying();
         }
+        user.setApi(null);
       }
     }
   }
