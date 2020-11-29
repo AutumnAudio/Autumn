@@ -294,9 +294,11 @@ public class StartChatTest {
   public void processAuthTest() {
 
     // Create HTTP request and get response
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
 	
-    assertEquals(200, response.getStatus());
+    assertEquals(302, response.getStatus());
 	
     System.out.println("/process-auth Response: " + response.getBody());
 	
@@ -307,7 +309,7 @@ public class StartChatTest {
     
     System.out.println("/process-auth Response: " + response.getBody());
     
-    assertEquals(200, response.getStatus());
+    assertEquals(302, response.getStatus());
     
     response = Unirest.get("http://localhost:8080/process_auth").asString();
     
@@ -316,9 +318,11 @@ public class StartChatTest {
     assertEquals(500, response.getStatus());
   
     System.out.println("Test process authorization");
-
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
   }
-  
+
   
   /**
   * This is a test case to evaluate the before endpoint.
