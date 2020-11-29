@@ -1,6 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,13 +9,9 @@ import org.junit.jupiter.api.Test;
 import models.ChatList;
 import models.ChatRoom;
 import models.Genre;
-import models.Login;
-import models.Song;
 import models.User;
 
 public class ChatListTest {
-
-  String refreshToken = SpotifyAccount.getRefreshToken();
 
   @Test
   public void refreshChatListTestWithToken() {
@@ -27,16 +22,15 @@ public class ChatListTest {
     chatlist.setChatrooms(map);
     Map<String, User> participants = new HashMap<>();
     chatroom.setParticipant(participants);
-    User user = new User();
-	user.setUsername("test");
-	user.setSpotifyToken(Login.refreshSpotifyToken(refreshToken));
-	user.setSpotifyRefreshToken(refreshToken);
-    chatroom.addParticipant(user);
+    User mockUser = mock(User.class);
+    when(mockUser.getSpotifyToken()).thenReturn("token");
+    doNothing().when(mockUser).refreshRecentlyPlayed();
+    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    doNothing().when(mockUser).setApi(null);
+    chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();
-	assertEquals(10, user.getRecentlyPlayed().length);
-	for (Song song : user.getRecentlyPlayed()) {
-	  assertNotNull(song.getName());
-	}
+    assertEquals(1, chatlist.size());
+    assertEquals(1, chatroom.getNumParticipants());
   }
 
   @Test
@@ -48,15 +42,12 @@ public class ChatListTest {
     chatlist.setChatrooms(map);
     Map<String, User> participants = new HashMap<>();
     chatroom.setParticipant(participants);
-    User user = new User();
-	user.setUsername("test");
-	user.setSpotifyToken("null");
-    chatroom.addParticipant(user);
+    User mockUser = mock(User.class);
+    when(mockUser.getSpotifyToken()).thenReturn("null");
+    chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();
-	assertEquals(10, user.getRecentlyPlayed().length);
-	for (Song song : user.getRecentlyPlayed()) {
-	  assertNull(song);
-	}
+    assertEquals(1, chatlist.size());
+    assertEquals(1, chatroom.getNumParticipants());
   }
 
   @Test
@@ -78,5 +69,31 @@ public class ChatListTest {
     map.put("blues", chatroom);
     chatlist.setChatrooms(map);
 	assertEquals(chatroom, chatlist.getChatroomByGenre(Genre.BLUES));
+  }
+
+  @Test
+  public void getTotalParticipantsTest() {
+    ChatList chatlist = new ChatList();
+    ChatRoom chatroom1 = new ChatRoom();
+    Map<String, ChatRoom> map = new HashMap<>();
+    chatlist.setChatrooms(map);
+    map.put("testRoom1", chatroom1);
+    Map<String, User> participants1 = new HashMap<>();
+    chatroom1.setParticipant(participants1);
+    User user1 = new User();
+    user1.setUsername("user1");
+    chatroom1.addParticipant(user1);
+    assertEquals(1, chatlist.getTotalParticipants());
+    ChatRoom chatroom2 = new ChatRoom();
+    map.put("testRoom2", chatroom2);
+    Map<String, User> participants2 = new HashMap<>();
+    chatroom2.setParticipant(participants2);
+    User user2 = new User();
+    user2.setUsername("user2");
+    User user3 = new User();
+    user3.setUsername("user3");
+    chatroom2.addParticipant(user2);
+    chatroom2.addParticipant(user3);
+    assertEquals(3, chatlist.getTotalParticipants());
   }
 }

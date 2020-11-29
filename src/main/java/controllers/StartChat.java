@@ -341,7 +341,7 @@ public final class StartChat {
               new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
         
-        if(chatlist.getTotalParticpants() == 0) {
+        if(chatlist.getTotalParticipants() == 0) {
           RefreshDataInterval.cancel(false);
         }
       } else {
@@ -378,8 +378,6 @@ public final class StartChat {
     Queue<Session> sessions = UiWebSocket.getSessions();
     for (Session sessionPlayer : sessions) {
       try {
-        System.out.println(genre);
-        System.out.println(msg);
         sessionPlayer.getRemote().sendString(msg);
       } catch (IOException e) {
         // Add logger here
