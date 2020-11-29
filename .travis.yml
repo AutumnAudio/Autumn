@@ -1,3 +1,3 @@
 language: java
 
-after_success: cat TRAVIS_TEST_RESULT
+after_success: cat TRAVIS_TEST_RESULT > output.txt
