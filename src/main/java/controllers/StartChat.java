@@ -123,11 +123,11 @@ public final class StartChat {
    */
   static ScheduledFuture<?> RefreshDataInterval;
   private static void refreshSongDataRepeatly() {
-    
+
     if(RefreshDataInterval != null && !RefreshDataInterval.isCancelled()) {
       return;
     }
-    
+
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     RefreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
       

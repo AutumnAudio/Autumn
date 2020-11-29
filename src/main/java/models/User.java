@@ -126,7 +126,6 @@ public class User {
         song.setName(track.getName());
         song.setArtists(songArtists);
         song.setUri(track.getUri());
-        System.out.println(track.getUri());
         currentTrack = song;
       } else {
         currentTrack = null;
