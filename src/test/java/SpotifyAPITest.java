@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.PlayHistory;
 
 import models.Login;
