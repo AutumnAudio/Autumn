@@ -7,7 +7,7 @@ matrix:
     - language: node_js
       node_js:
       - 12
-      script: cd react/ && npm install && CI=false npm run build > travisCI/NodeReport.txt
+      script: cd react/ && npm install && CI=false npm run build > ../travisCI/NodeReport.txt
 
 deploy:
   provider: pages
