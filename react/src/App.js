@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import Chatroom from './Component/Chatroom/Chatroom'
 import Lobby from './Component/Lobby/Lobby'
-import Home from './Home'
 import {
   BrowserRouter as Router,
   Switch,
@@ -12,22 +11,17 @@ import {
 function App() {
   return (
     <Router>
-      
+      <Switch>
+        <Route path="/">
+          <Lobby />
+        </Route>
+      </Switch>
       <Switch>
         <Route path="/chatroom">
           <Chatroom />
         </Route>
       </Switch>
-      <Switch>
-        <Route path="/lobby">
-          <Lobby />
-        </Route>
-      </Switch>
-      <Switch>
-        <Route path="/">
-          <Home />
-        </Route>
-      </Switch>
+      
     </Router>
   );
 }
