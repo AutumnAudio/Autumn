@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: java
-      before_script: echo "dsf" > output.txt
+      script: mvn test -B
 
     - language: node_js
       node_js:
