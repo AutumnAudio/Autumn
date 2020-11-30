@@ -15,10 +15,22 @@ matrix:
       - CI=false npm run build 2>&1 | tee ../nodeReport.txt
 
 deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
-  keep_history: true
-  #local_dir: ./travisCI/
-  on:
-    branch: feature/share-song
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
+    keep_history: true
+    file:
+      - javaReport.txt
+    on:
+      branch: feature/share-song
+      tags: true
+
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
+    keep_history: true
+    file:
+      - nodeReport.txt
+    on:
+      branch: feature/share-song
+      tags: true
