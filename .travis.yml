@@ -1,13 +1,13 @@
 matrix:
   include:
     - language: java
-      script: mvn test -B > travisCI/travisReport.txt
+      script: mvn test -B > travisCI/JavaReport.txt
 
 
     - language: node_js
       node_js:
       - 12
-      script: cd react/ && npm install && CI=false npm run build
+      script: cd react/ && npm install && CI=false npm run build > NodeReport
 
 deploy:
   provider: pages
@@ -15,5 +15,6 @@ deploy:
   github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
   keep_history: true
   local_dir: ./travisCI/
+  target_branch: feature/share-song
   on:
     branch: feature/share-song
