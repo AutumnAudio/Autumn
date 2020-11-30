@@ -15,6 +15,5 @@ deploy:
   github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
   keep_history: true
   local_dir: ./travisCI/
-  target_branch: feature/share-song
   on:
     branch: feature/share-song
