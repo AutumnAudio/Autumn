@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: java
-      after_script: echo "dsf" > output.txt
+      before_script: echo "dsf" > output.txt
 
     - language: node_js
       node_js:
