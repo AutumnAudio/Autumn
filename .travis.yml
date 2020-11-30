@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: java
-      script: cat mvn test -B > output.txt
+      script: mvn test -B > output.txt
 
 
     - language: node_js
