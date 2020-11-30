@@ -1,34 +1,24 @@
 matrix:
   include:
-    - language: node_js
-      script:
+    #- language: node_js
+    #  script:
       #SomeCommand 2>&1 | tee SomeFile.txt
-      - mvn test -B 2>&1 | tee javaReport.txt
+    #  - mvn test -B 2>&1 | tee javaReport.txt
 
 
     - language: node_js
       node_js:
       - 12
       script:
+      - mvn test -B 2>&1 | tee javaReport.txt
       - cd react/
       - npm install
       - CI=false npm run build 2>&1 | tee ../nodeReport.txt
 
 deploy:
-  - provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
-    keep_history: true
-    file:
-      - javaReport.txt
-    on:
-      branch: feature/share-song
-
-  - provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
-    keep_history: true
-    file:
-      - nodeReport.txt
-    on:
-      branch: feature/share-song
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
+  keep_history: true
+  on:
+    branch: feature/share-song
