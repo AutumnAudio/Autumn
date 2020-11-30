@@ -1,6 +1,6 @@
 matrix:
   include:
-    - language: java
+    - language: node_js
       script:
       #SomeCommand 2>&1 | tee SomeFile.txt
       - mvn test -B 2>&1 | tee javaReport.txt
