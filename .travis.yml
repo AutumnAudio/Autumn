@@ -23,7 +23,6 @@ deploy:
       - javaReport.txt
     on:
       branch: feature/share-song
-      tags: true
 
   - provider: pages
     skip_cleanup: true
@@ -33,4 +32,3 @@ deploy:
       - nodeReport.txt
     on:
       branch: feature/share-song
-      tags: true
