@@ -2,19 +2,17 @@ matrix:
   include:
     - language: java
       script:
-      - mkdir java/
       #SomeCommand 2>&1 | tee SomeFile.txt
-      - mvn test -B 2>&1 | tee java/javaReport.txt
+      - mvn test -B 2>&1 | tee javaReport.txt
 
 
     - language: node_js
       node_js:
       - 12
       script:
-      - mkdir node/
       - cd react/
       - npm install
-      - CI=false npm run build 2>&1 | tee ../node/nodeReport.txt
+      - CI=false npm run build 2>&1 | tee ../nodeReport.txt
 
 deploy:
   provider: pages
