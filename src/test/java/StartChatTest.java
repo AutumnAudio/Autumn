@@ -1,9 +1,13 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import controllers.StartChat;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import kong.unirest.HttpResponse;
@@ -11,8 +15,12 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import models.ChatList;
 import models.ChatRoom;
+import models.Genre;
 import models.Message;
+import models.Song;
 import models.SqLite;
+import models.User;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.AfterAll;
@@ -233,11 +241,11 @@ public class StartChatTest {
   */
   @Test
   @Order(7)
-  public void leaveRoomTest() {
+  public void lasttoleaveRoomTest() {
 
     // Create HTTP request and get response
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").asString();
-    response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean&skip_auth_testing=true").asString();  
+    response = Unirest.get("http://localhost:8080/chatroom/country").asString();  
     assertEquals(200, response.getStatus());
 
     JSONObject jsonObject = new JSONObject(response.getBody());
@@ -266,6 +274,50 @@ public class StartChatTest {
   */
   @Test
   @Order(8)
+  public void notLasttoleaveRoomTest() {
+
+    // Create HTTP request and get response
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/country").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/country/").asString();  
+    assertEquals(200, response.getStatus());
+    
+    JSONObject jsonObject = new JSONObject(response.getBody());
+    Gson gson = new Gson();
+    ChatRoom countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is present after joinroom
+    assertEquals(1, countryChatroom.getParticipant().size());
+    
+    response = Unirest.post("http://localhost:8080/joinroom/pop").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/pop").asString();  
+    assertEquals(200, response.getStatus());
+
+    jsonObject = new JSONObject(response.getBody());
+    gson = new Gson();
+    ChatRoom popChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is present after joinroom
+    assertEquals(1, popChatroom.getParticipant().size());
+	
+    response = Unirest.delete("http://localhost:8080/leaveroom/country").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/country").asString(); 
+    assertEquals(200, response.getStatus());
+    System.out.println("/leaveroom/[user] Response: " + response.getBody());
+
+    jsonObject = new JSONObject(response.getBody());
+    countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+    
+    // Check if user is not present after leaveroom
+    assertEquals(0, countryChatroom.getParticipant().size());
+  
+    System.out.println("Test leave chatroom");
+  }
+
+  /**
+  * This is a test case to evaluate the leaveroom endpoint.
+  */
+  @Test
+  @Order(9)
   public void invalidLeaveRoomTest() {
 
     // Create HTTP request and get response
@@ -280,42 +332,74 @@ public class StartChatTest {
   /**
   * This is a test case to evaluate the process_auth endpoint.
   */
+  
   @Test
-  @Order(9)
+  @Order(10)
   public void processAuthTest() {
 
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+    
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
+    
+    response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
 	
-    assertEquals(200, response.getStatus());
+    assertEquals(302, response.getStatus());
 	
     System.out.println("/process-auth Response: " + response.getBody());
-	
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
+  }
+  
+  @Test
+  @Order(11)
+  public void processAuthTestNoCodeAndSessionId() {
     StartChat.stop();
     StartChat.main(null);
     
-    response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+    
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
     
     System.out.println("/process-auth Response: " + response.getBody());
     
-    assertEquals(200, response.getStatus());
+    assertEquals(302, response.getStatus());
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
+  }
+  
+  @Test
+  @Order(12)
+  public void processAuthTestNoCode() {
+    StartChat.stop();
+    StartChat.main(null);
     
-    response = Unirest.get("http://localhost:8080/process_auth").asString();
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+    
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
     System.out.println("/process-auth Response: " + response.getBody());
     
-    assertEquals(200, response.getStatus());
+    assertEquals(500, response.getStatus());
+    
+    response = Unirest.get("http://localhost:8080/").asString();
   
     System.out.println("Test process authorization");
     
-    System.out.println("/process-auth Response: " + response.getBody());
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
   }
+
   
   /**
   * This is a test case to evaluate the before endpoint.
   */
   @Test
-  @Order(10)
+  @Order(13)
   public void LoginRedirectionTest() {
 
     // reset sessionId to enable redirection
@@ -333,7 +417,7 @@ public class StartChatTest {
   * This is a test case to evaluate the / endpoint.
   */
   @Test
-  @Order(11)
+  @Order(14)
   public void frontPageTest() {
 
     // Create HTTP request and get response
@@ -349,7 +433,7 @@ public class StartChatTest {
   * This is a test case to evaluate initializeChatlist function.
   */
   @Test
-  @Order(12)
+  @Order(15)
   public void initializeChatListTest() {
 
     SqLite db = StartChat.getDb();
@@ -367,7 +451,7 @@ public class StartChatTest {
   }
   
   @Test
-  @Order(13)
+  @Order(16)
   public void sendMessageTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
@@ -391,14 +475,14 @@ public class StartChatTest {
   }
 
   @Test
-  @Order(14)
+  @Order(17)
   public void sendMessageInvalidUserTest() {
     HttpResponse<String> response = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
     assertEquals("User not in any chatroom", response.getBody());
   }
   
   @Test
-  @Order(15)
+  @Order(18)
   public void webSocketTest() {
 	
     WebSocketClient client = new WebSocketClient();
@@ -425,7 +509,154 @@ public class StartChatTest {
       }
     }
   }
-  
+
+  @Test
+  @Order(19)
+  public void shareSongNullTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    assertEquals(200, response.getStatus());
+    
+    SqLite mockDb = mock(SqLite.class);
+    User mockUser = mock(User.class);
+    when(mockUser.getUsername()).thenReturn("testing1");
+    when(mockUser.getCurrentTrack()).thenReturn(null);
+    
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    System.out.println(mockDb.getUserBySessionId(sessionId));
+    
+    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
+    when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
+    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    
+    StartChat.setDb(mockDb);
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
+    System.out.println("/share Response: " + response1.getBody());
+
+    assertEquals("no song playing", response1.getBody());
+    
+    StartChat.setDb(origDb);
+  }
+
+  @Test
+  @Order(20)
+  public void shareSongNoGenreTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    assertEquals(200, response.getStatus());
+    
+    SqLite mockDb = mock(SqLite.class);
+    User mockUser = mock(User.class);
+    Song song = new Song();
+    song.setUsername("testing1");
+    song.setName("my song");
+    String[] artists = new String[1];
+    artists[0] = "my artist";
+    song.setArtists(artists);
+    song.setUri("my uri");
+    when(mockUser.getUsername()).thenReturn("testing1");
+    when(mockUser.getCurrentTrack()).thenReturn(song);
+    
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    
+    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
+    when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
+    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    
+    StartChat.setDb(mockDb);
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
+    System.out.println("/share Response: " + response1.getBody());
+
+    assertEquals("User not in any chatroom", response1.getBody());
+    
+    StartChat.setDb(origDb);
+  }
+
+  @Test
+  @Order(21)
+  public void shareSongNotNullTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    assertEquals(200, response.getStatus());
+    
+    SqLite mockDb = mock(SqLite.class);
+    User mockUser1 = mock(User.class);
+    Song song = new Song();
+    song.setUsername("testing1");
+    song.setName("my song");
+    String[] artists = new String[1];
+    artists[0] = "my artist";
+    song.setArtists(artists);
+    song.setUri("my uri");
+    when(mockUser1.getUsername()).thenReturn("testing1");
+    when(mockUser1.getCurrentTrack()).thenReturn(song);
+    
+    User mockUser2 = mock(User.class);
+    when(mockUser2.getUsername()).thenReturn("testing2");
+    when(mockUser2.addToQueue(song.getUri())).thenReturn("song added");
+    
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    
+    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);
+    when(mockDb.getUserByName("testing1")).thenReturn(mockUser1);
+    when(mockDb.getGenreUser("testing1")).thenReturn("blues");
+    doNothing().when(mockUser1).refreshCurrentlyPlaying();
+    
+    ChatList mockChatlist = mock(ChatList.class);
+    ChatRoom chatroom = new ChatRoom();
+    Map<String, User> participantList = new HashMap<>();
+    chatroom.setParticipant(participantList);
+    chatroom.addParticipant(mockUser1);
+    chatroom.addParticipant(mockUser2);
+    List<Song> songList = new ArrayList<>();
+    chatroom.setPlaylist(songList);
+    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);
+    
+    StartChat.setDb(mockDb);
+    StartChat.setChatlist(mockChatlist);
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
+    System.out.println("/share Response: " + response1.getBody());
+
+    assertEquals("song shared", response1.getBody());
+    
+    StartChat.setDb(origDb);
+  }
+
+  @Test
+  @Order(22)
+  public void addSongTest() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    assertEquals(200, response.getStatus());
+    
+    SqLite mockDb = mock(SqLite.class);
+    User mockUser = mock(User.class);
+    when(mockUser.getUsername()).thenReturn("testing1");
+    when(mockUser.addToQueue("hello")).thenReturn("song added");
+    
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    
+    
+    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
+    when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
+    
+    StartChat.setDb(mockDb);
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/add").body("uri=hello").asString();
+    System.out.println("/add Response: " + response1.getBody());
+
+    assertEquals("song added to your queue", response1.getBody());
+    
+    StartChat.setDb(origDb);
+  }
+
   /**
   * This will run every time after a test has finished.
   */

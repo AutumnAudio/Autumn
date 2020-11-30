@@ -3,11 +3,14 @@ package controllers;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import java.io.IOException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import models.ChatList;
@@ -118,18 +121,25 @@ public final class StartChat {
   /**
    * Start a thread that read DB periodically.
    */
+  static ScheduledFuture<?> RefreshDataInterval;
   private static void refreshSongDataRepeatly() {
-    ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-    exec.scheduleAtFixedRate(new Runnable() {
-      public void run() {
 
+    if(RefreshDataInterval != null && !RefreshDataInterval.isCancelled()) {
+      return;
+    }
+
+    ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+    RefreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
+      
+      public void run() {
+        System.out.println("scheduled run");
         SqLite db2 = new SqLite();
         db2.connect();
         ChatList chatListData = db2.update();
         chatListData.refreshChatList();
         for (ChatRoom chatroom : chatListData.getChatrooms().values()) {
           String genre = chatroom.getGenre().getGenre();
-            sendChatRoomToAllParticipants(genre,
+          sendChatRoomToAllParticipants(genre,
                   new Gson().toJson(chatroom));
         }
         db2.close();
@@ -148,7 +158,6 @@ public final class StartChat {
     if (chatlist.size() == 0) {
       initializeChatlist();
     }
-    refreshSongDataRepeatly();
 
     app = Javalin.create(config -> {
       config.addStaticFiles("/public");
@@ -247,6 +256,8 @@ public final class StartChat {
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatroom));
         ctx.result("success");
+        
+        refreshSongDataRepeatly();
       } else {
         ctx.result("Invalid Room");
       }
@@ -262,7 +273,6 @@ public final class StartChat {
         ctx.result("Invalid Room");
       }
     });
-
 
     app.post("/send", ctx -> {
       String username = db.getUserBySessionId(
@@ -284,8 +294,56 @@ public final class StartChat {
       }
     });
 
+    app.post("/add", ctx -> {
+      String uri = ctx.formParam("uri");
+      String username = db.getUserBySessionId(
+              (String) ctx.sessionAttribute("sessionId")).getUsername();
+      User user = db.getUserByName(username);
+      user.addToQueue(uri);
+      ctx.result("song added to your queue");
+    });
+    
     app.post("/share", ctx -> {
-      // TODO implement endpoint for iteration 2
+      String username = db.getUserBySessionId(
+                (String) ctx.sessionAttribute("sessionId")).getUsername();
+      User sharer = db.getUserByName(username);
+      sharer.refreshCurrentlyPlaying();
+      if (sharer.getCurrentTrack() == null) {
+        ctx.result("no song playing");
+        return;
+      }
+      String genreStr = db.getGenreUser(username);
+      if (genreStr == null) {
+        ctx.result("User not in any chatroom");
+        return;
+      }
+      Song song = new Song();
+      song.setUsername(username);
+      song.setName(sharer.getCurrentTrack().getName());
+      song.setArtists(sharer.getCurrentTrack().getArtists());
+      song.setUri(sharer.getCurrentTrack().getUri());
+      
+      Genre genre = Genre.valueOf(genreStr.toUpperCase());
+      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+      // share song with participants
+      for (User sharee : chatroom.getParticipant().values()) {
+        if (!sharer.getUsername().equals(sharee.getUsername())) {
+          sharee.addToQueue(song.getUri());
+        }
+      }
+      // add song to group playlist
+      chatroom.addSong(song);
+      db.insertSong(username, Time.valueOf(LocalTime.now()),
+              genre, new Gson().toJson(song));
+      db.commit();
+      // send message to chat
+      Message message = new Message();
+      message.setUsername(username);
+      message.setMessage("I just shared " + song.getName()
+              + " by " + song.getArtists()[0]);
+      sendChatMsgToAllParticipants(genre.getGenre(),
+              new Gson().toJson(message));
+      ctx.result("song shared");
     });
 
     app.delete("/leaveroom/:genre", ctx -> {
@@ -303,6 +361,10 @@ public final class StartChat {
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));
+        
+        if(chatlist.getTotalParticipants() == 0) {
+          RefreshDataInterval.cancel(false);
+        }
       } else {
         ctx.result("You are not in the room");
       }
@@ -337,8 +399,6 @@ public final class StartChat {
     Queue<Session> sessions = UiWebSocket.getSessions();
     for (Session sessionPlayer : sessions) {
       try {
-        System.out.println(genre);
-        System.out.println(msg);
         sessionPlayer.getRemote().sendString(msg);
       } catch (IOException e) {
         // Add logger here

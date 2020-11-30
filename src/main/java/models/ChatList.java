@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class ChatList {
   /**
-   * Player who starts the game.
+   * Chatrooms data structure.
    */
   private Map<String, ChatRoom> chatrooms = new HashMap<>();
 
@@ -41,6 +41,21 @@ public class ChatList {
   public int size() {
     return this.chatrooms.size();
   }
+ 
+  /**
+   * Return total people currently in all chatrooms.
+   * @return numPeopleChatting integer
+   */
+  public int getTotalParticipants() {
+    
+    int numPeopleChatting = 0;
+    
+    for (Map.Entry<String,ChatRoom> chatEntry : this.chatrooms.entrySet()) {
+      numPeopleChatting += chatEntry.getValue().getNumParticipants();
+    }
+    
+    return numPeopleChatting;
+  }
 
   /**
    * Refresh Chatlist song data.
@@ -50,10 +65,13 @@ public class ChatList {
       Map<String, User> participants = chatroom.getParticipant();
       for (Map.Entry<String, User> entry : participants.entrySet()) {
         User user = entry.getValue();
-        if (!user.getSpotifyToken().equals("")) {
+        String token = user.getSpotifyToken();
+        if (!token.equals("null")) {
           user.refreshRecentlyPlayed();
           user.refreshCurrentlyPlaying();
         }
+        // SpotifyAPI object cannot be serialize by Gson
+        user.setApi(null);
       }
     }
   }

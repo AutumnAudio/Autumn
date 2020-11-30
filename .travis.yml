@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - 12
+script:
+  - mkdir report/
+  - mvn test -B 2>&1 | tee report/javaReport.txt
+  - cd react/
+  - npm install
+  - CI=false npm run build 2>&1 | tee ../report/nodeReport.txt
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_PAGES  # Set in the settings page of your repository, as a secure variable
+  keep_history: true
+  local_dir: report/
+  target_branch: travisCI-reports
+  on:
+    branch: master

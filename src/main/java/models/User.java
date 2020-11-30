@@ -4,12 +4,9 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.IPlaylistItem;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
-import com.wrapper.spotify.model_objects.specification.PagingCursorbased;
 import com.wrapper.spotify.model_objects.specification.PlayHistory;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
-import com.wrapper.spotify.requests.data.player.GetCurrentUsersRecentlyPlayedTracksRequest;
-import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
 
 public class User {
 
@@ -64,51 +61,44 @@ public class User {
   private Song currentTrack;
 
   /**
+   * Spotify api object associated with user
+   */
+  private SpotifyAPI api = new SpotifyAPI();
+
+  /**
    * refresh recently playing.
    */
   public void refreshRecentlyPlayed() {
-    SpotifyApi spotifyApi = new SpotifyApi.Builder()
+    PlayHistory[] playHistory = null;
+	try {
+      api.setApi(new SpotifyApi.Builder()
             .setAccessToken(spotifyToken)
-            .build();
-    final GetCurrentUsersRecentlyPlayedTracksRequest
-          getCurrentUsersRecentlyPlayedTracksRequest =
-          spotifyApi.getCurrentUsersRecentlyPlayedTracks()
-            .limit(LIMIT)
-            .build();
-    try {
-      final PagingCursorbased<PlayHistory>
-            playHistoryPagingCursorbased =
-          getCurrentUsersRecentlyPlayedTracksRequest.execute();
-      PlayHistory[] playHistory = playHistoryPagingCursorbased.getItems();
-      for (int i = 0; i < playHistory.length; i++) {
-        TrackSimplified track = playHistory[i].getTrack();
-        ArtistSimplified[] artists = track.getArtists();
-        String[] songArtists = new String[artists.length];
-        for (int j = 0; j < artists.length; j++) {
-          songArtists[j] = artists[j].getName();
-          //System.out.println(songArtists[j] + "---");
-        }
-        Song song = new Song();
-        song.setUsername(username);
-        song.setName(track.getName());
-        song.setArtists(songArtists);
-        recentlyPlayed[i] = song;
-        //System.out.println(track.getName());
-      }
-    } catch (Exception e) {
+            .build());
+      playHistory = api.recentlyPlayed();
+	} catch (Exception e) {
+      // TODO Auto-generated catch block
       if (e.getMessage().equals("The access token expired")) {
         spotifyToken = Login.refreshSpotifyToken(
-                spotifyRefreshToken);
-        //db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
-        //spotifyRefreshToken, username);
-        //db.commit();
-        //setSpotifyToken(spotifyToken, true);
-        //System.out.println("new token: " + spotifyToken);----
+            spotifyRefreshToken);
         refreshRecentlyPlayed();
       } else {
         System.out.println("Something went wrong!\n"
-            + e.getMessage());
+          + e.getMessage());
       }
+	}
+    for (int i = 0; i < playHistory.length; i++) {
+      TrackSimplified track = playHistory[i].getTrack();
+      ArtistSimplified[] artists = track.getArtists();
+      String[] songArtists = new String[artists.length];
+      for (int j = 0; j < artists.length; j++) {
+        songArtists[j] = artists[j].getName();
+      }
+      Song song = new Song();
+      song.setUsername(username);
+      song.setName(track.getName());
+      song.setArtists(songArtists);
+      song.setUri(track.getUri());
+      recentlyPlayed[i] = song;
     }
   }
 
@@ -116,20 +106,14 @@ public class User {
    * refresh currently playing.
    */
   public void refreshCurrentlyPlaying() {
-    SpotifyApi spotifyApi = new SpotifyApi.Builder()
-            .setAccessToken(spotifyToken)
-            .build();
-    final GetUsersCurrentlyPlayingTrackRequest
-          getUsersCurrentlyPlayingTrackRequest = spotifyApi
-            .getUsersCurrentlyPlayingTrack()
-            .build();
+    CurrentlyPlaying currentlyPlaying = null;
     try {
-      final CurrentlyPlaying currentlyPlaying =
-            getUsersCurrentlyPlayingTrackRequest.execute();
+      api.setApi(new SpotifyApi.Builder()
+	            .setAccessToken(spotifyToken)
+	            .build());
+      currentlyPlaying = api.currentlyPlaying();
       if (currentlyPlaying != null) {
         IPlaylistItem playlistItem = currentlyPlaying.getItem();
-        // assuming participant only play music[Track Object]
-        // (not shows[Episode Object]) in this MVP
         Track track = (Track) playlistItem;
         ArtistSimplified[] artists = track.getArtists();
         String[] songArtists = new String[artists.length];
@@ -141,24 +125,41 @@ public class User {
         song.setUsername(username);
         song.setName(track.getName());
         song.setArtists(songArtists);
+        song.setUri(track.getUri());
         currentTrack = song;
-        //System.out.println(track.getName());
       } else {
         currentTrack = null;
-        //System.out.println(currentTrack);
       }
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
         spotifyToken =
                 Login.refreshSpotifyToken(spotifyRefreshToken);
-        //setSpotifyToken(spotifyToken, true);
-        //System.out.println("new token: " + spotifyToken);
         refreshCurrentlyPlaying();
       } else {
         System.out.println("Something went wrong!\n"
             + e.getMessage());
       }
     }
+  }
+
+  public String addToQueue(String uri) {
+    String ret = "";
+    try {
+      api.setApi(new SpotifyApi.Builder()
+         .setAccessToken(spotifyToken)
+            .build());
+      ret = api.addSong(uri);
+    } catch (Exception e) {
+      if (e.getMessage().equals("The access token expired")) {
+        spotifyToken =
+                Login.refreshSpotifyToken(spotifyRefreshToken);
+        addToQueue(uri);
+      } else {
+        System.out.println("Something went wrong!\n"
+            + e.getMessage());
+      }
+    }
+    return ret;
   }
 
   /**
@@ -182,6 +183,14 @@ public class User {
       database.commit();
     }
     this.setSpotifyTokenDb(token);
+  }
+
+  /**
+   * Public constructor
+   * @param newApi
+   */
+  public User(final SpotifyAPI newApi) {
+    this.api = newApi;
   }
 
   /**
@@ -382,4 +391,20 @@ public class User {
   public void setUsername(final String name) {
     this.username = name;
   }
-}
+
+  /**
+   * get Api
+   * @return api String
+   */
+  public SpotifyAPI getApi() {
+    return this.api;
+  }
+
+  /**
+   * set Api
+   * @param spotifyApi SpotifyApi
+   */
+  public void setApi(final SpotifyAPI spotifyApi) {
+    this.api = spotifyApi;
+  }
+ }
