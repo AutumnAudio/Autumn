@@ -8,8 +8,9 @@ test('should be able to render person panel', () => {
                         {username: 'testUser2',
                         recentlyPlayed: [{name: 'another song', artists: ['testArtist2']}]}]
     const genreMock = 'POP'
+    const updatePlayListSongs = (songs) => null
     const component = renderer.create(
-        <PersonPanel participants={participantsMock} genre={genreMock}/>,
+        <PersonPanel participants={participantsMock} genre={genreMock} updatePlayListSongs={updatePlayListSongs}/>,
     )
     let tree = component.toJSON()
     expect(tree).toMatchSnapshot()

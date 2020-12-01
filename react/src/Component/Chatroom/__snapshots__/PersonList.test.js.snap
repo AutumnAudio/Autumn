@@ -34,6 +34,7 @@ exports[`should be able to render people list 1`] = `
     </svg>
     <div
       className="Person-currentSongDiv-4"
+      onClick={[Function]}
     >
       song name
        - 
@@ -70,6 +71,7 @@ exports[`should be able to render people list 1`] = `
     </svg>
     <div
       className="Person-currentSongDiv-4"
+      onClick={[Function]}
     >
       another song
        - 

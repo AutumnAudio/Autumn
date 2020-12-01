@@ -7,8 +7,9 @@ test('should be able to render people list', () => {
                         recentlyPlayed: [{name: 'song name', artists: ['testArtist']}]},
                         {username: 'testUser2',
                         recentlyPlayed: [{name: 'another song', artists: ['testArtist2']}]}]
+    const updatePlayListSongs = (songs) => null
     const component = renderer.create(
-        <PersonList participants={participantsMock} />,
+        <PersonList participants={participantsMock} updatePlayListSongs={updatePlayListSongs}/>,
     )
     let tree = component.toJSON()
     expect(tree).toMatchSnapshot()
