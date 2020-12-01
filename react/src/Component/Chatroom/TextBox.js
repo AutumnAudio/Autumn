@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
+import { withStyles } from '@material-ui/core/styles'
+import Button from '@material-ui/core/Button'
 import { sendChat } from '../AutumnApi/AutumnApi'
+import { shareSong } from '../AutumnApi/AutumnApi'
 
 const styles = {
     textBox: {
@@ -18,8 +20,20 @@ const styles = {
         fontFamily: 'sans-serif',
         // padding: '10px',
     },
+    shareButton: {
+        position: 'absolute',
+        top: '16px',
+        left: '88%',
+        fontSize: '10px',
+    },
 }
-
+const shareRecentSong = () => {
+    shareSong().then((response) => {
+        return response.text()
+    }).then((data) => {
+        console.log(data)
+    })
+}
 const sendTextChat = (event, value, setValue) => {
     if (event.key === 'Enter') {
         sendChat(value)
@@ -37,6 +51,9 @@ const TextBox = (props) => {
             <textarea  className={classes.input}
               onChange={(event) => handleChange(setValue, event)}
               value={value}/>
+            <Button variant="contained" color="primary" className={classes.shareButton} onClick={shareRecentSong}>
+                Share Song
+            </Button>
         </div>
     )
     

@@ -51,6 +51,7 @@ exports[`should be able to render person panel 1`] = `
       </svg>
       <div
         className="Person-currentSongDiv-6"
+        onClick={[Function]}
       >
         song name
          - 
@@ -87,6 +88,7 @@ exports[`should be able to render person panel 1`] = `
       </svg>
       <div
         className="Person-currentSongDiv-6"
+        onClick={[Function]}
       >
         another song
          - 

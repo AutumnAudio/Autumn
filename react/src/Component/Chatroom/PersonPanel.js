@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -12,6 +12,7 @@ const styles = {
         color: 'white',
         margin: '35px auto 0px 160px',
         display: 'inline-block',
+        fontFamily: 'Sansita Swashed',
     },
     arrowBack: {
         color: 'white',
@@ -29,13 +30,18 @@ const leaveChatroom = (genre, history) => {
         
 }
 const PersonPanel = (props) => {
-    const { classes, participants, genre } = props
+    const { classes, participants, genre, updatePlayListSongs } = props
     const history = useHistory()
+    useEffect(() => {
+        return () => {
+            leaveChatroom(genre, history)
+        }
+    }, [])
     return (
         <div>
             <ArrowBackIcon className={classes.arrowBack} onClick={() => leaveChatroom(genre, history)}/>
             <h1 className={classes.roomHeader}>{genre}</h1>
-            <PersonList participants={participants}/>
+            <PersonList participants={participants} updatePlayListSongs={updatePlayListSongs}/>
         </div>
     )
     
@@ -45,6 +51,7 @@ PersonPanel.propTypes = {
     classes: PropTypes.object.isRequired,
     participants: PropTypes.array.isRequired,
     genre: PropTypes.string.isRequired,
+    updatePlayListSongs: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(PersonPanel)
