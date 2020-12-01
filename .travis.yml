@@ -6,7 +6,7 @@ script:
   - mvn test -B 2>&1 | tee report/javaReport.txt; test ${PIPESTATUS[0]} -eq 0
   - cd react/
   - npm install
-  - CI=false npm run test 2>&1 | tee output.txt; test ${PIPESTATUS[0]} -eq 0
+  - CI=false npm run test 2>&1 | tee ../report/nodeReport.txt; test ${PIPESTATUS[0]} -eq 0
 
 deploy:
   provider: pages
