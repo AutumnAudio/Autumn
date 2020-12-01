@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import PersonPanel from './PersonPanel';
 import ChatBoard from './ChatBoard';
 import TextBox from './TextBox'
+import PlayList from './PlayList'
 import { useLocation } from "react-router-dom";
 
 const styles = {
@@ -18,8 +19,9 @@ const styles = {
 let chatHistory = []
 let participants = []
 const updateprops = (msg, setParticipants, setChat, genre) => {
-    let jsonData = JSON.parse(msg['data'])
     
+    let jsonData = JSON.parse(msg['data'])
+    console.log(jsonData)
     if ('username' in jsonData) {
         console.log(chatHistory)
         // it is a chat message
@@ -44,10 +46,21 @@ const updateprops = (msg, setParticipants, setChat, genre) => {
     setParticipants(participantsArray)
     
 }
+const updatePlayListSongs = (songs, setPlayListSongs, setIsPlayListOpen) => {
+    const songsArray = [...songs]
+    console.log(songsArray)
+    setPlayListSongs(songsArray)
+    setIsPlayListOpen(true)
+}
+const closePlayList = (setIsPlayListOpen) => {
+    setIsPlayListOpen(false)
+}
 const Chatroom = (props) => {
     const { classes } = props;
     const [participants, setParticipants] = useState([])
     const [chat, setChat] = useState([])
+    const [playListSongs, setPlayListSongs] = useState([])
+    const [isPlayListOpen, setIsPlayListOpen] = useState(false)
     const location = useLocation()
     const genre  = location.state.genre
     useEffect(() => {
@@ -67,9 +80,14 @@ const Chatroom = (props) => {
     
     return (
         <div>
-            <div className={classes.personPanelStyle}><PersonPanel genre={genre} participants={participants}/></div>
+            <div className={classes.personPanelStyle}>
+                <PersonPanel genre={genre} participants={participants} 
+                  updatePlayListSongs={(songs) => updatePlayListSongs(songs, setPlayListSongs, setIsPlayListOpen)}
+                />
+            </div>
             
             <ChatBoard chat={chat}/>
+            {isPlayListOpen ? <PlayList songs={playListSongs} closePlayList={() => closePlayList(setIsPlayListOpen)}/> : null}
             <TextBox />
         </div>
     )
