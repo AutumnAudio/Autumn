@@ -22,3 +22,12 @@ export function sendChat(text) {
 export function authenticate() {
     return fetch('/auth')
 }
+
+export function shareSong() {
+    console.log('share')
+    let formData = new FormData();
+    return fetch('/share', {
+        body: formData,
+        method: 'POST'
+    })
+}
