@@ -6,8 +6,7 @@ script:
   - mvn test -B 2>&1 | tee report/javaReport.txt
   - cd react/
   - npm install
-  - CI=false npm run tests
-  #- CI=false npm run build 2>&1 | tee ../report/nodeReport.txt
+  - CI=false npm run tests 2>&1 | tee ../report/nodeReport.txt
 
 deploy:
   provider: pages
