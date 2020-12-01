@@ -19,6 +19,7 @@ import models.Genre;
 import models.Login;
 import models.Message;
 import models.Song;
+import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 import org.eclipse.jetty.websocket.api.Session;
@@ -61,6 +62,11 @@ public final class StartChat {
   private static SqLite db = new SqLite();
 
   /**
+   * Create SpotifyAPI instance.
+   */
+  private static SpotifyAPI api = new SpotifyAPI();
+
+  /**
    * get current database.
    * @return database SqLite
    */
@@ -95,6 +101,14 @@ public final class StartChat {
    */
   public static void setChatlist(final ChatList list) {
     chatlist = list;
+  }
+
+  /**
+   * set api
+   * @param api SpotifyAPI
+   */
+  public static void setApi(final SpotifyAPI newApi) {
+    api = newApi;
   }
 
   /**
@@ -178,7 +192,6 @@ public final class StartChat {
           db.insertSession("" + System.currentTimeMillis(), sessionId);
           db.commit();
           System.out.println(Login.getSpotifyAuthUrl());
-//          ctx.redirect(Login.getSpotifyAuthUrl());
           ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
         } else {
           ctx.result("{}");
@@ -208,7 +221,7 @@ public final class StartChat {
     //handle spotify authentication
     app.get("/process_auth", ctx -> {
       String sessionId = (String) ctx.sessionAttribute("sessionId");
-      Map<String, String> response = Login.getSpotifyTokenFromCode(
+      Map<String, String> response = api.getSpotifyTokenFromCode(
                                      ctx.queryParam("code"));
       User user = new User(response.get("access_token"), db);
       user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
@@ -382,10 +395,7 @@ public final class StartChat {
   private static void sendChatRoomToAllParticipants(final String genre,
         final String chatRoomJson) {
     Queue<Session> sessions = UiWebSocket.getSessions();
-    // check if refreshChatlist update song data
-    //System.out.println(genre + ": " + chatRoomJson);
     for (Session sessionPlayer : sessions) {
-      // TODO Need extra check for participant in the room
       try {
         sessionPlayer.getRemote().sendString(chatRoomJson);
       } catch (IOException e) {

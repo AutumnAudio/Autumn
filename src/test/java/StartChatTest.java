@@ -18,6 +18,7 @@ import models.ChatRoom;
 import models.Genre;
 import models.Message;
 import models.Song;
+import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 
@@ -55,7 +56,7 @@ public class StartChatTest {
     // If you do not wish to have this end point, it is okay to not have anything in this method.
     // Create HTTP request and get response
     StartChat.main(null);
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/lobby").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
     assertEquals(200, response.getStatus());
     
     SqLite db = StartChat.getDb();
@@ -341,6 +342,13 @@ public class StartChatTest {
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
     
+    SpotifyAPI mockApi = mock(SpotifyAPI.class);
+    Map<String, String> res = new HashMap<>();
+    res.put("access_token", "abc");
+    res.put("refresh_token", "def");
+    when(mockApi.getSpotifyTokenFromCode("123")).thenReturn(res);
+    StartChat.setApi(mockApi);
+    
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
     response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
@@ -351,6 +359,9 @@ public class StartChatTest {
     
     Unirest.config().reset();
     Unirest.config().followRedirects(true);
+    
+    SpotifyAPI api = new SpotifyAPI();
+    StartChat.setApi(api);
   }
   
   @Test
@@ -364,7 +375,7 @@ public class StartChatTest {
     
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
     
-    System.out.println("/process-auth Response: " + response.getBody());
+    System.out.println("/process-auth no code and sessionId Response: " + response.getBody());
     
     assertEquals(302, response.getStatus());
     Unirest.config().reset();
@@ -380,11 +391,18 @@ public class StartChatTest {
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
     
+    SpotifyAPI mockApi = mock(SpotifyAPI.class);
+    Map<String, String> res = new HashMap<>();
+    res.put("access_token", "abc");
+    res.put("refresh_token", "def");
+    when(mockApi.getSpotifyTokenFromCode("123")).thenReturn(res);
+    StartChat.setApi(mockApi);
+    
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
-    System.out.println("/process-auth Response: " + response.getBody());
+    System.out.println("/process-auth no code Response: " + response.getBody());
     
-    assertEquals(500, response.getStatus());
+    assertEquals(302, response.getStatus());
     
     response = Unirest.get("http://localhost:8080/").asString();
   
@@ -392,6 +410,10 @@ public class StartChatTest {
     
     Unirest.config().reset();
     Unirest.config().followRedirects(true);
+    
+    SpotifyAPI api = new SpotifyAPI();
+    StartChat.setApi(api);
+    
   }
 
   
@@ -528,7 +550,7 @@ public class StartChatTest {
     
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
-    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    when(mockUser.refreshCurrentlyPlaying()).thenReturn("OK");
     
     StartChat.setDb(mockDb);
 
@@ -564,7 +586,7 @@ public class StartChatTest {
     
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
-    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    when(mockUser.refreshCurrentlyPlaying()).thenReturn("OK");
     
     StartChat.setDb(mockDb);
 
@@ -605,7 +627,7 @@ public class StartChatTest {
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser1);
     when(mockDb.getGenreUser("testing1")).thenReturn("blues");
-    doNothing().when(mockUser1).refreshCurrentlyPlaying();
+    when(mockUser1.refreshCurrentlyPlaying()).thenReturn("OK");
     
     ChatList mockChatlist = mock(ChatList.class);
     ChatRoom chatroom = new ChatRoom();

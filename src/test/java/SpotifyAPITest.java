@@ -10,8 +10,10 @@ import models.Login;
 import models.SpotifyAPI;
 
 public class SpotifyAPITest {
+  SpotifyAPI api = new SpotifyAPI();
+  
   String refreshToken = SpotifyAccount.getRefreshToken();
-  String token = Login.refreshSpotifyToken(refreshToken);
+  String token = api.refreshSpotifyToken(refreshToken);
 
   @Test
   public void recentlyPlayedTest() {

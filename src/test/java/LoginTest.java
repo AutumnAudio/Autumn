@@ -6,9 +6,11 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import models.Login;
+import models.SpotifyAPI;
 
 public class LoginTest {
   String refreshToken = SpotifyAccount.getRefreshToken();
+  SpotifyAPI api = new SpotifyAPI();
 
   @Test
   public void getSpotifyAuthUrlTest() {
@@ -18,19 +20,19 @@ public class LoginTest {
 
   @Test
   public void getSpotifyTokenFromCodeTest() {
-    Map<String, String> map = Login.getSpotifyTokenFromCode("123");
+    Map<String, String> map = api.getSpotifyTokenFromCode("123");
     assertEquals(2, map.size());
   }
 
   @Test
   public void refreshSpotifyTokenTest() {
-    String token = Login.refreshSpotifyToken(refreshToken);
+    String token = api.refreshSpotifyToken(refreshToken);
     assertNotNull(token);
   }
 
   @Test
   public void getEmailFromSpotifyTokenTest() {
-    String token = Login.refreshSpotifyToken(refreshToken);
+    String token = api.refreshSpotifyToken(refreshToken);
     assertEquals("cherrychu_120@hotmail.com", Login.getEmailFromSpotifyToken(token));
   }
 }

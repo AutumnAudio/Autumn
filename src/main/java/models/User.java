@@ -68,81 +68,109 @@ public class User {
   /**
    * refresh recently playing.
    */
-  public void refreshRecentlyPlayed() {
+  public String refreshRecentlyPlayed() {
+    String ret = "OK";
     PlayHistory[] playHistory = null;
+    spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);
 	try {
       api.setApi(new SpotifyApi.Builder()
             .setAccessToken(spotifyToken)
             .build());
       playHistory = api.recentlyPlayed();
 	} catch (Exception e) {
-      // TODO Auto-generated catch block
       if (e.getMessage().equals("The access token expired")) {
-        spotifyToken = Login.refreshSpotifyToken(
-            spotifyRefreshToken);
         refreshRecentlyPlayed();
       } else {
         System.out.println("Something went wrong!\n"
           + e.getMessage());
       }
 	}
+	if (playHistory.length <  10 || playHistory.length > 10) {
+	  return "Number of items return not matched.";
+	}
     for (int i = 0; i < playHistory.length; i++) {
       TrackSimplified track = playHistory[i].getTrack();
+      if (track == null) {
+        return "List contains null track";
+      }
       ArtistSimplified[] artists = track.getArtists();
+      if (artists == null) {
+        return "List contains null artist list";
+      }
       String[] songArtists = new String[artists.length];
       for (int j = 0; j < artists.length; j++) {
         songArtists[j] = artists[j].getName();
       }
       Song song = new Song();
       song.setUsername(username);
-      song.setName(track.getName());
+      String trackName = track.getName();
+      if (trackName == null || trackName.length() == 0) {
+      	return "List contains invalid track name";
+      }
+      song.setName(trackName);
       song.setArtists(songArtists);
       song.setUri(track.getUri());
       recentlyPlayed[i] = song;
     }
+    return ret;
   }
 
   /**
    * refresh currently playing.
    */
-  public void refreshCurrentlyPlaying() {
+  public String refreshCurrentlyPlaying() {
+	String ret = "OK";
     CurrentlyPlaying currentlyPlaying = null;
+    spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);
     try {
       api.setApi(new SpotifyApi.Builder()
 	            .setAccessToken(spotifyToken)
 	            .build());
       currentlyPlaying = api.currentlyPlaying();
-      if (currentlyPlaying != null) {
-        IPlaylistItem playlistItem = currentlyPlaying.getItem();
-        Track track = (Track) playlistItem;
-        ArtistSimplified[] artists = track.getArtists();
-        String[] songArtists = new String[artists.length];
-        for (int j = 0; j < artists.length; j++) {
-          songArtists[j] = artists[j].getName();
-          //System.out.println(songArtists[j]);
-        }
-        Song song = new Song();
-        song.setUsername(username);
-        song.setName(track.getName());
-        song.setArtists(songArtists);
-        song.setUri(track.getUri());
-        currentTrack = song;
-      } else {
-        currentTrack = null;
-      }
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
-        spotifyToken =
-                Login.refreshSpotifyToken(spotifyRefreshToken);
         refreshCurrentlyPlaying();
       } else {
         System.out.println("Something went wrong!\n"
             + e.getMessage());
       }
     }
+    if (currentlyPlaying != null) {
+      IPlaylistItem playlistItem = currentlyPlaying.getItem();
+      Track track = (Track) playlistItem;
+      if (track == null) {
+          return "Null track";
+      }
+      ArtistSimplified[] artists = track.getArtists();
+      if (artists == null) {
+    	return "Null artist list";
+      }
+      String[] songArtists = new String[artists.length];
+      for (int j = 0; j < artists.length; j++) {
+        songArtists[j] = artists[j].getName();
+      }
+      Song song = new Song();
+      song.setUsername(username);
+      String trackName = track.getName();
+      if (trackName == null || trackName.length() == 0) {
+      	ret = "Invalid track name";
+      }
+      song.setName(trackName);
+      song.setArtists(songArtists);
+      song.setUri(track.getUri());
+      currentTrack = song;
+    } else {
+      currentTrack = null;
+      ret = "Currently not playing any tracks";
+    }
+    return ret;
   }
 
   public String addToQueue(String uri) {
+    spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);
+    if (uri.length() <= 14 || !uri.contains("spotify:track:")) {
+      return "invalid uri";
+    }
     String ret = "";
     try {
       api.setApi(new SpotifyApi.Builder()
@@ -151,8 +179,6 @@ public class User {
       ret = api.addSong(uri);
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
-        spotifyToken =
-                Login.refreshSpotifyToken(spotifyRefreshToken);
         addToQueue(uri);
       } else {
         System.out.println("Something went wrong!\n"
@@ -333,11 +359,15 @@ public class User {
   /**
    * Refresh Spotify token.
    * @return token String
+ * @throws Exception 
    */
-  public String refreshSpotifyToken() {
-    setSpotifyToken(
-        Login.refreshSpotifyToken(spotifyRefreshToken));
-    return getSpotifyToken();
+  public String refreshSpotifyToken() throws Exception {
+    String newToken = api.refreshSpotifyToken(spotifyRefreshToken);
+    if (newToken == null || newToken.length() == 0) {
+      throw new Exception("Invalid Token");
+    }
+    setSpotifyToken(newToken);
+    return newToken;
   }
 
   /**
