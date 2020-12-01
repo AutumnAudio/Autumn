@@ -74,8 +74,6 @@ public class StartChatTest {
   @Test
   @Order(1)
   public void chatroomsTest() {
-
-    
     HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms/").asString();
     
     //assertEquals(200, response.getStatus());

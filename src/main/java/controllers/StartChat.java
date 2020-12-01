@@ -151,9 +151,11 @@ public final class StartChat {
    * @param args Command line arguments
    */
   public static void main(final String[] args) {
+    
     db.start();
-    chatlist = db.update();
     db.commit();
+    
+    chatlist = db.update();
 
     if (chatlist.size() == 0) {
       initializeChatlist();
@@ -178,12 +180,12 @@ public final class StartChat {
           db.insertSession("" + System.currentTimeMillis(), sessionId);
           db.commit();
           System.out.println(Login.getSpotifyAuthUrl());
-//          ctx.redirect(Login.getSpotifyAuthUrl());
+  //        ctx.redirect(Login.getSpotifyAuthUrl());
           ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
         } else {
           ctx.result("{}");
         }
-    });
+    });    
     
     //authentication
     app.before(ctx -> {
@@ -198,12 +200,13 @@ public final class StartChat {
         ctx.sessionAttribute("sessionId", sessionId);
       }
       if (db.getUserBySessionId(sessionId).getUsername() == null) {
+        
         db.insertSession("" + System.currentTimeMillis(), sessionId);
         db.commit();
         
         ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
       }
-    });
+    });   
 
     //handle spotify authentication
     app.get("/process_auth", ctx -> {
@@ -250,7 +253,6 @@ public final class StartChat {
           db.insertUserwithGenre(username, genre.getGenre());
           db.commit();
           chatlist = db.update();
-          db.commit();
         }
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
         sendChatRoomToAllParticipants(genre.getGenre(),
@@ -352,11 +354,13 @@ public final class StartChat {
               (String) ctx.sessionAttribute("sessionId")).getUsername();
       ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
       if (chatroom.getParticipant().containsKey(username)) {
+        
         db.removeUserGenre(username);
         db.removeParticipant(genre, username);
         db.commit();
+        
         chatlist = db.update();
-        db.commit();
+
         chatroom = chatlist.getChatroomByGenre(genre);
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatroom));

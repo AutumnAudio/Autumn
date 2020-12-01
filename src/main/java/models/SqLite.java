@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,27 +26,46 @@ public class SqLite {
   /**
    * connect to autumn database.
    */
-  public void connect() {
-  try {
-      Class.forName("org.sqlite.JDBC");
-    } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+  public void connect(boolean autoCommit) {
+    
     try {
-      conn = DriverManager.getConnection("jdbc:sqlite:autumn.db");
-      conn.setAutoCommit(false);
-      stmt = conn.createStatement();
-    } catch (SQLException e) {
+      if(conn != null && !conn.isClosed())
+        return;
+    } catch (SQLException e1) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      e1.printStackTrace();
     }
+      
+    try {
+        Class.forName("org.sqlite.JDBC");
+      } catch (ClassNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      try {
+        conn = DriverManager.getConnection("jdbc:sqlite:autumn.db");
+        conn.setAutoCommit(autoCommit);
+        stmt = conn.createStatement();
+      } catch (SQLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+  }
+  
+  /**
+   * overloaded connect method automically sets autCommit to false
+   */
+  public void connect() {
+    connect(false);
   }
 
   /**
    * Start database.
    */
   public void start() {
+    
+    connect();
+    
     try {
       Class.forName("org.sqlite.JDBC");
     } catch (ClassNotFoundException e) {
@@ -55,9 +73,8 @@ public class SqLite {
       e.printStackTrace();
     }
     try {
-      conn = DriverManager.getConnection("jdbc:sqlite:autumn.db");
-      conn.setAutoCommit(false);
-      stmt = conn.createStatement();
+      
+     // stmt = conn.createStatement();
       String sql = "CREATE TABLE IF NOT EXISTS USERS "
                      + " (USERNAME              VARCHAR PRIMARY KEY NOT NULL, "
                      + " PASSWORD_HASH          VARCHAR, "
@@ -114,8 +131,11 @@ public class SqLite {
    * clean tables in database.
    */
   public void clear() {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = "DELETE FROM USERS;";
       stmt.executeUpdate(sql);
       sql = "DELETE FROM SESSIONS;";
@@ -143,8 +163,11 @@ public class SqLite {
    */
   public void insertUserWithToken(final String username,
       final String spotifyToken) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = String.format("INSERT INTO USERS (USERNAME, SPOTIFY_TOKEN) "
                      + "VALUES ('%s','%s');", username, spotifyToken);
       stmt.executeUpdate(sql);
@@ -161,8 +184,11 @@ public class SqLite {
    */
   public void insertUserWithSession(final String username,
       final String sessionId) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = String.format("INSERT INTO USERS (USERNAME, SESSION_ID) "
             + "VALUES ('%s','%s');", username, sessionId);
       stmt.executeUpdate(sql);
@@ -178,8 +204,11 @@ public class SqLite {
    * @param genre String
    */
   public void insertUserwithGenre(final String username, final String genre) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = String.format("INSERT INTO USERGENRE (USERNAME, GENRE) "
                   + "VALUES ('%s','%s');", username, genre);
       stmt.executeUpdate(sql);
@@ -197,8 +226,10 @@ public class SqLite {
    */
   public void updateUserAttribute(final String attribute,
           final String value, final String username) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
       String sql = String.format("UPDATE USERS SET %s = '%s'"
                      + " WHERE USERNAME = '%s';", attribute, value, username);
       stmt.executeUpdate(sql);
@@ -214,6 +245,9 @@ public class SqLite {
    * @return user User Object
    */
   public User getUserByName(final String username) {
+    
+    connect(true);
+    
     User user = new User();
     try {
       ResultSet rs;
@@ -236,6 +270,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return user;
   }
 
@@ -245,6 +282,9 @@ public class SqLite {
    * @return count equals 1 boolean
    */
   public int getUserCount(final String username) {
+    
+    connect(true);
+    
     int count = 0;
     try {
       ResultSet rs;
@@ -262,6 +302,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return count;
   }
 
@@ -271,6 +314,9 @@ public class SqLite {
    * @return count equals 1 boolean
    */
   public String getGenreUser(final String username) {
+    
+    connect(true);
+    
     String gen = null;
     try {
       ResultSet rs;
@@ -288,6 +334,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return gen;
   }
 
@@ -297,6 +346,9 @@ public class SqLite {
    * @return user User
    */
   public User getUserBySessionId(final String sessionId) {
+    
+    connect(true);
+    
     User user = new User();
     try {
       ResultSet rs;
@@ -314,11 +366,15 @@ public class SqLite {
         }
       } finally {
         rs.close();
+       
       }
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return user;
   }
 
@@ -330,8 +386,11 @@ public class SqLite {
    */
   public void insertChatRoom(final Genre genre, final String link,
           final String spotifyPlaylist) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = String.format("INSERT INTO CHATROOMS "
                    + "(GENRE, LINK, SPOTIFY_PLAYLIST) "
                    + "VALUES ('%s','%s','%s');",
@@ -348,6 +407,9 @@ public class SqLite {
    * @return Chatroom list List
    */
   public Map<String, ChatRoom> getAllChatRooms() {
+    
+    connect(true);    
+    
     Map<String, ChatRoom> map = new HashMap<>();
     List<Genre> genres = new ArrayList<>();
     try {
@@ -379,6 +441,9 @@ public class SqLite {
       chatroom.setPlaylist(playlist);
       map.put(genres.get(i).getGenre(), chatroom);
     }
+    
+    close();
+    
     return map;
   }
 
@@ -392,8 +457,10 @@ public class SqLite {
    */
   public void insertParticipant(final Genre genre, final String username,
       final String token, final String refreshToken, final String sessionId) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
       String sql = String.format("INSERT INTO PARTICIPANTS "
                    + "(GENRE, USERNAME, SPOTIFY_TOKEN, "
                    + "SPOTIFY_REFRESH_TOKEN, SESSION_ID) "
@@ -412,8 +479,10 @@ public class SqLite {
    * @param username String
    */
   public void removeParticipant(final Genre genre, final String username) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
       String sql = String.format("DELETE FROM PARTICIPANTS "
                    + "WHERE GENRE = '%s' AND USERNAME = '%s';",
                    genre.getGenre(), username);
@@ -429,8 +498,11 @@ public class SqLite {
    * @param username String
    */
   public void removeUserGenre(final String username) {
+    
+    connect();    
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = String.format("DELETE FROM USERGENRE "
                    + "WHERE USERNAME = '%s';",
                    username);
@@ -447,6 +519,9 @@ public class SqLite {
    * @return participant List
    */
   public Map<String, User> getChatRoomParticipant(final Genre genre) {
+    
+    connect(true);
+    
     Map<String, User> list = new HashMap<>();
     try {
       ResultSet rs;
@@ -469,6 +544,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return list;
   }
 
@@ -481,8 +559,10 @@ public class SqLite {
    */
   public void insertMessage(final String username, final Time timeSent,
           final Genre genre, final String message) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
       String sql = String.format("INSERT INTO CHAT "
                      + "(USERNAME, TIME_SENT, GENRE, MESSAGE) "
                      + "VALUES ('%s','%s','%s','%s');",
@@ -500,6 +580,9 @@ public class SqLite {
    * @return chat history List
    */
   public List<Message> getChatRoomChat(final Genre genre) {
+    
+    connect(true);
+    
     List<Message> list = new ArrayList<>();
     try {
       ResultSet rs;
@@ -520,6 +603,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return list;
   }
 
@@ -532,8 +618,11 @@ public class SqLite {
    */
   public void insertSong(final String username, final Time timeShared,
           final Genre genre, final String song) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
+
       String sql = String.format("INSERT INTO PLAYLIST "
                    + "(USERNAME, TIME_SHARED, GENRE, SONG) "
                    + "VALUES ('%s','%s','%s','%s');",
@@ -542,7 +631,7 @@ public class SqLite {
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
+    } 
   }
 
   /**
@@ -551,6 +640,9 @@ public class SqLite {
    * @return playlist List
    */
   public List<Song> getChatRoomPlaylist(final Genre genre) {
+    
+    connect(true);
+    
     List<Song> list = new ArrayList<>();
     try {
       ResultSet rs;
@@ -571,6 +663,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return list;
   }
 
@@ -580,8 +675,10 @@ public class SqLite {
    * @param sessionId String
    */
   public void insertSession(final String time, final String sessionId) {
+    
+    connect();
+    
     try {
-      conn.setAutoCommit(false);
       String sql = String.format("REPLACE INTO SESSIONS "
                    + "(TIME_VISITED, SESSION_ID) "
                    + "VALUES ('%s','%s');", time, sessionId);
@@ -589,14 +686,17 @@ public class SqLite {
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
+    }   
   }
-
+  
   /**
    * Get sessionId by username.
    * @return sessionId
    */
   public String getLatestSession() {
+    
+    connect(true);
+    
     String sessionId = "";
     try {
       ResultSet rs;
@@ -613,6 +713,9 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+    close();
+    
     return sessionId;
   }
 
@@ -620,11 +723,14 @@ public class SqLite {
    * Commit last sql execution.
    */
   public void commit() {
+
     try {
       conn.commit();
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+    } finally {
+      close();
     }
   }
 
