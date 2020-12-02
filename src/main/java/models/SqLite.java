@@ -145,8 +145,6 @@ public class SqLite {
       stmt.executeUpdate(sql);
       sql = "DELETE FROM PARTICIPANTS;";
       stmt.executeUpdate(sql);
-      sql = "DELETE FROM CHAT;";
-      stmt.executeUpdate(sql);
       sql = "DELETE FROM PLAYLIST;";
       stmt.executeUpdate(sql);
       sql = "DELETE FROM USERGENRE";
