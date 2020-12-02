@@ -64,7 +64,7 @@ public class StartChatTest {
     String sessionId = db.getLatestSession();
     
     db.insertUserWithSession("testing1", sessionId);
-    db.commit();
+    
     
     System.out.println("Before Each");
   }
@@ -75,8 +75,6 @@ public class StartChatTest {
   @Test
   @Order(1)
   public void chatroomsTest() {
-
-    
     HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms/").asString();
     
     //assertEquals(200, response.getStatus());
@@ -118,7 +116,7 @@ public class StartChatTest {
     SqLite db = StartChat.getDb();
     String sessionId = db.getLatestSession();
     db.insertUserWithSession("testing2", sessionId);
-    db.commit();
+    
     
     response = Unirest.get("http://localhost:8080/chatrooms/").asString();
 
@@ -460,7 +458,7 @@ public class StartChatTest {
 
     SqLite db = StartChat.getDb();
     db.clear();
-    db.commit();
+    
     ChatList chatlist = new ChatList();
     assertEquals(0, chatlist.size());
     StartChat.setChatlist(chatlist);
@@ -686,7 +684,7 @@ public class StartChatTest {
   public void finishChat() {
     SqLite db = StartChat.getDb();
     db.clear();
-    db.commit();
+    
     StartChat.stop();
     System.out.println("After Each");
   }

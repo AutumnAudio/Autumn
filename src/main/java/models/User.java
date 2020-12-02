@@ -206,7 +206,6 @@ public class User {
       this.lastConnectionTime = tmpUser.lastConnectionTime;
     } else {
       database.insertUserWithToken(email, token);
-      database.commit();
     }
     this.setSpotifyTokenDb(token);
   }
@@ -302,7 +301,6 @@ public class User {
   public void setSessionIdDb(final String id) {
     setSessionId(id);
     db.updateUserAttribute("SESSION_ID", id, username);
-    db.commit();
   }
 
   /**
@@ -345,7 +343,6 @@ public class User {
     setSpotifyToken(token);
     db.updateUserAttribute("SPOTIFY_TOKEN",
         token, username);
-    db.commit();
   }
 
   /**
@@ -386,7 +383,6 @@ public class User {
     setSpotifyRefreshToken(refreshToken);
     db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
         refreshToken, username);
-    db.commit();
   }
 
   /**
