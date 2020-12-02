@@ -113,7 +113,6 @@ public final class StartChat {
       map.put(genre.getGenre(), chatroom);
       db.insertChatRoom(chatroom.getGenre(), chatroom.getLink(),
                                 "playlist-" + genre.getGenre());
-      db.commit();
     }
     chatlist.setChatrooms(map);
   }
@@ -153,7 +152,6 @@ public final class StartChat {
   public static void main(final String[] args) {
     
     db.start();
-    db.commit();
     
     chatlist = db.update();
 
@@ -178,7 +176,6 @@ public final class StartChat {
         }
         if (db.getUserBySessionId(sessionId).getUsername() == null) {
           db.insertSession("" + System.currentTimeMillis(), sessionId);
-          db.commit();
           System.out.println(Login.getSpotifyAuthUrl());
   //        ctx.redirect(Login.getSpotifyAuthUrl());
           ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
@@ -202,7 +199,6 @@ public final class StartChat {
       if (db.getUserBySessionId(sessionId).getUsername() == null) {
         
         db.insertSession("" + System.currentTimeMillis(), sessionId);
-        db.commit();
         
         ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
       }
@@ -251,7 +247,6 @@ public final class StartChat {
           db.insertParticipant(genre, username, user.getSpotifyToken(),
               user.getSpotifyRefreshToken(), user.getSessionId());
           db.insertUserwithGenre(username, genre.getGenre());
-          db.commit();
           chatlist = db.update();
         }
         ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
@@ -337,7 +332,6 @@ public final class StartChat {
       chatroom.addSong(song);
       db.insertSong(username, Time.valueOf(LocalTime.now()),
               genre, new Gson().toJson(song));
-      db.commit();
       // send message to chat
       Message message = new Message();
       message.setUsername(username);
@@ -357,7 +351,6 @@ public final class StartChat {
         
         db.removeUserGenre(username);
         db.removeParticipant(genre, username);
-        db.commit();
         
         chatlist = db.update();
 
