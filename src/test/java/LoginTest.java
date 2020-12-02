@@ -33,6 +33,6 @@ public class LoginTest {
   @Test
   public void getEmailFromSpotifyTokenTest() {
     String token = api.refreshSpotifyToken(refreshToken);
-    assertEquals("cherrychu_120@hotmail.com", Login.getEmailFromSpotifyToken(token));
+    assertEquals("cherrychu_120@hotmail.com", api.getEmailFromSpotifyToken(token));
   }
 }

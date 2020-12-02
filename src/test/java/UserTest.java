@@ -1,12 +1,9 @@
-import models.Login;
-import models.Song;
 import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
-import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
@@ -15,9 +12,6 @@ import com.wrapper.spotify.model_objects.specification.PlayHistory;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.model_objects.specification.TrackSimplified;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -29,7 +23,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.mockito.Mock;
-import org.mockito.Spy;
 
 
 @TestMethodOrder(OrderAnnotation.class) 
@@ -362,7 +355,31 @@ public class UserTest {
 	assertEquals("invalid uri", user.addToQueue("song uri"));
   }
 
-//------------------------------------------ Other --------------------------------------------- //
+  // ------------------------------ SetSpotifyRefreshToken ---------------------------//
+  @Test
+  public void testSetSpotifyRefreshToken() {
+    User user = new User();
+    db.insertAuthenticatedUser("mary", "token", "123", "sessionId");
+    
+    assertEquals("123", db.getUserByName("mary").getSpotifyRefreshToken());
+    user.setDb(db);
+    user.setUsername("mary");
+    assertEquals("OK", user.setSpotifyRefreshTokenDb("new_refresh_token"));
+  }
+
+  @Test
+  public void testSetSpotifyRefreshTokenNullRefreshToken() {
+    User user = new User();
+    assertEquals("No token", user.setSpotifyRefreshTokenDb(null));
+  }
+
+  @Test
+  public void testSetSpotifyRefreshTokenEmptyRefreshToken() {
+    User user = new User();
+    assertEquals("No token", user.setSpotifyRefreshTokenDb(""));
+  }
+
+  //------------------------------------------ Other --------------------------------------------- //
   @Test
   public void testRefreshSpotifyTokenValid() throws Exception {
     SpotifyAPI mockAPI = mock(SpotifyAPI.class);
@@ -409,37 +426,25 @@ public class UserTest {
   @Test
   public void testSetSessionId() {
     User user = new User();
-    db.insertUserWithSession("cherry", "session");
+    db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "session");
     
-    assertEquals("session", db.getUserByName("cherry").getSessionId());
+    assertEquals("session", db.getUserByName("mary").getSessionId());
     user.setDb(db);
-    user.setUsername("cherry");
+    user.setUsername("mary");
     user.setSessionIdDb("new_session");
-    assertEquals("new_session", db.getUserByName("cherry").getSessionId());
+    assertEquals("new_session", db.getUserByName("mary").getSessionId());
   }
 
   @Test
   public void testSetSpotifyToken() {
     User user = new User();
-    db.insertUserWithToken("cherry", "token");
+    db.insertAuthenticatedUser("mary", "token", "refresh_token", "session");
     
-    assertEquals("token", db.getUserByName("cherry").getSpotifyToken());
+    assertEquals("token", db.getUserByName("mary").getSpotifyToken());
     user.setDb(db);
-    user.setUsername("cherry");
+    user.setUsername("mary");
     user.setSpotifyTokenDb("new_token");
-    assertEquals("new_token", db.getUserByName("cherry").getSpotifyToken());
-  }
-
-  @Test
-  public void testSetSpotifyRefreshToken() {
-    User user = new User();
-    db.insertUserWithToken("cherry", "token");
-    
-    assertNull(db.getUserByName("cherry").getSpotifyRefreshToken());
-    user.setDb(db);
-    user.setUsername("cherry");
-    user.setSpotifyRefreshTokenDb("new_refresh_token");
-    assertEquals("new_refresh_token", db.getUserByName("cherry").getSpotifyRefreshToken());
+    assertEquals("new_token", db.getUserByName("mary").getSpotifyToken());
   }
 
   @AfterEach

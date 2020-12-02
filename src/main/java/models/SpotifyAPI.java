@@ -141,4 +141,35 @@ public class SpotifyAPI {
     }
     return null;
   }
+
+  /**
+   * get email from given Spotify token.
+   * @param spotifyToken String
+   * @return email String
+   */
+  public String getEmailFromSpotifyToken(final String spotifyToken) {
+    HttpClient httpClient = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_2)
+        .build();
+
+    HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.spotify.com/v1/me"))
+            .setHeader("User-Agent", "Java 11 HttpClient Bot")
+            .header("Authorization", "Bearer " + spotifyToken)
+            .build();
+
+    HttpResponse<String> response = null;
+    try {
+      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      Gson gson = new Gson();
+      Map<String, String> result = gson.fromJson(response.body(),
+          new TypeToken<Map<String, Object>>() { }.getType());
+
+      return result.get("email");
+    } catch (IOException | InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
 }

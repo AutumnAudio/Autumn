@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
@@ -56,14 +57,14 @@ public class StartChatTest {
     // If you do not wish to have this end point, it is okay to not have anything in this method.
     // Create HTTP request and get response
     StartChat.main(null);
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/lobby").asString();
     assertEquals(200, response.getStatus());
     
     SqLite db = StartChat.getDb();
     
     String sessionId = db.getLatestSession();
-    
-    db.insertUserWithSession("testing1", sessionId);
+
+    db.insertAuthenticatedUser("testing1", "token1", "refresh1", sessionId);
     
     
     System.out.println("Before Each");
@@ -115,7 +116,8 @@ public class StartChatTest {
     // sessionId is new after restarting, need to log again
     SqLite db = StartChat.getDb();
     String sessionId = db.getLatestSession();
-    db.insertUserWithSession("testing2", sessionId);
+    db.insertAuthenticatedUser("testing2", "token2", "refresh2", sessionId);
+    
     
     
     response = Unirest.get("http://localhost:8080/chatrooms/").asString();
@@ -340,40 +342,34 @@ public class StartChatTest {
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
     
-    SpotifyAPI mockApi = mock(SpotifyAPI.class);
-    Map<String, String> res = new HashMap<>();
-    res.put("access_token", "abc");
-    res.put("refresh_token", "def");
-    when(mockApi.getSpotifyTokenFromCode("123")).thenReturn(res);
-    StartChat.setApi(mockApi);
-    
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
     response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
 	
     assertEquals(302, response.getStatus());
+    
+    assertEquals("New user", response.getBody());
 	
     System.out.println("/process-auth Response: " + response.getBody());
     
     Unirest.config().reset();
     Unirest.config().followRedirects(true);
-    
-    SpotifyAPI api = new SpotifyAPI();
-    StartChat.setApi(api);
   }
   
   @Test
   @Order(11)
-  public void processAuthTestNoCodeAndSessionId() {
+  public void processAuthTestNoSessionId() {
     StartChat.stop();
     StartChat.main(null);
     
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
-    
+
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
     
-    System.out.println("/process-auth no code and sessionId Response: " + response.getBody());
+    System.out.println("/process-auth no sessionId Response: " + response.getBody());
+    
+    assertEquals("New user", response.getBody());
     
     assertEquals(302, response.getStatus());
     Unirest.config().reset();
@@ -389,16 +385,11 @@ public class StartChatTest {
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
     
-    SpotifyAPI mockApi = mock(SpotifyAPI.class);
-    Map<String, String> res = new HashMap<>();
-    res.put("access_token", "abc");
-    res.put("refresh_token", "def");
-    when(mockApi.getSpotifyTokenFromCode("123")).thenReturn(res);
-    StartChat.setApi(mockApi);
-    
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
     System.out.println("/process-auth no code Response: " + response.getBody());
+    
+    assertEquals("No code", response.getBody());
     
     assertEquals(302, response.getStatus());
     
@@ -408,9 +399,6 @@ public class StartChatTest {
     
     Unirest.config().reset();
     Unirest.config().followRedirects(true);
-    
-    SpotifyAPI api = new SpotifyAPI();
-    StartChat.setApi(api);
     
   }
 
@@ -675,6 +663,52 @@ public class StartChatTest {
     assertEquals("song added to your queue", response1.getBody());
     
     StartChat.setDb(origDb);
+  }
+  
+  @Test
+  @Order(23)
+  public void authTest() {
+
+    // Create HTTP request and get response
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/auth").asString();
+    SqLite db = StartChat.getDb();
+    
+    String sessionId = db.getLatestSession();
+
+    db.insertAuthenticatedUser("authTest", "authToken", "authRefresh", sessionId);
+    
+    response = Unirest.get("http://localhost:8080/auth").asString();
+    
+    assertEquals("{}", response.getBody());
+	
+    assertEquals(200, response.getStatus());
+    
+    //assertEquals("New user", response.getBody());
+	
+    System.out.println("/auth Response: " + response.getBody());
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
+  }
+  
+  @Test
+  @Order(24)
+  public void authTestNoSessionId() {
+    StartChat.stop();
+    StartChat.main(null);
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/auth").asString();
+    
+    System.out.println("/auth no sessionId Response: " + response.getBody());
+    
+    assertNotEquals("{}", response.getBody());
+    
+    assertEquals(200, response.getStatus());
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
   }
 
   /**

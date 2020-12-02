@@ -189,28 +189,6 @@ public class User {
   }
 
   /**
-   * Public constructor.
-   * @param token String
-   * @param database SqLite
-   */
-  public User(final String token, final SqLite database) {
-    this.db = database;
-    String email = Login.getEmailFromSpotifyToken(token);
-    User tmpUser = database.getUserByName(email);
-    if (tmpUser.username != null) {
-      this.username = tmpUser.username;
-      this.passwordHash = tmpUser.passwordHash;
-      this.sessionId = tmpUser.sessionId;
-      this.spotifyToken = tmpUser.spotifyToken;
-      this.spotifyRefreshToken = tmpUser.spotifyRefreshToken;
-      this.lastConnectionTime = tmpUser.lastConnectionTime;
-    } else {
-      database.insertUserWithToken(email, token);
-    }
-    this.setSpotifyTokenDb(token);
-  }
-
-  /**
    * Public constructor
    * @param newApi
    */
@@ -378,11 +356,16 @@ public class User {
   /**
    * Set Spotify refresh token and save to DB.
    * @param refreshToken String
+   * @return response String
    */
-  public void setSpotifyRefreshTokenDb(final String refreshToken) {
+  public String setSpotifyRefreshTokenDb(final String refreshToken) {
+	if (refreshToken == null || refreshToken.length() == 0) {
+      return "No token";
+	}
     setSpotifyRefreshToken(refreshToken);
     db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
         refreshToken, username);
+    return "OK";
   }
 
   /**

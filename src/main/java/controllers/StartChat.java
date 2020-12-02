@@ -19,7 +19,6 @@ import models.Genre;
 import models.Login;
 import models.Message;
 import models.Song;
-import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 import org.eclipse.jetty.websocket.api.Session;
@@ -62,11 +61,6 @@ public final class StartChat {
   private static SqLite db = new SqLite();
 
   /**
-   * Create SpotifyAPI instance.
-   */
-  private static SpotifyAPI api = new SpotifyAPI();
-
-  /**
    * get current database.
    * @return database SqLite
    */
@@ -101,14 +95,6 @@ public final class StartChat {
    */
   public static void setChatlist(final ChatList list) {
     chatlist = list;
-  }
-
-  /**
-   * set api
-   * @param api SpotifyAPI
-   */
-  public static void setApi(final SpotifyAPI newApi) {
-    api = newApi;
   }
 
   /**
@@ -178,24 +164,14 @@ public final class StartChat {
     }).start(PORT_NUMBER);
 
     app.get("/auth", ctx -> {
-        String sessionId = (String) ctx.sessionAttribute("sessionId");
-        //if /auth and code present skip rest
-        if (ctx.url().contains("/process_auth")
-               && ctx.queryParam("code") != null && sessionId != null) {
-          return;
-        }
-        if (sessionId == null) {
-          sessionId = UUID.randomUUID().toString();
-          ctx.sessionAttribute("sessionId", sessionId);
-        }
-        if (db.getUserBySessionId(sessionId).getUsername() == null) {
-          db.insertSession("" + System.currentTimeMillis(), sessionId);
-          System.out.println(Login.getSpotifyAuthUrl());
-  //        ctx.redirect(Login.getSpotifyAuthUrl());
-          ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
-        } else {
-          ctx.result("{}");
-        }
+      String sessionId = (String) ctx.sessionAttribute("sessionId");
+      if (db.getUserBySessionId(sessionId).getUsername() == null) {
+        db.insertSession("" + System.currentTimeMillis(), sessionId);
+        System.out.println(Login.getSpotifyAuthUrl());
+        ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
+      } else {
+        ctx.result("{}");
+      }
     });    
     
     //authentication
@@ -211,22 +187,17 @@ public final class StartChat {
         ctx.sessionAttribute("sessionId", sessionId);
       }
       if (db.getUserBySessionId(sessionId).getUsername() == null) {
-        
         db.insertSession("" + System.currentTimeMillis(), sessionId);
-        
         ctx.result("{\"error\":\"not authenticated\",\"auth_url\":\"" + Login.getSpotifyAuthUrl() + "\"}");
       }
     });   
 
     //handle spotify authentication
     app.get("/process_auth", ctx -> {
-      String sessionId = (String) ctx.sessionAttribute("sessionId");
-      Map<String, String> response = api.getSpotifyTokenFromCode(
-                                     ctx.queryParam("code"));
-      User user = new User(response.get("access_token"), db);
-      user.setSpotifyRefreshTokenDb(response.get("refresh_token"));
-      user.setSessionIdDb(sessionId);
-      
+      User user = new User();
+      String response = db.authenticateUser(ctx.queryParam("code"), ctx.sessionAttribute("sessionId"));
+      //String response = user.authenticateUser(ctx.queryParam("code"), ctx.sessionAttribute("sessionId"), db);
+      ctx.result(response);
       ctx.redirect("http://localhost:3000"); //TODO: change to HOME constant (runtime arg or external config?)
     });
 
