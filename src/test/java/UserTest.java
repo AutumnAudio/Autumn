@@ -47,7 +47,7 @@ public class UserTest {
   @BeforeEach
   public void beforeEach() {
     db.start();
-    db.commit();
+    
   }
 
   @Test
@@ -133,7 +133,7 @@ public class UserTest {
   public void testSetSessionId() {
     User user = new User();
     db.insertUserWithSession("cherry", "session");
-    db.commit();
+    
     assertEquals("session", db.getUserByName("cherry").getSessionId());
     user.setDb(db);
     user.setUsername("cherry");
@@ -145,7 +145,7 @@ public class UserTest {
   public void testSetSpotifyToken() {
     User user = new User();
     db.insertUserWithToken("cherry", "token");
-    db.commit();
+    
     assertEquals("token", db.getUserByName("cherry").getSpotifyToken());
     user.setDb(db);
     user.setUsername("cherry");
@@ -157,7 +157,7 @@ public class UserTest {
   public void testSetSpotifyRefreshToken() {
     User user = new User();
     db.insertUserWithToken("cherry", "token");
-    db.commit();
+    
     assertNull(db.getUserByName("cherry").getSpotifyRefreshToken());
     user.setDb(db);
     user.setUsername("cherry");
@@ -168,7 +168,7 @@ public class UserTest {
   @AfterEach
   public void afterEach() {
     db.clear();
-    db.commit();
+    
     db.close();
   }
 }
