@@ -379,7 +379,7 @@ public class UserTest {
     assertEquals("No token", user.setSpotifyRefreshTokenDb(""));
   }
 
-  //------------------------------------------ Other --------------------------------------------- //
+  //---------------------------------- RefreshSpotifyToken ---------------------------------------- //
   @Test
   public void testRefreshSpotifyTokenValid() throws Exception {
     SpotifyAPI mockAPI = mock(SpotifyAPI.class);
@@ -423,6 +423,7 @@ public class UserTest {
      assertEquals("Invalid Token", thrown.getMessage());
   }
 
+  //---------------------------------- Minor setter methods ---------------------------------------- //
   @Test
   public void testSetSessionId() {
     User user = new User();

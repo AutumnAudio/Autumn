@@ -1,18 +1,7 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -20,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.specification.PlayHistory;
 
-import models.Login;
 import models.SpotifyAPI;
 
 public class SpotifyAPITest {
@@ -74,5 +62,58 @@ public class SpotifyAPITest {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+  }
+
+  // ------------------------- GetSpotifyTokenFromCode ------------------------- //
+  @Test
+  public void getSpotifyTokenFromCodeTestOK() {
+    Map<String, String> map = api.getSpotifyTokenFromCode("1");
+    assertEquals(2, map.size());
+  }
+
+  @Test
+  public void getSpotifyTokenFromCodeTestNullCode() {
+    assertNull(api.getSpotifyTokenFromCode(null));
+  }
+
+  @Test
+  public void getSpotifyTokenFromCodeTestEmptyCode() {
+    assertNull(api.getSpotifyTokenFromCode(""));
+  }  
+
+  // ------------------------- RefreshSpotifyToken ------------------------- //
+  @Test
+  public void refreshSpotifyTokenTestOK() {
+    String token = api.refreshSpotifyToken(refreshToken);
+    assertNotNull(token);
+  }
+
+  @Test
+  public void refreshSpotifyTokenTestNullToken() {
+    String token = api.refreshSpotifyToken(null);
+    assertNull(token);
+  }
+
+  @Test
+  public void refreshSpotifyTokenTestEmptyToken() {
+    String token = api.refreshSpotifyToken("");
+    assertNull(token);
+  }
+
+  // ----------------------- GetEmailFromSpotifyToken ------------------------ //
+  @Test
+  public void getEmailFromSpotifyTokenTestOK() {
+    String token = api.refreshSpotifyToken(refreshToken);
+    assertEquals("cherrychu_120@hotmail.com", api.getEmailFromSpotifyToken(token));
+  }
+  
+  @Test
+  public void getEmailFromSpotifyTokenTestNullToken() {
+    assertNull(api.getEmailFromSpotifyToken(null));
+  }
+
+  @Test
+  public void getEmailFromSpotifyTokenTestEmptyToken() {
+    assertNull(api.getEmailFromSpotifyToken(""));
   }
 }

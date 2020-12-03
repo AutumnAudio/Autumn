@@ -76,6 +76,9 @@ public enum Genre {
    * @return true/false boolean
    */
   public static boolean isValidGenre(final String genre) {
+    if (genre == null || genre.length() < 3) {
+      return false;
+    }
     return Arrays.stream(Genre.values())
           .map(Genre::name)
           .collect(Collectors.toSet())

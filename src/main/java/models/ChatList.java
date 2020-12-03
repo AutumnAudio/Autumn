@@ -47,21 +47,28 @@ public class ChatList {
    * @return numPeopleChatting integer
    */
   public int getTotalParticipants() {
-    
-    int numPeopleChatting = 0;
-    
-    for (Map.Entry<String,ChatRoom> chatEntry : this.chatrooms.entrySet()) {
-      numPeopleChatting += chatEntry.getValue().getNumParticipants();
+    if (this.chatrooms == null) {
+       return 0;
     }
-    
+    int numPeopleChatting = 0;
+    for (Map.Entry<String,ChatRoom> chatEntry : this.chatrooms.entrySet()) {
+      numPeopleChatting += chatEntry.getValue().getParticipant().size();
+    }
     return numPeopleChatting;
   }
 
   /**
    * Refresh Chatlist song data.
+   * @return response String
    */
-  public void refreshChatList() {
+  public String refreshChatList() {
+    if (this.chatrooms == null) {
+      return "Null chatroom list";
+    }
     for (ChatRoom chatroom : chatrooms.values()) {
+      if (chatroom == null) {
+        return "Null chatroom";
+      }
       Map<String, User> participants = chatroom.getParticipant();
       for (Map.Entry<String, User> entry : participants.entrySet()) {
         User user = entry.getValue();
@@ -74,6 +81,7 @@ public class ChatList {
         user.setApi(null);
       }
     }
+    return "OK";
   }
 
 }

@@ -92,7 +92,7 @@ public class Song {
 
   /**
    * Get song.
-   * @return message song
+   * @return song name String
    */
   public String getSong() {
     return this.song;

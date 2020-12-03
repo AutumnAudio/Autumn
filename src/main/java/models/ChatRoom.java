@@ -37,14 +37,7 @@ public class ChatRoom {
   public Map<String, User> getParticipant() {
     return this.participants;
   }
-  
-  /**
-   * Get number of participants in chatroom.
-   * @return num Participants
-  */
-  public int getNumParticipants() {
-    return getParticipant().size();
-  }
+
 
   /**
    * Set participant list.
@@ -57,9 +50,15 @@ public class ChatRoom {
   /**
    * Add user to chatroom participant list.
    * @param user User Object
+   * @return response String
    */
-  public void addParticipant(final User user) {
+  public String addParticipant(final User user) {
+    if (user == null || user.getUsername() == null
+            || user.getUsername().length() == 0) {
+      return "No user";
+    }
     this.participants.put(user.getUsername(), user);
+    return "OK";
   }
 
   /**
@@ -81,10 +80,16 @@ public class ChatRoom {
   /**
    * Add message to chat history.
    * @param message Message Object
+   * @return response String
    */
-  public void addMessage(final Message message) {
+  public String addMessage(final Message message) {
     // call sql query to add message
-    this.chat.add(message);
+	if (message == null || message.getMessage() == null
+            || message.getMessage().length() == 0) {
+      return "No message";
+	}
+	this.chat.add(message);
+	return "OK";
   }
 
   /**
@@ -106,10 +111,15 @@ public class ChatRoom {
   /**
    * Add song to shared songs.
    * @param song Song Object
+   * @return response String
    */
-  public void addSong(final Song song) {
-    // call sql query to add song
+  public String addSong(final Song song) {
+    if (song == null || song.getName() == null
+            || song.getName().length() == 0) {
+      return "No song";
+    }
     this.playlist.add(song);
+    return "OK";
   }
 
   /**
