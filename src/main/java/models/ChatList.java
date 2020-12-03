@@ -51,7 +51,7 @@ public class ChatList {
     int numPeopleChatting = 0;
     
     for (Map.Entry<String,ChatRoom> chatEntry : this.chatrooms.entrySet()) {
-      numPeopleChatting += chatEntry.getValue().getNumParticipants();
+      numPeopleChatting += chatEntry.getValue().getParticipant().size();
     }
     
     return numPeopleChatting;

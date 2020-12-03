@@ -23,6 +23,7 @@ public class ChatListTest {
     Map<String, User> participants = new HashMap<>();
     chatroom.setParticipant(participants);
     User mockUser = mock(User.class);
+    when(mockUser.getUsername()).thenReturn("user");
     when(mockUser.getSpotifyToken()).thenReturn("token");
     when(mockUser.refreshRecentlyPlayed()).thenReturn("OK");
     when(mockUser.refreshCurrentlyPlaying()).thenReturn("OK");
@@ -30,7 +31,7 @@ public class ChatListTest {
     chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();
     assertEquals(1, chatlist.size());
-    assertEquals(1, chatroom.getNumParticipants());
+    assertEquals(1, chatroom.getParticipant().size());
   }
 
   @Test
@@ -43,11 +44,12 @@ public class ChatListTest {
     Map<String, User> participants = new HashMap<>();
     chatroom.setParticipant(participants);
     User mockUser = mock(User.class);
+    when(mockUser.getUsername()).thenReturn("user");
     when(mockUser.getSpotifyToken()).thenReturn("null");
     chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();
     assertEquals(1, chatlist.size());
-    assertEquals(1, chatroom.getNumParticipants());
+    assertEquals(1, chatroom.getParticipant().size());
   }
 
   @Test

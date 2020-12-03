@@ -87,7 +87,7 @@ public class SqLiteTest {
 
   //----------------------------- UpdateUserAttribute --------------------------------------- //
   @Test
-  public void testUpdateUserAttribute() {
+  public void testUpdateUserAttributeOK() {
     db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
     String res = db.updateUserAttribute("spotify_token", "new_token", "mary");
     assertEquals("OK", res);
@@ -137,7 +137,7 @@ public class SqLiteTest {
 
 //----------------------------- InsertUserwithGenre --------------------------------------- //
   @Test
-  public void testInsertUserwithGenre() {
+  public void testInsertUserwithGenreOK() {
     String res = db.insertUserwithGenre("mary", "blues");
     assertEquals("OK", res);
   }
@@ -155,7 +155,7 @@ public class SqLiteTest {
   }
 
   @Test
-  public void testInsertUserwithGenreNoGenre() {
+  public void testInsertUserwithGenreNullGenre() {
     String res = db.insertUserwithGenre("mary", null);
     assertEquals("No genre", res);
   }
@@ -228,7 +228,7 @@ public class SqLiteTest {
 
   //--------------------------------- GetUserCount ------------------------------------------ //
   @Test
-  public void testGetUserCount() {
+  public void testGetUserCountOK() {
     db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
     assertEquals(1, db.getUserCount("mary"));
   }
@@ -245,7 +245,7 @@ public class SqLiteTest {
 
   //--------------------------------- GetGenreUser ------------------------------------------ //
   @Test
-  public void testGetGenreUser() {
+  public void testGetGenreUserOK() {
     db.insertUserwithGenre("mary", "jazz");
     assertEquals("jazz", db.getGenreUser("mary"));
   }
@@ -262,7 +262,7 @@ public class SqLiteTest {
 
   //------------------------------- GetUserBySessionId --------------------------------------- //
   @Test
-  public void testGetUserBySessionId() {
+  public void testGetUserBySessionIdOK() {
     db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
     assertEquals("mary", db.getUserBySessionId("sessionId").getUsername());
   }
@@ -279,7 +279,7 @@ public class SqLiteTest {
 
   //---------------------------------- InsertChatRoom ----------------------------------------- //
   @Test
-  public void testInsertChatRoom() {
+  public void testInsertChatRoomOK() {
     String res = db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
     assertEquals("OK", res);
   }
@@ -377,7 +377,7 @@ public class SqLiteTest {
 
   //---------------------------------- RemoveParticipant --------------------------------------- //  
   @Test
-  public void testRemoveParticipant() {
+  public void testRemoveParticipantOK() {
     db.insertParticipant(Genre.JAZZ, "m", "a", "a", "a");
     assertEquals("OK", db.removeParticipant(Genre.JAZZ, "m"));
   }
@@ -402,7 +402,7 @@ public class SqLiteTest {
 
   //---------------------------------- RemoveUserGenre ---------------------------------------- //  
   @Test
-  public void testRemoveUserGenre() {
+  public void testRemoveUserGenreOK() {
     db.insertUserwithGenre("mary", "blues");
     assertEquals("blues", db.getGenreUser("mary"));
     assertEquals("OK", db.removeUserGenre("mary"));
@@ -420,7 +420,7 @@ public class SqLiteTest {
 
   //--------------------------------- GetChatRoomParticpant ------------------------------------ //
   @Test
-  public void testGetChatRoomParticipant() {
+  public void testGetChatRoomParticipantOK() {
     db.insertParticipant(Genre.JAZZ, "mary", "token", "refresh", "session");
     assertEquals(1, db.getChatRoomParticipant(Genre.JAZZ).size());
   }
@@ -433,7 +433,7 @@ public class SqLiteTest {
 
   //-------------------------------------- InsertSong ------------------------------------------ //  
   @Test
-  public void testInsertSong() {
+  public void testInsertSongOK() {
     String res = db.insertSong("m", Time.valueOf(LocalTime.now()), Genre.BLUES, "b");
     assertEquals("OK", res);
   }
@@ -476,7 +476,7 @@ public class SqLiteTest {
   
   //----------------------------------- GetChatRoomPlaylist -------------------------------------- //
   @Test
-  public void testGetChatRoomPlaylist() {
+  public void testGetChatRoomPlaylistOK() {
     db.insertSong("m", Time.valueOf(LocalTime.now()), Genre.JAZZ, "b");
     assertEquals(1, db.getChatRoomPlaylist(Genre.JAZZ).size());
   }
@@ -488,7 +488,7 @@ public class SqLiteTest {
 
   //------------------------------------- InsertSession ----------------------------------------- // 
   @Test
-  public void testInsertSession() {
+  public void testInsertSessionOK() {
     assertEquals("OK", db.insertSession("0", "1"));
   }
 
