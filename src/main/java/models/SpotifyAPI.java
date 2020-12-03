@@ -2,10 +2,12 @@ package models;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +69,9 @@ public class SpotifyAPI {
    */
   public Map<String, String> getSpotifyTokenFromCode(final String code) {
     //https://mkyong.com/java/how-to-send-http-request-getpost-in-java/
+    if (code == null || code.length() == 0) {
+      return null;
+    }
     HttpClient httpClient = HttpClient.newBuilder()
         .version(HttpClient.Version.HTTP_2)
         .build();
@@ -78,7 +83,7 @@ public class SpotifyAPI {
     data.put("redirect_uri", Login.getRedirectURI());
 
     HttpRequest request = HttpRequest.newBuilder()
-            .POST(Login.buildFormDataFromMap(data))
+            .POST(buildFormDataFromMap(data))
             .uri(URI.create("https://accounts.spotify.com/api/token"))
             .setHeader("User-Agent", "Java 11 HttpClient Bot")
             .header("Content-Type", "application/x-www-form-urlencoded")
@@ -107,7 +112,9 @@ public class SpotifyAPI {
    * @return token String
    */
   public String refreshSpotifyToken(final String refreshToken) {
-
+    if (refreshToken == null || refreshToken.length() == 0) {
+      return null;
+    }
     HttpClient httpClient = HttpClient.newBuilder()
         .version(HttpClient.Version.HTTP_2)
         .build();
@@ -118,7 +125,7 @@ public class SpotifyAPI {
     data.put("refresh_token", refreshToken);
 
     HttpRequest request = HttpRequest.newBuilder()
-            .POST(Login.buildFormDataFromMap(data))
+            .POST(buildFormDataFromMap(data))
             .uri(URI.create("https://accounts.spotify.com/api/token"))
             .setHeader("User-Agent", "Java 11 HttpClient Bot")
             .header("Content-Type", "application/x-www-form-urlencoded")
@@ -148,6 +155,9 @@ public class SpotifyAPI {
    * @return email String
    */
   public String getEmailFromSpotifyToken(final String spotifyToken) {
+    if (spotifyToken == null || spotifyToken.length() == 0) {
+      return null;
+    }
     HttpClient httpClient = HttpClient.newBuilder()
         .version(HttpClient.Version.HTTP_2)
         .build();
@@ -171,5 +181,27 @@ public class SpotifyAPI {
       e.printStackTrace();
     }
     return null;
+  }
+ 
+  /**
+   * Build HTTP Form Data with given data.
+   * @param data Map
+   * @return Form data HTTPRequest
+   */
+  private static HttpRequest.BodyPublisher buildFormDataFromMap(
+        final Map<Object, Object> data) {
+    var builder = new StringBuilder();
+    for (Map.Entry<Object, Object> entry : data.entrySet()) {
+      if (builder.length() > 0) {
+        builder.append("&");
+      }
+      builder.append(URLEncoder.encode(entry.getKey().toString(),
+                StandardCharsets.UTF_8));
+      builder.append("=");
+      builder.append(URLEncoder.encode(entry.getValue().toString(),
+                StandardCharsets.UTF_8));
+    }
+
+    return HttpRequest.BodyPublishers.ofString(builder.toString());
   }
 }
