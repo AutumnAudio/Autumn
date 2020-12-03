@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
@@ -18,6 +19,7 @@ import models.ChatRoom;
 import models.Genre;
 import models.Message;
 import models.Song;
+import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 
@@ -61,8 +63,8 @@ public class StartChatTest {
     SqLite db = StartChat.getDb();
     
     String sessionId = db.getLatestSession();
-    
-    db.insertUserWithSession("testing1", sessionId);
+
+    db.insertAuthenticatedUser("testing1", "token1", "refresh1", sessionId);
     
     
     System.out.println("Before Each");
@@ -114,7 +116,8 @@ public class StartChatTest {
     // sessionId is new after restarting, need to log again
     SqLite db = StartChat.getDb();
     String sessionId = db.getLatestSession();
-    db.insertUserWithSession("testing2", sessionId);
+    db.insertAuthenticatedUser("testing2", "token2", "refresh2", sessionId);
+    
     
     
     response = Unirest.get("http://localhost:8080/chatrooms/").asString();
@@ -344,6 +347,8 @@ public class StartChatTest {
     response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
 	
     assertEquals(302, response.getStatus());
+    
+    assertEquals("New user", response.getBody());
 	
     System.out.println("/process-auth Response: " + response.getBody());
     
@@ -353,16 +358,18 @@ public class StartChatTest {
   
   @Test
   @Order(11)
-  public void processAuthTestNoCodeAndSessionId() {
+  public void processAuthTestNoSessionId() {
     StartChat.stop();
     StartChat.main(null);
     
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
-    
+
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth?code=123").asString();
     
-    System.out.println("/process-auth Response: " + response.getBody());
+    System.out.println("/process-auth no sessionId Response: " + response.getBody());
+    
+    assertEquals("New user", response.getBody());
     
     assertEquals(302, response.getStatus());
     Unirest.config().reset();
@@ -380,9 +387,11 @@ public class StartChatTest {
     
     HttpResponse<String> response = Unirest.get("http://localhost:8080/process_auth").asString();
     
-    System.out.println("/process-auth Response: " + response.getBody());
+    System.out.println("/process-auth no code Response: " + response.getBody());
     
-    assertEquals(500, response.getStatus());
+    assertEquals("No code", response.getBody());
+    
+    assertEquals(302, response.getStatus());
     
     response = Unirest.get("http://localhost:8080/").asString();
   
@@ -390,6 +399,7 @@ public class StartChatTest {
     
     Unirest.config().reset();
     Unirest.config().followRedirects(true);
+    
   }
 
   
@@ -526,7 +536,7 @@ public class StartChatTest {
     
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
-    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    when(mockUser.refreshCurrentlyPlaying()).thenReturn("OK");
     
     StartChat.setDb(mockDb);
 
@@ -562,7 +572,7 @@ public class StartChatTest {
     
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
-    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    when(mockUser.refreshCurrentlyPlaying()).thenReturn("OK");
     
     StartChat.setDb(mockDb);
 
@@ -603,7 +613,7 @@ public class StartChatTest {
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser1);
     when(mockDb.getGenreUser("testing1")).thenReturn("blues");
-    doNothing().when(mockUser1).refreshCurrentlyPlaying();
+    when(mockUser1.refreshCurrentlyPlaying()).thenReturn("OK");
     
     ChatList mockChatlist = mock(ChatList.class);
     ChatRoom chatroom = new ChatRoom();
@@ -653,6 +663,52 @@ public class StartChatTest {
     assertEquals("song added to your queue", response1.getBody());
     
     StartChat.setDb(origDb);
+  }
+  
+  @Test
+  @Order(23)
+  public void authTest() {
+
+    // Create HTTP request and get response
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/auth").asString();
+    SqLite db = StartChat.getDb();
+    
+    String sessionId = db.getLatestSession();
+
+    db.insertAuthenticatedUser("authTest", "authToken", "authRefresh", sessionId);
+    
+    response = Unirest.get("http://localhost:8080/auth").asString();
+    
+    assertEquals("{}", response.getBody());
+	
+    assertEquals(200, response.getStatus());
+    
+    //assertEquals("New user", response.getBody());
+	
+    System.out.println("/auth Response: " + response.getBody());
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
+  }
+  
+  @Test
+  @Order(24)
+  public void authTestNoSessionId() {
+    StartChat.stop();
+    StartChat.main(null);
+    
+    Unirest.config().reset();
+    Unirest.config().followRedirects(false);
+
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/auth").asString();
+    
+    System.out.println("/auth no sessionId Response: " + response.getBody());
+    
+    assertNotEquals("{}", response.getBody());
+    
+    assertEquals(200, response.getStatus());
+    Unirest.config().reset();
+    Unirest.config().followRedirects(true);
   }
 
   /**

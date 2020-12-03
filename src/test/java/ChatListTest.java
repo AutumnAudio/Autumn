@@ -24,8 +24,8 @@ public class ChatListTest {
     chatroom.setParticipant(participants);
     User mockUser = mock(User.class);
     when(mockUser.getSpotifyToken()).thenReturn("token");
-    doNothing().when(mockUser).refreshRecentlyPlayed();
-    doNothing().when(mockUser).refreshCurrentlyPlaying();
+    when(mockUser.refreshRecentlyPlayed()).thenReturn("OK");
+    when(mockUser.refreshCurrentlyPlaying()).thenReturn("OK");
     doNothing().when(mockUser).setApi(null);
     chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();

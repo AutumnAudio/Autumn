@@ -15,12 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public final class Login {
+public class Login {
 
   /**
-   * Private constructor that prevents utility class instantiation.
+   * Public constructor
    */
-  private Login() {
+  public Login() {
   }
 
   /**
@@ -37,6 +37,18 @@ public final class Login {
    * redirect URI for process authentication.
    */
   private static String redirectURI = "http://localhost:8080/process_auth";
+
+  public static String getClientId() {
+    return clientId;
+  }
+
+  public static String getClientSecret() {
+    return clientSecret;
+  }
+
+  public static String getRedirectURI() {
+   return redirectURI;
+  }
 
   /**
    * Get Spotify Authorization URL.
@@ -58,124 +70,11 @@ public final class Login {
   }
 
   /**
-   * Get Spotify token from given code.
-   * @param code String
-   * @return response Map
-   */
-  public static Map<String, String> getSpotifyTokenFromCode(final String code) {
-    //https://mkyong.com/java/how-to-send-http-request-getpost-in-java/
-    HttpClient httpClient = HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_2)
-        .build();
-
-    // form parameters
-    Map<Object, Object> data = new HashMap<>();
-    data.put("grant_type", "authorization_code");
-    data.put("code", code);
-    data.put("redirect_uri", redirectURI);
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .POST(buildFormDataFromMap(data))
-            .uri(URI.create("https://accounts.spotify.com/api/token"))
-            .setHeader("User-Agent", "Java 11 HttpClient Bot")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Authorization", "Basic "
-                + Base64.getEncoder().encodeToString((clientId + ":"
-                + clientSecret).getBytes(Charset.forName("UTF-8"))))
-            .build();
-
-    HttpResponse<String> response = null;
-    try {
-      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-      Gson gson = new Gson();
-      Map<String, String> result = gson.fromJson(response.body(),
-          new TypeToken<Map<String, Object>>() { }.getType());
-      return result;
-    } catch (IOException | InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /**
-   * Get new Spotify token with refresh token.
-   * @param refreshToken String
-   * @return token String
-   */
-  public static String refreshSpotifyToken(final String refreshToken) {
-
-    HttpClient httpClient = HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_2)
-        .build();
-
-    // form parameters
-    Map<Object, Object> data = new HashMap<>();
-    data.put("grant_type", "refresh_token");
-    data.put("refresh_token", refreshToken);
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .POST(buildFormDataFromMap(data))
-            .uri(URI.create("https://accounts.spotify.com/api/token"))
-            .setHeader("User-Agent", "Java 11 HttpClient Bot")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .header("Authorization", "Basic "
-                + Base64.getEncoder().encodeToString((clientId + ":"
-                + clientSecret).getBytes(Charset.forName("UTF-8"))))
-            .build();
-
-    HttpResponse<String> response = null;
-    try {
-      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-      Gson gson = new Gson();
-      Map<String, String> result = gson.fromJson(response.body(),
-          new TypeToken<Map<String, Object>>() { }.getType());
-
-      return result.get("access_token");
-    } catch (IOException | InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /**
-   * get email from given Spotify token.
-   * @param spotifyToken String
-   * @return email String
-   */
-  public static String getEmailFromSpotifyToken(final String spotifyToken) {
-    HttpClient httpClient = HttpClient.newBuilder()
-        .version(HttpClient.Version.HTTP_2)
-        .build();
-
-    HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("https://api.spotify.com/v1/me"))
-            .setHeader("User-Agent", "Java 11 HttpClient Bot")
-            .header("Authorization", "Bearer " + spotifyToken)
-            .build();
-
-    HttpResponse<String> response = null;
-    try {
-      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-      Gson gson = new Gson();
-      Map<String, String> result = gson.fromJson(response.body(),
-          new TypeToken<Map<String, Object>>() { }.getType());
-
-      return result.get("email");
-    } catch (IOException | InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /**
    * Build HTTP Form Data with given data.
    * @param data Map
    * @return Form data HTTPRequest
    */
-  private static HttpRequest.BodyPublisher buildFormDataFromMap(
+  public static HttpRequest.BodyPublisher buildFormDataFromMap(
         final Map<Object, Object> data) {
     var builder = new StringBuilder();
     for (Map.Entry<Object, Object> entry : data.entrySet()) {
