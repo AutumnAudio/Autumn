@@ -23,7 +23,7 @@ public class Song {
   private String[] artists;
 
   /**
-   * uri that contains the song context
+   * uri that contains the song context.
    */
   private String uri;
 
@@ -110,7 +110,7 @@ public class Song {
    * Set uri.
    * @param songUri String
    */
-  public void setUri(String songUri) {
+  public void setUri(final String songUri) {
     this.uri = songUri;
   }
 

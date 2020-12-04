@@ -5,10 +5,7 @@ import static org.mockito.Mockito.*;
 import com.google.gson.Gson;
 import controllers.StartChat;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import kong.unirest.HttpResponse;
@@ -16,10 +13,8 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import models.ChatList;
 import models.ChatRoom;
-import models.Genre;
 import models.Message;
 import models.Song;
-import models.SpotifyAPI;
 import models.SqLite;
 import models.User;
 
@@ -543,7 +538,7 @@ public class StartChatTest {
     HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
     System.out.println("/share Response: " + response1.getBody());
 
-    assertEquals("no song playing", response1.getBody());
+    assertEquals("no song shared", response1.getBody());
     
     StartChat.setDb(origDb);
   }
@@ -579,7 +574,7 @@ public class StartChatTest {
     HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
     System.out.println("/share Response: " + response1.getBody());
 
-    assertEquals("User not in any chatroom", response1.getBody());
+    assertEquals("no song shared", response1.getBody());
     
     StartChat.setDb(origDb);
   }
@@ -593,19 +588,9 @@ public class StartChatTest {
     
     SqLite mockDb = mock(SqLite.class);
     User mockUser1 = mock(User.class);
-    Song song = new Song();
-    song.setUsername("testing1");
-    song.setName("my song");
-    String[] artists = new String[1];
-    artists[0] = "my artist";
-    song.setArtists(artists);
-    song.setUri("my uri");
+    Message message = new Message();
+    message.setMessage("I shared xxx song");
     when(mockUser1.getUsername()).thenReturn("testing1");
-    when(mockUser1.getCurrentTrack()).thenReturn(song);
-    
-    User mockUser2 = mock(User.class);
-    when(mockUser2.getUsername()).thenReturn("testing2");
-    when(mockUser2.addToQueue(song.getUri())).thenReturn("song added");
     
     SqLite origDb = StartChat.getDb();
     String sessionId = origDb.getLatestSession();
@@ -613,20 +598,9 @@ public class StartChatTest {
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser1);
     when(mockDb.getGenreUser("testing1")).thenReturn("blues");
-    when(mockUser1.refreshCurrentlyPlaying()).thenReturn("OK");
-    
-    ChatList mockChatlist = mock(ChatList.class);
-    ChatRoom chatroom = new ChatRoom();
-    Map<String, User> participantList = new HashMap<>();
-    chatroom.setParticipant(participantList);
-    chatroom.addParticipant(mockUser1);
-    chatroom.addParticipant(mockUser2);
-    List<Song> songList = new ArrayList<>();
-    chatroom.setPlaylist(songList);
-    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);
-    
+    when(mockUser1.share(StartChat.getChatlist())).thenReturn(message);
+
     StartChat.setDb(mockDb);
-    StartChat.setChatlist(mockChatlist);
 
     HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
     System.out.println("/share Response: " + response1.getBody());

@@ -1,5 +1,9 @@
 package models;
 
+import java.sql.Time;
+import java.time.LocalTime;
+
+import com.google.gson.Gson;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.IPlaylistItem;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
@@ -36,11 +40,6 @@ public class User {
   private String spotifyRefreshToken;
 
   /**
-   * last connection time.
-   */
-  private int lastConnectionTime;
-
-  /**
    * SqLite database.
    */
   private SqLite db;
@@ -49,6 +48,11 @@ public class User {
    * Recently played song limit.
    */
   private static final int LIMIT = 10;
+
+  /**
+   * min length for uri.
+   */
+  private static final int URILIMIT = 14;
 
   /**
    * Recently Played song list.
@@ -61,71 +65,73 @@ public class User {
   private Song currentTrack;
 
   /**
-   * Spotify api object associated with user
+   * Spotify api object associated with user.
    */
-  private SpotifyAPI api = new SpotifyAPI();
+  private MyApi api = new MyApi();
 
   /**
    * refresh recently playing.
+   * @return response String
    */
   public String refreshRecentlyPlayed() {
     String ret = "OK";
     PlayHistory[] playHistory = null;
     spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);
-	try {
+    try {
       api.setApi(new SpotifyApi.Builder()
             .setAccessToken(spotifyToken)
             .build());
       playHistory = api.recentlyPlayed();
-	} catch (Exception e) {
+      if (playHistory.length <  LIMIT || playHistory.length > LIMIT) {
+        return "Number of items return not matched.";
+      }
+      for (int i = 0; i < playHistory.length; i++) {
+        TrackSimplified track = playHistory[i].getTrack();
+        if (track == null) {
+          return "List contains null track";
+        }
+        ArtistSimplified[] artists = track.getArtists();
+        if (artists == null) {
+          return "List contains null artist list";
+        }
+        String[] songArtists = new String[artists.length];
+        for (int j = 0; j < artists.length; j++) {
+          songArtists[j] = artists[j].getName();
+        }
+        Song song = new Song();
+        song.setUsername(username);
+        String trackName = track.getName();
+        if (trackName == null || trackName.length() == 0) {
+          return "List contains invalid track name";
+        }
+        song.setName(trackName);
+        song.setArtists(songArtists);
+        song.setUri(track.getUri());
+        recentlyPlayed[i] = song;
+      }
+    } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
         refreshRecentlyPlayed();
       } else {
         System.out.println("Something went wrong!\n"
           + e.getMessage());
       }
-	}
-	if (playHistory.length <  10 || playHistory.length > 10) {
-	  return "Number of items return not matched.";
-	}
-    for (int i = 0; i < playHistory.length; i++) {
-      TrackSimplified track = playHistory[i].getTrack();
-      if (track == null) {
-        return "List contains null track";
-      }
-      ArtistSimplified[] artists = track.getArtists();
-      if (artists == null) {
-        return "List contains null artist list";
-      }
-      String[] songArtists = new String[artists.length];
-      for (int j = 0; j < artists.length; j++) {
-        songArtists[j] = artists[j].getName();
-      }
-      Song song = new Song();
-      song.setUsername(username);
-      String trackName = track.getName();
-      if (trackName == null || trackName.length() == 0) {
-      	return "List contains invalid track name";
-      }
-      song.setName(trackName);
-      song.setArtists(songArtists);
-      song.setUri(track.getUri());
-      recentlyPlayed[i] = song;
     }
     return ret;
   }
 
   /**
    * refresh currently playing.
+   * @return response String
    */
   public String refreshCurrentlyPlaying() {
-	String ret = "OK";
+    String ret = "OK";
     CurrentlyPlaying currentlyPlaying = null;
     spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);
     try {
       api.setApi(new SpotifyApi.Builder()
-	            .setAccessToken(spotifyToken)
-	            .build());
+                .setAccessToken(spotifyToken)
+                .build());
       currentlyPlaying = api.currentlyPlaying();
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
@@ -139,11 +145,11 @@ public class User {
       IPlaylistItem playlistItem = currentlyPlaying.getItem();
       Track track = (Track) playlistItem;
       if (track == null) {
-          return "Null track";
+        return "Null track";
       }
       ArtistSimplified[] artists = track.getArtists();
       if (artists == null) {
-    	return "Null artist list";
+        return "Null artist list";
       }
       String[] songArtists = new String[artists.length];
       for (int j = 0; j < artists.length; j++) {
@@ -153,7 +159,7 @@ public class User {
       song.setUsername(username);
       String trackName = track.getName();
       if (trackName == null || trackName.length() == 0) {
-      	ret = "Invalid track name";
+        ret = "Invalid track name";
       }
       song.setName(trackName);
       song.setArtists(songArtists);
@@ -166,16 +172,21 @@ public class User {
     return ret;
   }
 
-  public String addToQueue(String uri) {
+  /**
+   * add song to queue.
+   * @param uri String
+   * @return response String
+   */
+  public String addToQueue(final String uri) {
     spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);
-    if (uri.length() <= 14 || !uri.contains("spotify:track:")) {
+    if (uri.length() <= URILIMIT || !uri.contains("spotify:track:")) {
       return "invalid uri";
     }
     String ret = "";
     try {
       api.setApi(new SpotifyApi.Builder()
-         .setAccessToken(spotifyToken)
-            .build());
+          .setAccessToken(spotifyToken)
+          .build());
       ret = api.addSong(uri);
     } catch (Exception e) {
       if (e.getMessage().equals("The access token expired")) {
@@ -189,10 +200,50 @@ public class User {
   }
 
   /**
-   * Public constructor
-   * @param newApi
+   * share user currently playing song.
+   * @param chatlist ChatList
+   * @return message Message
    */
-  public User(final SpotifyAPI newApi) {
+  public Message share(final ChatList chatlist) {
+    if (chatlist == null) {
+      return null;
+    }
+    Message message = new Message();
+    message.setUsername(username);
+    refreshCurrentlyPlaying();
+    String genreStr = db.getGenreUser(username);
+    if (getCurrentTrack() == null || genreStr == null) {
+      return null;
+    }
+    Song song = new Song();
+    song.setUsername(username);
+    song.setName(getCurrentTrack().getName());
+    song.setArtists(getCurrentTrack().getArtists());
+    song.setUri(getCurrentTrack().getUri());
+    Genre genre = Genre.valueOf(genreStr.toUpperCase());
+    ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+    // share song with participants
+    for (User sharee : chatroom.getParticipant().values()) {
+      if (!getUsername().equals(sharee.getUsername())) {
+        sharee.addToQueue(song.getUri());
+      }
+    }
+    // add song to group playlist
+    chatroom.addSong(song);
+    db.insertSong(username, Time.valueOf(LocalTime.now()),
+            genre, new Gson().toJson(song));
+    // send message to chat
+    message.setUsername(username);
+    message.setMessage("I just shared " + song.getName()
+            + " by " + song.getArtists()[0]);
+    return message;
+  }
+
+  /**
+   * Public constructor.
+   * @param newApi MyApi
+   */
+  public User(final MyApi newApi) {
     this.api = newApi;
   }
 
@@ -282,22 +333,6 @@ public class User {
   }
 
   /**
-   * get last connection time.
-   * @return time integer
-   */
-  public int getLastConnectionTime() {
-    return lastConnectionTime;
-  }
-
-  /**
-   * Set last connection time.
-   * @param connectionTime integer
-   */
-  public void setLastConnectionTime(final int connectionTime) {
-    this.lastConnectionTime = connectionTime;
-  }
-
-  /**
    * Get Spotify token.
    * @return spotifyToken String
    */
@@ -334,7 +369,7 @@ public class User {
   /**
    * Refresh Spotify token.
    * @return token String
- * @throws Exception 
+   * @throws Exception Exception
    */
   public String refreshSpotifyToken() throws Exception {
     String newToken = api.refreshSpotifyToken(spotifyRefreshToken);
@@ -359,9 +394,9 @@ public class User {
    * @return response String
    */
   public String setSpotifyRefreshTokenDb(final String refreshToken) {
-	if (refreshToken == null || refreshToken.length() == 0) {
+    if (refreshToken == null || refreshToken.length() == 0) {
       return "No token";
-	}
+    }
     setSpotifyRefreshToken(refreshToken);
     db.updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
         refreshToken, username);
@@ -402,18 +437,18 @@ public class User {
   }
 
   /**
-   * get Api
+   * get Api.
    * @return api String
    */
-  public SpotifyAPI getApi() {
+  public MyApi getApi() {
     return this.api;
   }
 
   /**
-   * set Api
+   * set Api.
    * @param spotifyApi SpotifyApi
    */
-  public void setApi(final SpotifyAPI spotifyApi) {
+  public void setApi(final MyApi spotifyApi) {
     this.api = spotifyApi;
   }
  }

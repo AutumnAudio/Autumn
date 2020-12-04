@@ -1,28 +1,15 @@
 package models;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.IOException;
-import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
-
-public class Login {
+public final class Login {
 
   /**
-   * Public constructor
+   * private constructor to prevent instantiation.
    */
-  public Login() {
+  private Login() {
   }
-
   /**
    * client Id for Spotify app.
    */
@@ -38,14 +25,26 @@ public class Login {
    */
   private static String redirectURI = "http://localhost:8080/process_auth";
 
+  /**
+   * get client id of app.
+   * @return clientId String
+   */
   public static String getClientId() {
     return clientId;
   }
 
+  /**
+   * Get client secret of app.
+   * @return clientSecret String
+   */
   public static String getClientSecret() {
     return clientSecret;
   }
 
+  /**
+   * Get redirect URI.
+   * @return redirectURI String
+   */
   public static String getRedirectURI() {
    return redirectURI;
   }
@@ -55,7 +54,6 @@ public class Login {
    * @return url String
    */
   public static String getSpotifyAuthUrl() {
-
     String url = "https://accounts.spotify.com/authorize?response_type=code"
             + "&client_id=" + clientId
             + "&redirect_uri="
@@ -68,6 +66,4 @@ public class Login {
             + " playlist-modify-private", StandardCharsets.UTF_8);
     return url;
   }
-
-  
 }

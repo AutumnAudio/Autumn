@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.model_objects.specification.PlayHistory;
 
-import models.SpotifyAPI;
+import models.MyApi;
 
-public class SpotifyAPITest {
-  SpotifyAPI api = new SpotifyAPI();
+public class MyApiTest {
+  MyApi api = new MyApi();
   
   String refreshToken = SpotifyAccount.getRefreshToken();
   String token = api.refreshSpotifyToken(refreshToken);
@@ -22,7 +22,7 @@ public class SpotifyAPITest {
     SpotifyApi api = new SpotifyApi.Builder()
             .setAccessToken(token)
             .build();
-    SpotifyAPI myApi = new SpotifyAPI();
+    MyApi myApi = new MyApi();
     myApi.setApi(api);
     try {
     	PlayHistory[] playHistory = myApi.recentlyPlayed();
@@ -38,7 +38,7 @@ public class SpotifyAPITest {
     SpotifyApi api = new SpotifyApi.Builder()
             .setAccessToken(token)
             .build();
-    SpotifyAPI myApi = new SpotifyAPI();
+    MyApi myApi = new MyApi();
     myApi.setApi(api);
     try {
     	myApi.currentlyPlaying();
@@ -53,7 +53,7 @@ public class SpotifyAPITest {
     SpotifyApi api = new SpotifyApi.Builder()
             .setAccessToken(token)
             .build();
-    SpotifyAPI myApi = new SpotifyAPI();
+    MyApi myApi = new MyApi();
     myApi.setApi(api);
     try {
     	String ret = myApi.addSong("spotify:track:4jAIqgrPjKLTY9Gbez25Qb");

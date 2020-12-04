@@ -41,17 +41,17 @@ public class ChatList {
   public int size() {
     return this.chatrooms.size();
   }
- 
+
   /**
    * Return total people currently in all chatrooms.
    * @return numPeopleChatting integer
    */
   public int getTotalParticipants() {
     if (this.chatrooms == null) {
-       return 0;
+      return 0;
     }
     int numPeopleChatting = 0;
-    for (Map.Entry<String,ChatRoom> chatEntry : this.chatrooms.entrySet()) {
+    for (Map.Entry<String, ChatRoom> chatEntry : this.chatrooms.entrySet()) {
       numPeopleChatting += chatEntry.getValue().getParticipant().size();
     }
     return numPeopleChatting;
@@ -77,7 +77,7 @@ public class ChatList {
           user.refreshRecentlyPlayed();
           user.refreshCurrentlyPlaying();
         }
-        // SpotifyAPI object cannot be serialize by Gson
+        // MyApi object cannot be serialize by Gson
         user.setApi(null);
       }
     }

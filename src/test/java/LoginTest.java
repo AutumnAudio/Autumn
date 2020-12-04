@@ -6,7 +6,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import models.Login;
-import models.SpotifyAPI;
+import models.MyApi;
 
 public class LoginTest {
 
