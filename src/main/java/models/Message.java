@@ -13,6 +13,27 @@ public class Message {
   private String message;
 
   /**
+   * Genre of chatroom message
+   */
+  private Genre genre;
+
+  /**
+   * Set genre of a message.
+   * @param newGenre Genre
+   */
+  public void setGenre(final Genre newGenre) {
+    this.genre = newGenre;
+  }
+
+  /**
+   * Get genre of a message.
+   * @return genre Genre
+   */
+  public Genre getGenre() {
+    return this.genre;
+  }
+
+  /**
    * Set user of a message.
    * @param name String
    */

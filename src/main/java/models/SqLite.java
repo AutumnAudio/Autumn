@@ -13,6 +13,8 @@ import java.util.Map;
 
 import org.sqlite.SQLiteConfig;
 
+import com.google.gson.Gson;
+
 public class SqLite {
 
   /**
@@ -679,6 +681,45 @@ public class SqLite {
       e.printStackTrace();
     }
     return "OK";
+  }
+
+  public ChatList userJoin(final Genre genre, final String username,
+          ChatList chatlist) {
+    if (genre == null || chatlist == null || username == null
+        || username.length() == 0) {
+      return null;
+    }
+    Map<String, User> participants =
+            chatlist.getChatroomByGenre(genre).getParticipant();
+    if (!participants.containsKey(username)) {
+      User user = getUserByName(username);
+      insertParticipant(genre, username, user.getSpotifyToken(),
+      user.getSpotifyRefreshToken(), user.getSessionId());
+      insertUserwithGenre(username, genre.getGenre());
+      chatlist = update();
+    }
+    return chatlist;
+  }
+
+  public Message userSend(final String username, final String text
+          ,ChatList chatlist) {
+    if (chatlist == null || username == null || username.length() == 0
+      || text == null || text.length() == 0) {
+    return null;
+    }
+    Message message = new Message();
+    message.setUsername(username);
+    message.setMessage(text);
+    String genreStr = getGenreUser(username);
+    if (genreStr != null) {
+      Genre genre = Genre.valueOf(genreStr.toUpperCase());
+      message.setGenre(genre);
+      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
+      chatroom.addMessage(message);
+      return message;
+    } else {
+      return null;
+    }
   }
 
   /**
