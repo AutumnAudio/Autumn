@@ -403,14 +403,14 @@ public class UserTest {
     map.put("testing1", sharer);
     map.put("testing2", mockSharee);
     when(mockChatroom.getParticipant()).thenReturn(map);
-    assertNotNull(sharer.share(mockChatlist));
+    assertNotNull(sharer.share(mockChatlist, mockDb));
     
   }
 
   @Test
   public void shareTestNullChatlist() throws ParseException, SpotifyWebApiException, IOException {
     User sharer = new User();
-    assertNull(sharer.share(null));
+    assertNull(sharer.share(null, null));
     
   }
 
@@ -426,7 +426,7 @@ public class UserTest {
     
     sharer.setApi(mockApi);
     sharer.setDb(mockDb);
-    assertNull(sharer.share(new ChatList()));
+    assertNull(sharer.share(new ChatList(), mockDb));
   }
 
   @Test
@@ -451,7 +451,7 @@ public class UserTest {
     
     sharer.setApi(mockApi);
     sharer.setDb(mockDb);
-    assertNull(sharer.share(new ChatList()));
+    assertNull(sharer.share(new ChatList(), mockDb));
   }
   // ------------------------------ SetSpotifyRefreshToken ---------------------------//
   @Test

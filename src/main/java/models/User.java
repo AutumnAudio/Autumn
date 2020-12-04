@@ -202,16 +202,17 @@ public class User {
   /**
    * share user currently playing song.
    * @param chatlist ChatList
+   * @param database SqLite
    * @return message Message
    */
-  public Message share(final ChatList chatlist) {
+  public Message share(final ChatList chatlist, final SqLite database) {
     if (chatlist == null) {
       return null;
     }
     Message message = new Message();
     message.setUsername(username);
     refreshCurrentlyPlaying();
-    String genreStr = db.getGenreUser(username);
+    String genreStr = database.getGenreUser(username);
     if (getCurrentTrack() == null || genreStr == null) {
       return null;
     }
@@ -230,7 +231,7 @@ public class User {
     }
     // add song to group playlist
     chatroom.addSong(song);
-    db.insertSong(username, Time.valueOf(LocalTime.now()),
+    database.insertSong(username, Time.valueOf(LocalTime.now()),
             genre, new Gson().toJson(song));
     // send message to chat
     message.setUsername(username);
