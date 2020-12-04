@@ -83,13 +83,12 @@ public class ChatRoom {
    * @return response String
    */
   public String addMessage(final Message message) {
-    // call sql query to add message
-	if (message == null || message.getMessage() == null
+    if (message == null || message.getMessage() == null
             || message.getMessage().length() == 0) {
       return "No message";
-	}
-	this.chat.add(message);
-	return "OK";
+    }
+    this.chat.add(message);
+    return "OK";
   }
 
   /**

@@ -45,6 +45,11 @@ public enum Genre {
   private String genre;
 
   /**
+   * Minumum length of genre.
+   */
+  private static final int MINLENGTH = 3;
+
+  /**
    * Constructor of genre object.
    * @param newGenre String
    */
@@ -76,7 +81,7 @@ public enum Genre {
    * @return true/false boolean
    */
   public static boolean isValidGenre(final String genre) {
-    if (genre == null || genre.length() < 3) {
+    if (genre == null || genre.length() < MINLENGTH) {
       return false;
     }
     return Arrays.stream(Genre.values())

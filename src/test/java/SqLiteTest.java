@@ -8,7 +8,7 @@ import java.util.Map;
 
 import models.ChatList;
 import models.Genre;
-import models.SpotifyAPI;
+import models.MyApi;
 import models.SqLite;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -33,7 +33,7 @@ public class SqLiteTest {
   //----------------------------- InsertAuthenticatedUser --------------------------------------- //
   @Test
   public void testInsertAuthenticatedUserOK() {
-    String res = db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
+    String res = db.insertAuthenticatedUser("m", "s", "r", "s");
     assertEquals("OK", res);
   }
 
@@ -89,7 +89,7 @@ public class SqLiteTest {
   @Test
   public void testUpdateUserAttributeOK() {
     db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
-    String res = db.updateUserAttribute("spotify_token", "new_token", "mary");
+    String res = db.updateUserAttribute("spotify_token", "n", "m");
     assertEquals("OK", res);
   }
 
@@ -138,7 +138,7 @@ public class SqLiteTest {
 //----------------------------- InsertUserwithGenre --------------------------------------- //
   @Test
   public void testInsertUserwithGenreOK() {
-    String res = db.insertUserwithGenre("mary", "blues");
+    String res = db.insertUserwithGenre("m", "blues");
     assertEquals("OK", res);
   }
 
@@ -169,8 +169,8 @@ public class SqLiteTest {
   //---------------------------------- GetUserByName ----------------------------------------- //
   @Test
   public void testGetUserByName() {
-    db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
-    assertEquals("mary", db.getUserByName("mary").getUsername());
+    db.insertAuthenticatedUser("m", "spotify_token", "refresh_token", "sessionId");
+    assertEquals("m", db.getUserByName("m").getUsername());
   }
   @Test
   public void testGetUserByNameNullUsername() {
@@ -184,20 +184,20 @@ public class SqLiteTest {
   //-------------------------------- AuthenticateUser ---------------------------------------- //
   @Test
   public void testAuthenticateUserOld() {
-    SpotifyAPI mockApi = mock(SpotifyAPI.class);
+    MyApi mockApi = mock(MyApi.class);
     Map<String, String> map = new HashMap<>();
-    map.put("access_token", "token");
-    map.put("refresh_token", "refreshToken");
-    when(mockApi.getSpotifyTokenFromCode("code")).thenReturn(map);
-    when(mockApi.getEmailFromSpotifyToken("token")).thenReturn("email");
+    map.put("access_token", "t");
+    map.put("refresh_token", "r");
+    when(mockApi.getSpotifyTokenFromCode("c")).thenReturn(map);
+    when(mockApi.getEmailFromSpotifyToken("t")).thenReturn("e");
     db.setApi(mockApi);
-    db.insertAuthenticatedUser("email", "spotify_token", "refresh_token", "sessionId");
-    assertEquals("User exists", db.authenticateUser("code", "sessionId"));
+    db.insertAuthenticatedUser("e", "s", "r", "s");
+    assertEquals("User exists", db.authenticateUser("c", "s"));
   }
 
   @Test
   public void testAuthenticateUserNew() {
-    SpotifyAPI mockApi = mock(SpotifyAPI.class);
+    MyApi mockApi = mock(MyApi.class);
     Map<String, String> map = new HashMap<>();
     map.put("access_token", "token");
     map.put("refresh_token", "refreshToken");
@@ -229,8 +229,8 @@ public class SqLiteTest {
   //--------------------------------- GetUserCount ------------------------------------------ //
   @Test
   public void testGetUserCountOK() {
-    db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
-    assertEquals(1, db.getUserCount("mary"));
+    db.insertAuthenticatedUser("m", "spotify_token", "refresh_token", "sessionId");
+    assertEquals(1, db.getUserCount("m"));
   }
 
   @Test
@@ -246,8 +246,8 @@ public class SqLiteTest {
   //--------------------------------- GetGenreUser ------------------------------------------ //
   @Test
   public void testGetGenreUserOK() {
-    db.insertUserwithGenre("mary", "jazz");
-    assertEquals("jazz", db.getGenreUser("mary"));
+    db.insertUserwithGenre("m", "jazz");
+    assertEquals("jazz", db.getGenreUser("m"));
   }
 
   @Test
@@ -263,8 +263,8 @@ public class SqLiteTest {
   //------------------------------- GetUserBySessionId --------------------------------------- //
   @Test
   public void testGetUserBySessionIdOK() {
-    db.insertAuthenticatedUser("mary", "spotify_token", "refresh_token", "sessionId");
-    assertEquals("mary", db.getUserBySessionId("sessionId").getUsername());
+    db.insertAuthenticatedUser("m", "spotify_token", "refresh_token", "s");
+    assertEquals("m", db.getUserBySessionId("s").getUsername());
   }
 
   @Test
@@ -280,7 +280,7 @@ public class SqLiteTest {
   //---------------------------------- InsertChatRoom ----------------------------------------- //
   @Test
   public void testInsertChatRoomOK() {
-    String res = db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
+    String res = db.insertChatRoom(Genre.JAZZ, "l", "p");
     assertEquals("OK", res);
   }
 
@@ -403,9 +403,9 @@ public class SqLiteTest {
   //---------------------------------- RemoveUserGenre ---------------------------------------- //  
   @Test
   public void testRemoveUserGenreOK() {
-    db.insertUserwithGenre("mary", "blues");
-    assertEquals("blues", db.getGenreUser("mary"));
-    assertEquals("OK", db.removeUserGenre("mary"));
+    db.insertUserwithGenre("m", "blues");
+    assertEquals("blues", db.getGenreUser("m"));
+    assertEquals("OK", db.removeUserGenre("m"));
   }
 
   @Test

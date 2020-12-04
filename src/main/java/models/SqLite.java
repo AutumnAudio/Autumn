@@ -28,55 +28,28 @@ public class SqLite {
   /**
    * spotify api.
    */
-  private SpotifyAPI api = new SpotifyAPI();
+  private MyApi api = new MyApi();
 
   /**
    * set api.
-   * @param newApi SpotifyAPI
+   * @param newApi MyApi
    */
-  public void setApi(SpotifyAPI newApi) {
+  public void setApi(final MyApi newApi) {
     this.api = newApi;
   }
 
   /**
    * connect to autumn database.
    */
-  public void connect() {
-    
+  public synchronized void connect() {
     try {
-      if(conn != null && !conn.isClosed())
+      if (conn != null && !conn.isClosed()) {
         return;
+      }
     } catch (SQLException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
-      
-    try {
-        Class.forName("org.sqlite.JDBC");
-      } catch (ClassNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      try {
-        
-        SQLiteConfig config = new SQLiteConfig();
-        
-        conn = DriverManager.getConnection("jdbc:sqlite:autumn.db",config.toProperties());
-        conn.setAutoCommit(true);
-        stmt = conn.createStatement();
-      } catch (SQLException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-  }
-
-  /**
-   * Start database.
-   */
-  public void start() {
-    
-    connect();
-    
     try {
       Class.forName("org.sqlite.JDBC");
     } catch (ClassNotFoundException e) {
@@ -84,15 +57,35 @@ public class SqLite {
       e.printStackTrace();
     }
     try {
-      
-     // stmt = conn.createStatement();
+      SQLiteConfig config = new SQLiteConfig();
+      conn = DriverManager.getConnection("jdbc:sqlite:autumn.db",
+              config.toProperties());
+      conn.setAutoCommit(true);
+      stmt = conn.createStatement();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Start database.
+   */
+  public synchronized void start() {
+    connect();
+    try {
+      Class.forName("org.sqlite.JDBC");
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
       String sql = "CREATE TABLE IF NOT EXISTS USERS "
                      + " (USERNAME              VARCHAR PRIMARY KEY NOT NULL, "
                      + " PASSWORD_HASH          VARCHAR, "
                      + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
                      + " SESSION_ID             VARCHAR) ";
-                     //+ " LAST_CONNECTION_TIME   TIME) ";
       stmt.executeUpdate(sql);
       sql = "CREATE TABLE IF NOT EXISTS SESSIONS "
               + " (TIME_VISITED         VARCHAR PRIMARY KEY NOT NULL, "
@@ -134,9 +127,7 @@ public class SqLite {
    * clean tables in database.
    */
   public synchronized void clear() {
-    
     try {
-
       String sql = "DELETE FROM USERS;";
       stmt.executeUpdate(sql);
       sql = "DELETE FROM SESSIONS;";
@@ -158,7 +149,9 @@ public class SqLite {
   /**
    * Add user to Users Table.
    * @param username String
-   * @param spotifyToken String
+   * @param token String
+   * @param refreshToken String
+   * @param sessionId String
    * @return response String
    */
   public synchronized String insertAuthenticatedUser(final String username,
@@ -177,7 +170,7 @@ public class SqLite {
     }
     try {
       String sql = String.format("INSERT INTO USERS (USERNAME, SPOTIFY_TOKEN, "
-      		+ "SPOTIFY_REFRESH_TOKEN, SESSION_ID) "
+            + "SPOTIFY_REFRESH_TOKEN, SESSION_ID) "
             + "VALUES ('%s','%s','%s','%s');",
             username, token, refreshToken, sessionId);
       stmt.executeUpdate(sql);
@@ -249,7 +242,7 @@ public class SqLite {
    */
   public synchronized User getUserByName(final String username) {
     if (username == null || username.length() == 0) {
-     return new User();
+      return new User();
     }
     User user = new User();
     try {
@@ -273,12 +266,11 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
     return user;
   }
 
   /**
-   * authenticate user
+   * authenticate user.
    * @param code String
    * @param sessionId String
    * @return response String
@@ -294,20 +286,19 @@ public class SqLite {
     Map<String, String> response = api.getSpotifyTokenFromCode(code);
     String email = api.getEmailFromSpotifyToken(response.get("access_token"));
     User tmpUser = getUserByName(email);
-	if (tmpUser.getUsername() != null) {
+    if (tmpUser.getUsername() != null) {
       updateUserAttribute("SPOTIFY_TOKEN",
-    		  response.get("access_token"), email);
+              response.get("access_token"), email);
       updateUserAttribute("SPOTIFY_REFRESH_TOKEN",
-    		  response.get("refresh_token"), email);
-      updateUserAttribute("SESSION_ID",sessionId, email);
+              response.get("refresh_token"), email);
+      updateUserAttribute("SESSION_ID", sessionId, email);
       ret = "User exists";
     } else {
       insertAuthenticatedUser(email, response.get("access_token"),
               response.get("refresh_token"), sessionId);
       ret = "New user";
-      
     }
-	return ret;
+    return ret;
   }
 
   /**
@@ -336,7 +327,6 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
     return count;
   }
 
@@ -366,7 +356,6 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
     return gen;
   }
 
@@ -392,16 +381,14 @@ public class SqLite {
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
-         // user.setLastConnectionTime(rs.getInt("LAST_CONNECTION_TIME"));
         }
       } finally {
-        rs.close();       
+        rs.close();
       }
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
     return user;
   }
 
@@ -412,8 +399,9 @@ public class SqLite {
    * @param spotifyPlaylist String
    * @return response String
    */
-  public synchronized String insertChatRoom(final Genre genre, final String link,
-          final String spotifyPlaylist) {
+  public synchronized String insertChatRoom(
+        final Genre genre, final String link,
+        final String spotifyPlaylist) {
     if (genre == null) {
       return "No genre";
     }
@@ -473,7 +461,6 @@ public class SqLite {
       chatroom.setChat(chat);
       map.put(genres.get(i).getGenre(), chatroom);
     }
-    
     return map;
   }
 
@@ -486,9 +473,10 @@ public class SqLite {
    * @param sessionId String
    * @return response String
    */
-  public synchronized String insertParticipant(final Genre genre, final String username,
+  public synchronized String insertParticipant(
+          final Genre genre, final String username,
       final String token, final String refreshToken, final String sessionId) {
-	if (genre == null) {
+    if (genre == null) {
       return "No genre";
     }
     if (username == null || username.length() == 0) {
@@ -523,8 +511,9 @@ public class SqLite {
    * @param username String
    * @return response String
    */
-  public synchronized String removeParticipant(final Genre genre, final String username) {
-	if (genre == null) {
+  public synchronized String removeParticipant(
+          final Genre genre, final String username) {
+    if (genre == null) {
       return "No genre";
     }
     if (username == null || username.length() == 0) {
@@ -540,14 +529,14 @@ public class SqLite {
       e.printStackTrace();
     }
     return "OK";
-    }
+  }
 
   /**
    * Remove user from USERGENRE.
    * @param username String
    * @return response String
    */
-  public synchronized String removeUserGenre(final String username) {  
+  public synchronized String removeUserGenre(final String username) {
     if (username == null || username.length() == 0) {
       return "No username";
     }
@@ -568,8 +557,9 @@ public class SqLite {
    * @param genre String
    * @return participant List
    */
-  public synchronized Map<String, User> getChatRoomParticipant(final Genre genre) {
-	if (genre == null) {
+  public synchronized Map<String, User> getChatRoomParticipant(
+          final Genre genre) {
+    if (genre == null) {
       return null;
     }
     Map<String, User> list = new HashMap<>();
@@ -594,7 +584,6 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
     return list;
   }
 
@@ -606,13 +595,14 @@ public class SqLite {
    * @param song String
    * @return response String
    */
-  public synchronized String insertSong(final String username, final Time timeShared,
+  public synchronized String insertSong(final String username,
+        final Time timeShared,
           final Genre genre, final String song) {
     if (username == null || username.length() == 0) {
       return "No username";
     }
     if (timeShared == null) {
-       return "No time";
+      return "No time";
     }
     if (genre == null) {
       return "No genre";
@@ -662,7 +652,6 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
     return list;
   }
 
@@ -672,7 +661,8 @@ public class SqLite {
    * @param sessionId String
    * @return response String
    */
-  public synchronized String insertSession(final String time, final String sessionId) {
+  public synchronized String insertSession(final String time,
+          final String sessionId) {
     if (time == null || time.length() == 0) {
       return "No time";
     }
@@ -690,13 +680,12 @@ public class SqLite {
     }
     return "OK";
   }
-  
+
   /**
    * Get sessionId by username.
    * @return sessionId
    */
   public synchronized String getLatestSession() {
-	  
     String sessionId = "";
     try {
       ResultSet rs;

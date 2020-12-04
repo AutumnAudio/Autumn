@@ -21,24 +21,45 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.PlayHistory;
 
-public class SpotifyAPI {
-  
+public class MyApi {
+
+  /**
+   * spotify api.
+   */
   private SpotifyApi api;
 
-  
+  /**
+   * set spotify api.
+   * @param newApi SpotifyAPI
+   */
   public void setApi(final SpotifyApi newApi) {
     this.api = newApi;
   }
 
+  /**
+   * get spotify api.
+   * @return api SpotifyAPI
+   */
   public SpotifyApi getApi() {
     return this.api;
   }
-  
+
+  /**
+   * Number of recently played objects.
+   */
   private static final int LIMIT = 10;
-  
-  public PlayHistory[] recentlyPlayed() throws ParseException, SpotifyWebApiException, IOException {
+
+  /**
+   * call recently played api.
+   * @return playHistory PlayHistory[]
+   * @throws ParseException Exception
+   * @throws SpotifyWebApiException Exception
+   * @throws IOException Exception
+   */
+  public PlayHistory[] recentlyPlayed()
+        throws ParseException, SpotifyWebApiException, IOException {
     PlayHistory[] playHistory = api
-    	    .getCurrentUsersRecentlyPlayedTracks()
+            .getCurrentUsersRecentlyPlayedTracks()
             .limit(LIMIT)
             .build()
             .execute()
@@ -46,15 +67,32 @@ public class SpotifyAPI {
     return playHistory;
   }
 
-  public CurrentlyPlaying currentlyPlaying() throws ParseException, SpotifyWebApiException, IOException {
+  /**
+   * call currently playing api.
+   * @return currentTrack CurrentlyPlaying
+   * @throws ParseException Exception
+   * @throws SpotifyWebApiException Exception
+   * @throws IOException Exception
+   */
+  public CurrentlyPlaying currentlyPlaying()
+          throws ParseException, SpotifyWebApiException, IOException {
     CurrentlyPlaying currentTrack = api
-      .getUsersCurrentlyPlayingTrack()
-      .build()
-      .execute();
+        .getUsersCurrentlyPlayingTrack()
+        .build()
+        .execute();
     return currentTrack;
   }
 
-  public String addSong(String uri) throws ParseException, SpotifyWebApiException, IOException {
+  /**
+   * add song to user play queue.
+   * @param uri String
+   * @return response String
+   * @throws ParseException Exception
+   * @throws SpotifyWebApiException Exception
+   * @throws IOException Exception
+   */
+  public String addSong(final String uri)
+          throws ParseException, SpotifyWebApiException, IOException {
     String ret = api
           .addItemToUsersPlaybackQueue(uri)
           .build()
@@ -182,7 +220,7 @@ public class SpotifyAPI {
     }
     return null;
   }
- 
+
   /**
    * Build HTTP Form Data with given data.
    * @param data Map
@@ -201,7 +239,6 @@ public class SpotifyAPI {
       builder.append(URLEncoder.encode(entry.getValue().toString(),
                 StandardCharsets.UTF_8));
     }
-
     return HttpRequest.BodyPublishers.ofString(builder.toString());
   }
 }
