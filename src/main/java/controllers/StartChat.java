@@ -292,7 +292,7 @@ public final class StartChat {
       String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
       User sharer = db.getUserByName(username);
-      Message message = sharer.share(chatlist);
+      Message message = sharer.share(chatlist, db);
       if (message == null) {
         ctx.result("no song shared");
       } else {

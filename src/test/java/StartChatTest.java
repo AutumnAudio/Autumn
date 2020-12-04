@@ -586,21 +586,30 @@ public class StartChatTest {
     response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
     assertEquals(200, response.getStatus());
     
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    
     SqLite mockDb = mock(SqLite.class);
     User mockUser1 = mock(User.class);
     Message message = new Message();
     message.setMessage("I shared xxx song");
-    when(mockUser1.getUsername()).thenReturn("testing1");
     
-    SqLite origDb = StartChat.getDb();
-    String sessionId = origDb.getLatestSession();
+    ChatList mockChatlist = mock(ChatList.class);
+
+    StartChat.setDb(mockDb);
+    StartChat.setChatlist(mockChatlist);
+    
+    when(mockUser1.share(mockChatlist, mockDb)).thenReturn(message);
+    when(mockUser1.getUsername()).thenReturn("testing1");
+    Song song = new Song();
+    song.setName("song name");
+    song.setUri("uri");
+    when(mockUser1.getCurrentTrack()).thenReturn(song);
     
     when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);
     when(mockDb.getUserByName("testing1")).thenReturn(mockUser1);
     when(mockDb.getGenreUser("testing1")).thenReturn("blues");
-    when(mockUser1.share(StartChat.getChatlist())).thenReturn(message);
-
-    StartChat.setDb(mockDb);
+    
 
     HttpResponse<String> response1 = Unirest.post("http://localhost:8080/share").asString();
     System.out.println("/share Response: " + response1.getBody());
