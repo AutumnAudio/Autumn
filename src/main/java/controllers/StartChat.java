@@ -115,19 +115,6 @@ public final class StartChat {
     chatlist.setChatrooms(map);
   }
 
-  private static ChatRoom userJoin(final Genre genre, final String username) {
-    Map<String, User> participants =
-        chatlist.getChatroomByGenre(genre).getParticipant();
-    if (!participants.containsKey(username)) {
-      User user = db.getUserByName(username);
-      db.insertParticipant(genre, username, user.getSpotifyToken(),
-          user.getSpotifyRefreshToken(), user.getSessionId());
-      db.insertUserwithGenre(username, genre.getGenre());
-          chatlist = db.update();
-    }
-    return chatlist.getChatroomByGenre(genre);
-  }
-
   private static String userSend(final String username, final String text) {
     Message message = new Message();
     message.setUsername(username);
@@ -252,8 +239,9 @@ public final class StartChat {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
         String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
+        chatlist = db.userJoin(genre, username, chatlist);
         sendChatRoomToAllParticipants(genre.getGenre(),
-              new Gson().toJson(userJoin(genre, username)));
+              new Gson().toJson(chatlist.getChatroomByGenre(genre)));
         ctx.result("success");
         refreshSongDataRepeatly();
       } else {
@@ -276,7 +264,15 @@ public final class StartChat {
       String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
       String text = ctx.formParam("text");
-      ctx.result(userSend(username, text));
+      Message message = db.userSend(username, text, chatlist);
+      if (message == null) {
+        ctx.result("User not in any chatroom");
+      } else {
+        sendChatMsgToAllParticipants(message.getGenre().getGenre(),
+                new Gson().toJson(message));
+        ctx.result("chat sent");
+      }
+      
     });
 
     app.post("/add", ctx -> {
@@ -311,7 +307,6 @@ public final class StartChat {
         db.removeUserGenre(username);
         db.removeParticipant(genre, username);
         chatlist = db.update();
-        chatroom = chatlist.getChatroomByGenre(genre);
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatroom));
         ctx.result(new Gson().toJson(chatroom));

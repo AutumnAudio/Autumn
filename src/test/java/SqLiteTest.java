@@ -3,13 +3,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Time;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import models.ChatList;
+import models.ChatRoom;
 import models.Genre;
+import models.Message;
 import models.MyApi;
 import models.SqLite;
+import models.User;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.AfterEach;
@@ -510,6 +515,109 @@ public class SqLiteTest {
   @Test
   public void testInsertSessionEmptySessionId() {
     assertEquals("No session id", db.insertSession("0912", ""));
+  }
+
+  //----------------------------------- UserJoin ---------------------------------------- // 
+  @Test
+  public void UserJoinOldOK() {
+    ChatList mockChatlist = mock(ChatList.class);
+    User user1 = new User();
+    user1.setUsername("t");
+    User user2 = new User();
+    user2.setUsername("testing2");
+    Map<String, User> map = new HashMap<>();
+    map.put("t", user1);
+    map.put("testing2", user2);
+    ChatRoom chatroom = new ChatRoom();
+    chatroom.setParticipant(map);
+    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);
+    db.userJoin(Genre.BLUES, "t", mockChatlist);
+    assertNull(db.getGenreUser("t"));
+  }
+
+  @Test
+  public void testUserJoinNewOK() {
+    ChatList mockChatlist = mock(ChatList.class);
+    User user1 = new User();
+    user1.setUsername("testing1");
+    User user2 = new User();
+    user2.setUsername("testing2");
+    Map<String, User> map = new HashMap<>();
+    map.put("testing2", user2);
+    ChatRoom chatroom = new ChatRoom();
+    chatroom.setParticipant(map);
+    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);
+    db.userJoin(Genre.BLUES, "testing1", mockChatlist);
+    assertEquals("blues", db.getGenreUser("testing1"));
+  }
+
+  @Test
+  public void testUserJoinNullGenre() {
+    assertNull(db.userJoin(null, "testing1", new ChatList()));
+  }
+
+  @Test
+  public void testUserJoinNullUsername() {
+    assertNull(db.userJoin(Genre.BLUES, null, new ChatList()));
+  }
+
+  @Test
+  public void testUserJoinEmptyUsername() {
+    assertNull(db.userJoin(Genre.BLUES, "", new ChatList()));
+  }
+
+  @Test
+  public void testUserJoinNullChatlist() {
+    assertNull(db.userJoin(Genre.BLUES, "testing1", null));
+  }
+
+  //----------------------------------- UserSend ---------------------------------------- //
+  @Test
+  public void testUserSendOK() {
+    db.insertUserwithGenre("t", "blues");
+    ChatList mockChatlist = mock(ChatList.class);
+    ChatRoom chatroom = new ChatRoom();
+    List<Message> chat = new ArrayList<>();
+    //chatroom.setParticipant(map);
+    chatroom.setChat(chat);
+    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);
+    db.userSend("t", "h", mockChatlist);
+    assertEquals(1, chatroom.getChat().size());
+  }
+
+  @Test
+  public void testUserSendNoGenreOK() {
+    ChatList mockChatlist = mock(ChatList.class);
+    ChatRoom chatroom = new ChatRoom();
+    List<Message> chat = new ArrayList<>();
+    chatroom.setChat(chat);
+    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);
+    assertNull(db.userSend("testing1", "hello", mockChatlist));
+  }
+
+  @Test
+  public void testUserSendNullUsername() {
+    assertNull(db.userSend(null, "hello", new ChatList()));
+  }
+
+  @Test
+  public void testUserSendEmptyUsername() {
+    assertNull(db.userSend("", "hello", new ChatList()));
+  }
+
+  @Test
+  public void testUserSendNullText() {
+    assertNull(db.userSend("testing1", null, new ChatList()));
+  }
+
+  @Test
+  public void testUserSendEmptyText() {
+    assertNull(db.userSend("testing1", "", new ChatList()));
+  }
+
+  @Test
+  public void testUserSendNullChatlist() {
+    assertNull(db.userSend("testing1", null, null));
   }
 
   //----------------------------------- GetLatestSession ---------------------------------------- // 
