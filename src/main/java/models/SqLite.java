@@ -10,10 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.sqlite.SQLiteConfig;
-
-import com.google.gson.Gson;
 
 public class SqLite {
 
@@ -683,8 +680,15 @@ public class SqLite {
     return "OK";
   }
 
+  /**
+   * join room.
+   * @param genre Genre
+   * @param username String
+   * @param chatlist ChatList
+   * @return chatlist ChatList
+   */
   public ChatList userJoin(final Genre genre, final String username,
-          ChatList chatlist) {
+          final ChatList chatlist) {
     if (genre == null || chatlist == null || username == null
         || username.length() == 0) {
       return null;
@@ -696,13 +700,19 @@ public class SqLite {
       insertParticipant(genre, username, user.getSpotifyToken(),
       user.getSpotifyRefreshToken(), user.getSessionId());
       insertUserwithGenre(username, genre.getGenre());
-      chatlist = update();
     }
     return chatlist;
   }
 
-  public Message userSend(final String username, final String text
-          ,ChatList chatlist) {
+  /**
+   * send message.
+   * @param username String
+   * @param text String
+   * @param chatlist ChatList
+   * @return message Message
+   */
+  public Message userSend(final String username, final String text,
+          final ChatList chatlist) {
     if (chatlist == null || username == null || username.length() == 0
       || text == null || text.length() == 0) {
     return null;
