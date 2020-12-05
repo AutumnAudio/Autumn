@@ -23,7 +23,7 @@ public final class Login {
   /**
    * redirect URI for process authentication.
    */
-  private static String redirectURI = "http://localhost:8080/process_auth";
+  private static String redirectURI = "https://autumn-audio.herokuapp.com/process_auth";
 
   /**
    * get client id of app.
