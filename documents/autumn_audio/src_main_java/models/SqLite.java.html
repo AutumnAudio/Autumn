@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SqLite.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">SqLite.java</span></div><h1>SqLite.java</h1><pre class="source lang-java linenums">package models;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.sqlite.SQLiteConfig;
+
+<span class="fc" id="L15">public class SqLite {</span>
+
+  /**
+   * Connection to database.
+   */
+<span class="fc" id="L20">  private Connection conn = null;</span>
+
+  /**
+   * database statement for execution.
+   */
+<span class="fc" id="L25">  private Statement stmt = null;</span>
+
+  /**
+   * spotify api.
+   */
+<span class="fc" id="L30">  private MyApi api = new MyApi();</span>
+
+  /**
+   * set api.
+   * @param newApi MyApi
+   */
+  public void setApi(final MyApi newApi) {
+<span class="fc" id="L37">    this.api = newApi;</span>
+<span class="fc" id="L38">  }</span>
+
+  /**
+   * set conn.
+   * @param newConn Connection
+   */
+  public synchronized void setConn(final Connection newConn) {
+<span class="fc" id="L45">    this.conn = newConn;</span>
+<span class="fc" id="L46">  }</span>
+
+  /**
+   * set stmt.
+   * @param newStmt Statement
+   */
+  public synchronized void setStmt(final Statement newStmt) {
+<span class="fc" id="L53">    this.stmt = newStmt;</span>
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * get stmt.
+   * @return stmt Statement
+   */
+  public synchronized Statement getStmt() {
+<span class="fc" id="L61">    return this.stmt;</span>
+  }
+
+  /**
+   * connect to autumn database.
+   * @return response String
+   */
+  public synchronized String connect() {
+    try {
+<span class="fc bfc" id="L70" title="All 4 branches covered.">      if (conn != null &amp;&amp; !conn.isClosed()) {</span>
+<span class="fc" id="L71">        return &quot;Connection exists&quot;;</span>
+      }
+<span class="nc" id="L73">    } catch (SQLException e1) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L75">      e1.printStackTrace();</span>
+    }
+    try {
+<span class="fc" id="L78">      Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+<span class="pc" id="L79">    } catch (ClassNotFoundException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L81">      e.printStackTrace();</span>
+    }
+    try {
+<span class="fc" id="L84">      SQLiteConfig config = new SQLiteConfig();</span>
+<span class="fc" id="L85">      conn = DriverManager.getConnection(&quot;jdbc:sqlite:autumn.db&quot;,</span>
+<span class="fc" id="L86">              config.toProperties());</span>
+<span class="fc" id="L87">      conn.setAutoCommit(true);</span>
+<span class="fc" id="L88">      stmt = conn.createStatement();</span>
+<span class="pc" id="L89">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L91">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L93">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Start database.
+   */
+  public synchronized void start() {
+<span class="fc" id="L100">    connect();</span>
+    try {
+<span class="fc" id="L102">      Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
+<span class="pc" id="L103">    } catch (ClassNotFoundException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L105">      e.printStackTrace();</span>
+    }
+    try {
+<span class="fc" id="L108">      String sql = &quot;CREATE TABLE IF NOT EXISTS USERS &quot;</span>
+                     + &quot; (USERNAME              VARCHAR PRIMARY KEY NOT NULL, &quot;
+                     + &quot; SPOTIFY_TOKEN          VARCHAR UNIQUE, &quot;
+                     + &quot; SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, &quot;
+                     + &quot; SESSION_ID             VARCHAR) &quot;;
+<span class="fc" id="L113">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L114">      sql = &quot;CREATE TABLE IF NOT EXISTS SESSIONS &quot;</span>
+              + &quot; (TIME_VISITED         VARCHAR PRIMARY KEY NOT NULL, &quot;
+              + &quot; SESSION_ID            VARCHAR) &quot;;
+<span class="fc" id="L117">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L118">      sql = &quot;CREATE TABLE IF NOT EXISTS CHATROOMS &quot;</span>
+                     + &quot; (GENRE            VARCHAR PRIMARY KEY NOT NULL, &quot;
+                     + &quot; LINK              VARCHAR NOT NULL, &quot;
+                     + &quot; SPOTIFY_PLAYLIST  VARCHAR) &quot;;
+<span class="fc" id="L122">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L123">      sql = &quot;CREATE TABLE IF NOT EXISTS PARTICIPANTS &quot;</span>
+                     + &quot; (GENRE                 VARCHAR NOT NULL, &quot;
+                     + &quot; USERNAME               INT NOT NULL, &quot;
+                     + &quot; SPOTIFY_TOKEN          VARCHAR, &quot;
+                     + &quot; SPOTIFY_REFRESH_TOKEN  VARCHAR, &quot;
+                     + &quot; SESSION_ID             VARCHAR, &quot;
+                     + &quot; CONSTRAINT             PARTICIPANT PRIMARY KEY &quot;
+                     + &quot;(GENRE, USERNAME) ) &quot;;
+<span class="fc" id="L131">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L132">      sql = &quot;CREATE TABLE IF NOT EXISTS PLAYLIST &quot;</span>
+                     + &quot; (USERNAME         VARCHAR NOT NULL, &quot;
+                     + &quot; TIME_SHARED       TIME NOT NULL, &quot;
+                     + &quot; GENRE             VARCHAR NOT NULL, &quot;
+                     + &quot; SONG              VARCHAR, &quot;
+                     + &quot; CONSTRAINT        MESSAGE_ID PRIMARY KEY &quot;
+                     + &quot;(USERNAME, TIME_SHARED) ) &quot;;
+<span class="fc" id="L139">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L140">      sql = &quot;CREATE TABLE IF NOT EXISTS USERGENRE &quot;</span>
+            + &quot;(USERNAME VARCHAR NOT NULL, &quot;
+            + &quot; GENRE     VARCHAR NOT NULL)&quot;;
+<span class="fc" id="L143">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L144">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L146">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L148">  }</span>
+
+  /**
+   * clean tables in database.
+   */
+  public synchronized void clear() {
+    try {
+<span class="fc" id="L155">      String sql = &quot;DELETE FROM USERS;&quot;;</span>
+<span class="fc" id="L156">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L157">      sql = &quot;DELETE FROM SESSIONS;&quot;;</span>
+<span class="fc" id="L158">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L159">      sql = &quot;DELETE FROM CHATROOMS;&quot;;</span>
+<span class="fc" id="L160">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L161">      sql = &quot;DELETE FROM PARTICIPANTS;&quot;;</span>
+<span class="fc" id="L162">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L163">      sql = &quot;DELETE FROM PLAYLIST;&quot;;</span>
+<span class="fc" id="L164">      stmt.executeUpdate(sql);</span>
+<span class="fc" id="L165">      sql = &quot;DELETE FROM USERGENRE&quot;;</span>
+<span class="fc" id="L166">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L167">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L169">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L171">  }</span>
+
+  /**
+   * Add user to Users Table.
+   * @param username String
+   * @param token String
+   * @param refreshToken String
+   * @param sessionId String
+   * @return response String
+   */
+  public synchronized String insertAuthenticatedUser(final String username,
+      final String token, final String refreshToken, final String sessionId) {
+<span class="fc bfc" id="L183" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L184">      return &quot;No username&quot;;</span>
+    }
+<span class="fc bfc" id="L186" title="All 4 branches covered.">    if (token == null || token.length() == 0) {</span>
+<span class="fc" id="L187">      return &quot;No token&quot;;</span>
+    }
+<span class="fc bfc" id="L189" title="All 4 branches covered.">    if (refreshToken == null || refreshToken.length() == 0) {</span>
+<span class="fc" id="L190">      return &quot;No refresh token&quot;;</span>
+    }
+<span class="fc bfc" id="L192" title="All 4 branches covered.">    if (sessionId == null || sessionId.length() == 0) {</span>
+<span class="fc" id="L193">      return &quot;No session id&quot;;</span>
+    }
+    try {
+<span class="fc" id="L196">      String sql = String.format(&quot;INSERT INTO USERS (USERNAME, SPOTIFY_TOKEN, &quot;</span>
+            + &quot;SPOTIFY_REFRESH_TOKEN, SESSION_ID) &quot;
+            + &quot;VALUES ('%s','%s','%s','%s');&quot;,
+<span class="fc" id="L199">            username, token, refreshToken, sessionId);</span>
+<span class="fc" id="L200">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L201">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L203">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L205">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Update user attribute in Users Table.
+   * @param attribute String
+   * @param value String
+   * @param username String
+   * @return response String
+   */
+  public synchronized String updateUserAttribute(final String attribute,
+          final String value, final String username) {
+<span class="fc bfc" id="L217" title="All 4 branches covered.">    if (attribute == null || attribute.length() == 0) {</span>
+<span class="fc" id="L218">      return &quot;No attribute&quot;;</span>
+    }
+<span class="fc bfc" id="L220" title="All 4 branches covered.">    if (value == null || value.length() == 0) {</span>
+<span class="fc" id="L221">      return &quot;No value&quot;;</span>
+    }
+<span class="fc bfc" id="L223" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L224">      return &quot;No username&quot;;</span>
+    }
+    try {
+<span class="fc" id="L227">      String sql = String.format(&quot;UPDATE USERS SET %s = '%s'&quot;</span>
+<span class="fc" id="L228">                     + &quot; WHERE USERNAME = '%s';&quot;, attribute, value, username);</span>
+<span class="fc" id="L229">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L230">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L232">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L234">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Add user name and genre pair.
+   * @param username String
+   * @param genre String
+   * @return response String
+   */
+  public synchronized String insertUserwithGenre(final String username,
+          final String genre) {
+<span class="fc bfc" id="L245" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L246">      return &quot;No username&quot;;</span>
+    }
+<span class="fc bfc" id="L248" title="All 4 branches covered.">    if (genre == null || genre.length() == 0) {</span>
+<span class="fc" id="L249">      return &quot;No genre&quot;;</span>
+    }
+    try {
+<span class="fc" id="L252">      String sql = String.format(&quot;INSERT INTO USERGENRE (USERNAME, GENRE) &quot;</span>
+<span class="fc" id="L253">                  + &quot;VALUES ('%s','%s');&quot;, username, genre);</span>
+<span class="fc" id="L254">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L255">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L257">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L259">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Get user by username.
+   * @param username String
+   * @return user User Object
+   */
+  public synchronized User getUserByName(final String username) {
+<span class="fc bfc" id="L268" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L269">      return new User();</span>
+    }
+<span class="fc" id="L271">    User user = new User();</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L274">      String sql = String.format(&quot;SELECT * FROM USERS &quot;</span>
+<span class="fc" id="L275">              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);</span>
+<span class="fc" id="L276">      rs = stmt.executeQuery(sql);</span>
+      try {
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L279">          user.setUsername(rs.getString(&quot;USERNAME&quot;));</span>
+<span class="fc" id="L280">          user.setSpotifyToken(rs.getString(&quot;SPOTIFY_TOKEN&quot;));</span>
+<span class="fc" id="L281">          user.setSpotifyRefreshToken(rs.getString(&quot;SPOTIFY_REFRESH_TOKEN&quot;));</span>
+<span class="fc" id="L282">          user.setSessionId(rs.getString(&quot;SESSION_ID&quot;));</span>
+          //user.setLastConnectionTime(rs.getInt(&quot;LAST_CONNECTION_TIME&quot;));
+        }
+<span class="fc" id="L285">      } finally {</span>
+<span class="fc" id="L286">        rs.close();</span>
+      }
+<span class="nc" id="L288">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L290">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L292">    return user;</span>
+  }
+
+  /**
+   * authenticate user.
+   * @param code String
+   * @param sessionId String
+   * @return response String
+   */
+  public String authenticateUser(final String code, final String sessionId) {
+<span class="fc" id="L302">    String ret = &quot;&quot;;</span>
+<span class="fc bfc" id="L303" title="All 4 branches covered.">    if (code == null || code.length() == 0) {</span>
+<span class="fc" id="L304">      return &quot;No code&quot;;</span>
+    }
+<span class="fc bfc" id="L306" title="All 4 branches covered.">    if (sessionId == null || sessionId.length() == 0) {</span>
+<span class="fc" id="L307">      return &quot;No session id&quot;;</span>
+    }
+<span class="fc" id="L309">    Map&lt;String, String&gt; response = api.getSpotifyTokenFromCode(code);</span>
+<span class="fc" id="L310">    String email = api.getEmailFromSpotifyToken(response.get(&quot;access_token&quot;));</span>
+<span class="fc" id="L311">    User tmpUser = getUserByName(email);</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">    if (tmpUser.getUsername() != null) {</span>
+<span class="fc" id="L313">      updateUserAttribute(&quot;SPOTIFY_TOKEN&quot;,</span>
+<span class="fc" id="L314">              response.get(&quot;access_token&quot;), email);</span>
+<span class="fc" id="L315">      updateUserAttribute(&quot;SPOTIFY_REFRESH_TOKEN&quot;,</span>
+<span class="fc" id="L316">              response.get(&quot;refresh_token&quot;), email);</span>
+<span class="fc" id="L317">      updateUserAttribute(&quot;SESSION_ID&quot;, sessionId, email);</span>
+<span class="fc" id="L318">      ret = &quot;User exists&quot;;</span>
+<span class="fc" id="L319">    } else {</span>
+<span class="fc" id="L320">      insertAuthenticatedUser(email, response.get(&quot;access_token&quot;),</span>
+<span class="fc" id="L321">              response.get(&quot;refresh_token&quot;), sessionId);</span>
+<span class="fc" id="L322">      ret = &quot;New user&quot;;</span>
+    }
+<span class="fc" id="L324">    return ret;</span>
+  }
+
+  /**
+   * Get user by username.
+   * @param username String
+   * @return count equals 1 boolean
+   */
+  public synchronized int getUserCount(final String username) {
+<span class="fc bfc" id="L333" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L334">      return 0;</span>
+    }
+<span class="fc" id="L336">    int count = 0;</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L339">      String sql = String.format(&quot;SELECT * FROM USERS &quot;</span>
+<span class="fc" id="L340">              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);</span>
+<span class="fc" id="L341">      rs = stmt.executeQuery(sql);</span>
+      try {
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L344">          count++;</span>
+        }
+<span class="fc" id="L346">      } finally {</span>
+<span class="fc" id="L347">        rs.close();</span>
+      }
+<span class="nc" id="L349">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L351">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L353">    return count;</span>
+  }
+
+  /**
+   * Get genre by username.
+   * @param username String
+   * @return genre String
+   */
+  public synchronized String getGenreUser(final String username) {
+<span class="fc bfc" id="L362" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L363">      return null;</span>
+    }
+<span class="fc" id="L365">    String gen = null;</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L368">      String sql = String.format(&quot;SELECT * FROM USERGENRE &quot;</span>
+<span class="fc" id="L369">              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);</span>
+<span class="fc" id="L370">      rs = stmt.executeQuery(sql);</span>
+      try {
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L373">          gen = rs.getString(&quot;GENRE&quot;);</span>
+        }
+<span class="fc" id="L375">      } finally {</span>
+<span class="fc" id="L376">        rs.close();</span>
+      }
+<span class="nc" id="L378">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L380">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L382">    return gen;</span>
+  }
+
+  /**
+   * Get user by sessionId.
+   * @param sessionId String
+   * @return user User
+   */
+  public synchronized User getUserBySessionId(final String sessionId) {
+<span class="fc bfc" id="L391" title="All 4 branches covered.">    if (sessionId == null || sessionId.length() == 0) {</span>
+<span class="fc" id="L392">      return null;</span>
+    }
+<span class="fc" id="L394">    User user = new User();</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L397">      String sql = String.format(&quot;SELECT * FROM USERS &quot;</span>
+<span class="fc" id="L398">              + &quot;WHERE SESSION_ID = '%s'&quot;, sessionId);</span>
+<span class="fc" id="L399">      rs = stmt.executeQuery(sql);</span>
+      try {
+<span class="fc bfc" id="L401" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L402">          user.setUsername(rs.getString(&quot;USERNAME&quot;));</span>
+<span class="fc" id="L403">          user.setSpotifyToken(rs.getString(&quot;SPOTIFY_TOKEN&quot;));</span>
+<span class="fc" id="L404">          user.setSpotifyRefreshToken(rs.getString(&quot;SPOTIFY_REFRESH_TOKEN&quot;));</span>
+<span class="fc" id="L405">          user.setSessionId(rs.getString(&quot;SESSION_ID&quot;));</span>
+        }
+<span class="fc" id="L407">      } finally {</span>
+<span class="fc" id="L408">        rs.close();</span>
+      }
+<span class="nc" id="L410">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L412">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L414">    return user;</span>
+  }
+
+  /**
+   * Add chatroom to Chatrooms Table.
+   * @param genre String
+   * @param link String
+   * @param spotifyPlaylist String
+   * @return response String
+   */
+  public synchronized String insertChatRoom(
+        final Genre genre, final String link,
+        final String spotifyPlaylist) {
+<span class="fc bfc" id="L427" title="All 2 branches covered.">    if (genre == null) {</span>
+<span class="fc" id="L428">      return &quot;No genre&quot;;</span>
+    }
+<span class="fc bfc" id="L430" title="All 4 branches covered.">    if (link == null || link.length() == 0) {</span>
+<span class="fc" id="L431">      return &quot;No link&quot;;</span>
+    }
+<span class="fc bfc" id="L433" title="All 4 branches covered.">    if (spotifyPlaylist == null || spotifyPlaylist.length() == 0) {</span>
+<span class="fc" id="L434">      return &quot;No playlist&quot;;</span>
+    }
+    try {
+
+<span class="fc" id="L438">      String sql = String.format(&quot;INSERT INTO CHATROOMS &quot;</span>
+                   + &quot;(GENRE, LINK, SPOTIFY_PLAYLIST) &quot;
+                   + &quot;VALUES ('%s','%s','%s');&quot;,
+<span class="fc" id="L441">                   genre.getGenre(), link, spotifyPlaylist);</span>
+<span class="fc" id="L442">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L443">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L445">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L447">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Get the list of Chatroom available.
+   * @return Chatroom list List
+   */
+  public synchronized Map&lt;String, ChatRoom&gt; getAllChatRooms() {
+<span class="fc bfc" id="L455" title="All 2 branches covered.">    if (stmt == null) {</span>
+<span class="fc" id="L456">      return null;</span>
+    }
+<span class="fc" id="L458">    Map&lt;String, ChatRoom&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L459">    List&lt;Genre&gt; genres = new ArrayList&lt;&gt;();</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L462">      rs = stmt.executeQuery(&quot;SELECT * FROM CHATROOMS&quot;);</span>
+      try {
+<span class="fc bfc" id="L464" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L465">          ChatRoom room = new ChatRoom();</span>
+<span class="fc" id="L466">          Genre genre = Genre.valueOf(rs.getString(&quot;GENRE&quot;).toUpperCase());</span>
+<span class="fc" id="L467">          room.setGenre(genre);</span>
+<span class="fc" id="L468">          room.setLink(rs.getString(&quot;LINK&quot;));</span>
+<span class="fc" id="L469">          genres.add(genre);</span>
+<span class="fc" id="L470">          map.put(genre.getGenre(), room);</span>
+        }
+<span class="fc" id="L472">      } finally {</span>
+<span class="fc" id="L473">        rs.close();</span>
+      }
+<span class="nc" id="L475">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L477">      e.printStackTrace();</span>
+    }
+<span class="fc bfc" id="L479" title="All 2 branches covered.">    for (int i = 0; i &lt; genres.size(); i++) {</span>
+<span class="fc" id="L480">      ChatRoom chatroom = map.get(genres.get(i).getGenre());</span>
+<span class="fc" id="L481">      Map&lt;String, User&gt; participants = getChatRoomParticipant(genres.get(i));</span>
+<span class="fc" id="L482">      List&lt;Song&gt; playlist = getChatRoomPlaylist(genres.get(i));</span>
+<span class="fc" id="L483">      List&lt;Message&gt; chat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L484">      chatroom.setParticipant(participants);</span>
+<span class="fc" id="L485">      chatroom.setPlaylist(playlist);</span>
+<span class="fc" id="L486">      chatroom.setChat(chat);</span>
+<span class="fc" id="L487">      map.put(genres.get(i).getGenre(), chatroom);</span>
+    }
+<span class="fc" id="L489">    return map;</span>
+  }
+
+  /**
+   * Add participant to Participant Table.
+   * @param genre Genre
+   * @param username String
+   * @param token String
+   * @param refreshToken String
+   * @param sessionId String
+   * @return response String
+   */
+  public synchronized String insertParticipant(
+          final Genre genre, final String username,
+      final String token, final String refreshToken, final String sessionId) {
+<span class="fc bfc" id="L504" title="All 2 branches covered.">    if (genre == null) {</span>
+<span class="fc" id="L505">      return &quot;No genre&quot;;</span>
+    }
+<span class="fc bfc" id="L507" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L508">      return &quot;No username&quot;;</span>
+    }
+<span class="fc bfc" id="L510" title="All 4 branches covered.">    if (token == null || token.length() == 0) {</span>
+<span class="fc" id="L511">      return &quot;No token&quot;;</span>
+    }
+<span class="fc bfc" id="L513" title="All 4 branches covered.">    if (refreshToken == null || refreshToken.length() == 0) {</span>
+<span class="fc" id="L514">      return &quot;No refresh token&quot;;</span>
+    }
+<span class="fc bfc" id="L516" title="All 4 branches covered.">    if (sessionId == null || sessionId.length() == 0) {</span>
+<span class="fc" id="L517">      return &quot;No session id&quot;;</span>
+    }
+    try {
+<span class="fc" id="L520">      String sql = String.format(&quot;INSERT INTO PARTICIPANTS &quot;</span>
+                   + &quot;(GENRE, USERNAME, SPOTIFY_TOKEN, &quot;
+                   + &quot;SPOTIFY_REFRESH_TOKEN, SESSION_ID) &quot;
+                   + &quot;VALUES ('%s','%s','%s','%s','%s');&quot;,
+<span class="fc" id="L524">                   genre.getGenre(), username, token, refreshToken, sessionId);</span>
+<span class="fc" id="L525">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L526">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L528">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L530">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Remove participant to Participant Table.
+   * @param genre String
+   * @param username String
+   * @return response String
+   */
+  public synchronized String removeParticipant(
+          final Genre genre, final String username) {
+<span class="fc bfc" id="L541" title="All 2 branches covered.">    if (genre == null) {</span>
+<span class="fc" id="L542">      return &quot;No genre&quot;;</span>
+    }
+<span class="fc bfc" id="L544" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L545">      return &quot;No username&quot;;</span>
+    }
+    try {
+<span class="fc" id="L548">      String sql = String.format(&quot;DELETE FROM PARTICIPANTS &quot;</span>
+                   + &quot;WHERE GENRE = '%s' AND USERNAME = '%s';&quot;,
+<span class="fc" id="L550">                   genre.getGenre(), username);</span>
+<span class="fc" id="L551">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L552">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L554">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L556">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Remove user from USERGENRE.
+   * @param username String
+   * @return response String
+   */
+  public synchronized String removeUserGenre(final String username) {
+<span class="fc bfc" id="L565" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L566">      return &quot;No username&quot;;</span>
+    }
+    try {
+<span class="fc" id="L569">      String sql = String.format(&quot;DELETE FROM USERGENRE &quot;</span>
+                   + &quot;WHERE USERNAME = '%s';&quot;,
+<span class="fc" id="L571">                   username);</span>
+<span class="fc" id="L572">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L573">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L575">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L577">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * get participant of a chatroom.
+   * @param genre String
+   * @return participant List
+   */
+  public synchronized Map&lt;String, User&gt; getChatRoomParticipant(
+          final Genre genre) {
+<span class="fc bfc" id="L587" title="All 2 branches covered.">    if (genre == null) {</span>
+<span class="fc" id="L588">      return null;</span>
+    }
+<span class="fc" id="L590">    Map&lt;String, User&gt; list = new HashMap&lt;&gt;();</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L593">      String sql = String.format(&quot;SELECT * FROM PARTICIPANTS &quot;</span>
+<span class="fc" id="L594">                              + &quot;WHERE GENRE = '%s'&quot;, genre.getGenre());</span>
+<span class="fc" id="L595">      rs = stmt.executeQuery(sql);</span>
+      try {
+<span class="fc bfc" id="L597" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L598">          User user = new User();</span>
+<span class="fc" id="L599">          user.setUsername(rs.getString(&quot;USERNAME&quot;));</span>
+<span class="fc" id="L600">          user.setSpotifyToken(rs.getString(&quot;SPOTIFY_TOKEN&quot;));</span>
+<span class="fc" id="L601">          user.setSpotifyRefreshToken(rs.getString(&quot;SPOTIFY_REFRESH_TOKEN&quot;));</span>
+<span class="fc" id="L602">          user.setSessionId(rs.getString(&quot;SESSION_ID&quot;));</span>
+<span class="fc" id="L603">          list.put(user.getUsername(), user);</span>
+        }
+<span class="fc" id="L605">      } finally {</span>
+<span class="fc" id="L606">        rs.close();</span>
+      }
+<span class="nc" id="L608">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L610">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L612">    return list;</span>
+  }
+
+  /**
+   * Add song to Playlist.
+   * @param username String
+   * @param timeShared Time
+   * @param genre String
+   * @param song String
+   * @return response String
+   */
+  public synchronized String insertSong(final String username,
+        final Time timeShared,
+          final Genre genre, final String song) {
+<span class="fc bfc" id="L626" title="All 4 branches covered.">    if (username == null || username.length() == 0) {</span>
+<span class="fc" id="L627">      return &quot;No username&quot;;</span>
+    }
+<span class="fc bfc" id="L629" title="All 2 branches covered.">    if (timeShared == null) {</span>
+<span class="fc" id="L630">      return &quot;No time&quot;;</span>
+    }
+<span class="fc bfc" id="L632" title="All 2 branches covered.">    if (genre == null) {</span>
+<span class="fc" id="L633">      return &quot;No genre&quot;;</span>
+    }
+<span class="fc bfc" id="L635" title="All 4 branches covered.">    if (song == null || song.length() == 0) {</span>
+<span class="fc" id="L636">      return &quot;No song&quot;;</span>
+    }
+    try {
+<span class="fc" id="L639">      String sql = String.format(&quot;INSERT INTO PLAYLIST &quot;</span>
+                   + &quot;(USERNAME, TIME_SHARED, GENRE, SONG) &quot;
+                   + &quot;VALUES ('%s','%s','%s','%s');&quot;,
+<span class="fc" id="L642">                   username, timeShared, genre.getGenre(), song);</span>
+<span class="fc" id="L643">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L644">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L646">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L648">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * Get playlist of a chatroom.
+   * @param genre Genre
+   * @return playlist List
+   */
+  public synchronized List&lt;Song&gt; getChatRoomPlaylist(final Genre genre) {
+<span class="fc bfc" id="L657" title="All 2 branches covered.">    if (genre == null) {</span>
+<span class="fc" id="L658">      return null;</span>
+    }
+<span class="fc" id="L660">    List&lt;Song&gt; list = new ArrayList&lt;&gt;();</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L663">      String sql = String.format(&quot;SELECT * FROM PLAYLIST &quot;</span>
+<span class="fc" id="L664">              + &quot;WHERE GENRE = '%s'&quot;, genre.getGenre());</span>
+<span class="fc" id="L665">      rs = stmt.executeQuery(sql);</span>
+      try {
+<span class="fc bfc" id="L667" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L668">          Song song = new Song();</span>
+<span class="fc" id="L669">          song.setUsername(rs.getString(&quot;USERNAME&quot;));</span>
+<span class="fc" id="L670">          song.setSong(rs.getString(&quot;SONG&quot;));</span>
+<span class="fc" id="L671">          list.add(song);</span>
+        }
+<span class="fc" id="L673">      } finally {</span>
+<span class="fc" id="L674">        rs.close();</span>
+      }
+<span class="nc" id="L676">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L678">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L680">    return list;</span>
+  }
+
+  /**
+   * Insert session to SESSIONS table.
+   * @param time String
+   * @param sessionId String
+   * @return response String
+   */
+  public synchronized String insertSession(final String time,
+          final String sessionId) {
+<span class="fc bfc" id="L691" title="All 4 branches covered.">    if (time == null || time.length() == 0) {</span>
+<span class="fc" id="L692">      return &quot;No time&quot;;</span>
+    }
+<span class="fc bfc" id="L694" title="All 4 branches covered.">    if (sessionId == null || sessionId.length() == 0) {</span>
+<span class="fc" id="L695">      return &quot;No session id&quot;;</span>
+    }
+    try {
+<span class="fc" id="L698">      String sql = String.format(&quot;REPLACE INTO SESSIONS &quot;</span>
+                   + &quot;(TIME_VISITED, SESSION_ID) &quot;
+<span class="fc" id="L700">                   + &quot;VALUES ('%s','%s');&quot;, time, sessionId);</span>
+<span class="fc" id="L701">      stmt.executeUpdate(sql);</span>
+<span class="pc" id="L702">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L704">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L706">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * join room.
+   * @param genre Genre
+   * @param username String
+   * @param chatlist ChatList
+   * @return chatlist ChatList
+   */
+  public ChatList userJoin(final Genre genre, final String username,
+          final ChatList chatlist) {
+<span class="fc bfc" id="L718" title="All 6 branches covered.">    if (genre == null || chatlist == null || username == null</span>
+<span class="fc bfc" id="L719" title="All 2 branches covered.">        || username.length() == 0) {</span>
+<span class="fc" id="L720">      return null;</span>
+    }
+<span class="fc" id="L722">    Map&lt;String, User&gt; participants =</span>
+<span class="fc" id="L723">            chatlist.getChatroomByGenre(genre).getParticipant();</span>
+<span class="fc bfc" id="L724" title="All 2 branches covered.">    if (!participants.containsKey(username)) {</span>
+<span class="fc" id="L725">      User user = getUserByName(username);</span>
+<span class="fc" id="L726">      insertParticipant(genre, username, user.getSpotifyToken(),</span>
+<span class="fc" id="L727">      user.getSpotifyRefreshToken(), user.getSessionId());</span>
+<span class="fc" id="L728">      insertUserwithGenre(username, genre.getGenre());</span>
+    }
+<span class="fc" id="L730">    return chatlist;</span>
+  }
+
+  /**
+   * send message.
+   * @param username String
+   * @param text String
+   * @param chatlist ChatList
+   * @return message Message
+   */
+  public Message userSend(final String username, final String text,
+          final ChatList chatlist) {
+<span class="fc bfc" id="L742" title="All 6 branches covered.">    if (chatlist == null || username == null || username.length() == 0</span>
+<span class="fc bfc" id="L743" title="All 4 branches covered.">      || text == null || text.length() == 0) {</span>
+<span class="fc" id="L744">    return null;</span>
+    }
+<span class="fc" id="L746">    Message message = new Message();</span>
+<span class="fc" id="L747">    message.setUsername(username);</span>
+<span class="fc" id="L748">    message.setMessage(text);</span>
+<span class="fc" id="L749">    String genreStr = getGenreUser(username);</span>
+<span class="fc bfc" id="L750" title="All 2 branches covered.">    if (genreStr != null) {</span>
+<span class="fc" id="L751">      Genre genre = Genre.valueOf(genreStr.toUpperCase());</span>
+<span class="fc" id="L752">      message.setGenre(genre);</span>
+<span class="fc" id="L753">      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);</span>
+<span class="fc" id="L754">      chatroom.addMessage(message);</span>
+<span class="fc" id="L755">      return message;</span>
+    } else {
+<span class="fc" id="L757">      return null;</span>
+    }
+  }
+
+  /**
+   * Get sessionId by username.
+   * @return sessionId
+   */
+  public synchronized String getLatestSession() {
+<span class="fc bfc" id="L766" title="All 2 branches covered.">    if (stmt == null) {</span>
+<span class="fc" id="L767">      return null;</span>
+    }
+<span class="fc" id="L769">    String sessionId = &quot;&quot;;</span>
+    try {
+      ResultSet rs;
+<span class="fc" id="L772">      rs = stmt.executeQuery(&quot;SELECT * FROM SESSIONS &quot;</span>
+                              + &quot;ORDER BY TIME_VISITED ASC&quot;);
+      try {
+<span class="fc bfc" id="L775" title="All 2 branches covered.">        while (rs.next()) {</span>
+<span class="fc" id="L776">          sessionId = rs.getString(&quot;SESSION_ID&quot;);</span>
+        }
+<span class="fc" id="L778">      } finally {</span>
+<span class="fc" id="L779">        rs.close();</span>
+      }
+<span class="nc" id="L781">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L783">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L785">    return sessionId;</span>
+  }
+
+  /**
+   * Update chatroom after reboot.
+   * @return chatlist ChatList
+   */
+  public ChatList update() {
+<span class="fc" id="L793">    ChatList chatlist = new ChatList();</span>
+<span class="fc" id="L794">    chatlist.setChatrooms(new HashMap&lt;String, ChatRoom&gt;());</span>
+<span class="fc" id="L795">    chatlist.setChatrooms(getAllChatRooms());</span>
+<span class="fc" id="L796">    return chatlist;</span>
+  }
+
+  /**
+   * close database.
+   */
+  public void close() {
+    try {
+<span class="fc" id="L804">      stmt.close();</span>
+<span class="fc" id="L805">      conn.close();</span>
+<span class="pc" id="L806">    } catch (SQLException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L808">      e.printStackTrace();</span>
+    }
+<span class="fc" id="L810">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>

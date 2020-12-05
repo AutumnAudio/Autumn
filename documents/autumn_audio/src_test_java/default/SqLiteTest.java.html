@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SqLiteTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">SqLiteTest.java</span></div><h1>SqLiteTest.java</h1><pre class="source lang-java linenums">import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Time;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import models.ChatList;
+import models.ChatRoom;
+import models.Genre;
+import models.Message;
+import models.MyApi;
+import models.SqLite;
+import models.User;
+
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.sqlite.SQLiteConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import java.sql.Connection;
+import static org.mockito.Mockito.*;
+
+
+@TestMethodOrder(OrderAnnotation.class) 
+<span class="fc" id="L34">public class SqLiteTest {</span>
+
+<span class="fc" id="L36">  static SqLite db = new SqLite();</span>
+  
+  @BeforeEach
+  public void beforeEach() {
+<span class="fc" id="L40">    db.start();</span>
+<span class="fc" id="L41">    db.clear();  </span>
+<span class="fc" id="L42">  }</span>
+
+  //----------------------------- InsertAuthenticatedUser --------------------------------------- //
+  @Test
+  public void testInsertAuthenticatedUserOK() {
+<span class="fc" id="L47">    String res = db.insertAuthenticatedUser(&quot;m&quot;, &quot;s&quot;, &quot;r&quot;, &quot;s&quot;);</span>
+<span class="fc" id="L48">    assertEquals(&quot;OK&quot;, res);</span>
+<span class="fc" id="L49">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserNullUsername() {
+<span class="fc" id="L53">    String res = db.insertAuthenticatedUser(null, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L54">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L55">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserEmptyUsername() {
+<span class="fc" id="L59">    String res = db.insertAuthenticatedUser(&quot;&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L60">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L61">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserNullToken() {
+<span class="fc" id="L65">    String res = db.insertAuthenticatedUser(&quot;mary&quot;, null, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L66">    assertEquals(&quot;No token&quot;, res);</span>
+<span class="fc" id="L67">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserEmptyToken() {
+<span class="fc" id="L71">    String res = db.insertAuthenticatedUser(&quot;mary&quot;, &quot;&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L72">    assertEquals(&quot;No token&quot;, res);</span>
+<span class="fc" id="L73">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserNullRefreshToken() {
+<span class="fc" id="L77">    String res = db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, null, &quot;sessionId&quot;);</span>
+<span class="fc" id="L78">    assertEquals(&quot;No refresh token&quot;, res);</span>
+<span class="fc" id="L79">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserEmptyRefreshToken() {
+<span class="fc" id="L83">    String res = db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L84">    assertEquals(&quot;No refresh token&quot;, res);</span>
+<span class="fc" id="L85">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserNullSessionId() {
+<span class="fc" id="L89">    String res = db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, null);</span>
+<span class="fc" id="L90">    assertEquals(&quot;No session id&quot;, res);</span>
+<span class="fc" id="L91">  }</span>
+
+  @Test
+  public void testInsertAuthenticatedUserEmptySessionId() {
+<span class="fc" id="L95">    String res = db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;&quot;);</span>
+<span class="fc" id="L96">    assertEquals(&quot;No session id&quot;, res);</span>
+<span class="fc" id="L97">  }</span>
+
+  //----------------------------- UpdateUserAttribute --------------------------------------- //
+  @Test
+  public void testUpdateUserAttributeOK() {
+<span class="fc" id="L102">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L103">    String res = db.updateUserAttribute(&quot;spotify_token&quot;, &quot;n&quot;, &quot;m&quot;);</span>
+<span class="fc" id="L104">    assertEquals(&quot;OK&quot;, res);</span>
+<span class="fc" id="L105">  }</span>
+
+  @Test
+  public void testUpdateUserAttributeNullAttribute() {
+<span class="fc" id="L109">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L110">    String res = db.updateUserAttribute(null, &quot;new_token&quot;, &quot;mary&quot;);</span>
+<span class="fc" id="L111">    assertEquals(&quot;No attribute&quot;, res);</span>
+<span class="fc" id="L112">  }</span>
+
+  @Test
+  public void testUpdateUserAttributeEmptyAttribute() {
+<span class="fc" id="L116">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L117">    String res = db.updateUserAttribute(&quot;&quot;, &quot;new_token&quot;, &quot;mary&quot;);</span>
+<span class="fc" id="L118">    assertEquals(&quot;No attribute&quot;, res);</span>
+<span class="fc" id="L119">  }</span>
+
+  @Test
+  public void testUpdateUserAttributeNullValue() {
+<span class="fc" id="L123">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L124">    String res = db.updateUserAttribute(&quot;spotify_token&quot;, null, &quot;mary&quot;);</span>
+<span class="fc" id="L125">    assertEquals(&quot;No value&quot;, res);</span>
+<span class="fc" id="L126">  }</span>
+
+  @Test
+  public void testUpdateUserAttributeEmptyValue() {
+<span class="fc" id="L130">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L131">    String res = db.updateUserAttribute(&quot;spotify_token&quot;, &quot;&quot;, &quot;mary&quot;);</span>
+<span class="fc" id="L132">    assertEquals(&quot;No value&quot;, res);</span>
+<span class="fc" id="L133">  }</span>
+
+  @Test
+  public void testUpdateUserAttributeNullUsername() {
+<span class="fc" id="L137">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L138">    String res = db.updateUserAttribute(&quot;spotify_token&quot;, &quot;new_token&quot;, null);</span>
+<span class="fc" id="L139">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L140">  }</span>
+
+  @Test
+  public void testUpdateUserAttributeEmptyUsername() {
+<span class="fc" id="L144">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L145">    String res = db.updateUserAttribute(&quot;spotify_token&quot;, &quot;new_token&quot;, &quot;&quot;);</span>
+<span class="fc" id="L146">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L147">  }</span>
+
+//----------------------------- InsertUserwithGenre --------------------------------------- //
+  @Test
+  public void testInsertUserwithGenreOK() {
+<span class="fc" id="L152">    String res = db.insertUserwithGenre(&quot;m&quot;, &quot;blues&quot;);</span>
+<span class="fc" id="L153">    assertEquals(&quot;OK&quot;, res);</span>
+<span class="fc" id="L154">  }</span>
+
+  @Test
+  public void testInsertUserwithGenreNullUsername() {
+<span class="fc" id="L158">    String res = db.insertUserwithGenre(null, &quot;blues&quot;);</span>
+<span class="fc" id="L159">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L160">  }</span>
+
+  @Test
+  public void testInsertUserwithGenreEmptyUsername() {
+<span class="fc" id="L164">    String res = db.insertUserwithGenre(&quot;&quot;, &quot;blues&quot;);</span>
+<span class="fc" id="L165">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L166">  }</span>
+
+  @Test
+  public void testInsertUserwithGenreNullGenre() {
+<span class="fc" id="L170">    String res = db.insertUserwithGenre(&quot;mary&quot;, null);</span>
+<span class="fc" id="L171">    assertEquals(&quot;No genre&quot;, res);</span>
+<span class="fc" id="L172">  }</span>
+
+  @Test
+  public void testInsertUserwithGenreEmptyGenre() {
+<span class="fc" id="L176">    String res = db.insertUserwithGenre(&quot;mary&quot;, &quot;&quot;);</span>
+<span class="fc" id="L177">    assertEquals(&quot;No genre&quot;, res);</span>
+<span class="fc" id="L178">  }</span>
+
+  //---------------------------------- GetUserByName ----------------------------------------- //
+  @Test
+  public void testGetUserByNameOK() {
+<span class="fc" id="L183">    db.insertAuthenticatedUser(&quot;m&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L184">    assertEquals(&quot;m&quot;, db.getUserByName(&quot;m&quot;).getUsername());</span>
+<span class="fc" id="L185">  }</span>
+  @Test
+  public void testGetUserByNameNullUsername() {
+<span class="fc" id="L188">    assertNull(db.getUserByName(null).getUsername());</span>
+<span class="fc" id="L189">  }</span>
+  @Test
+  public void testGetUserByNameEmptyUsername() {
+<span class="fc" id="L192">    assertNull(db.getUserByName(&quot;&quot;).getUsername());</span>
+<span class="fc" id="L193">  }</span>
+  
+  //-------------------------------- AuthenticateUser ---------------------------------------- //
+  @Test
+  public void testAuthenticateUserOld() {
+<span class="fc" id="L198">    MyApi mockApi = mock(MyApi.class);</span>
+<span class="fc" id="L199">    Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L200">    map.put(&quot;access_token&quot;, &quot;t&quot;);</span>
+<span class="fc" id="L201">    map.put(&quot;refresh_token&quot;, &quot;r&quot;);</span>
+<span class="fc" id="L202">    when(mockApi.getSpotifyTokenFromCode(&quot;c&quot;)).thenReturn(map);</span>
+<span class="fc" id="L203">    when(mockApi.getEmailFromSpotifyToken(&quot;t&quot;)).thenReturn(&quot;e&quot;);</span>
+<span class="fc" id="L204">    db.setApi(mockApi);</span>
+<span class="fc" id="L205">    db.insertAuthenticatedUser(&quot;e&quot;, &quot;s&quot;, &quot;r&quot;, &quot;s&quot;);</span>
+<span class="fc" id="L206">    assertEquals(&quot;User exists&quot;, db.authenticateUser(&quot;c&quot;, &quot;s&quot;));</span>
+<span class="fc" id="L207">  }</span>
+
+  @Test
+  public void testAuthenticateUserNew() {
+<span class="fc" id="L211">    MyApi mockApi = mock(MyApi.class);</span>
+<span class="fc" id="L212">    Map&lt;String, String&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L213">    map.put(&quot;access_token&quot;, &quot;token&quot;);</span>
+<span class="fc" id="L214">    map.put(&quot;refresh_token&quot;, &quot;refreshToken&quot;);</span>
+<span class="fc" id="L215">    when(mockApi.getSpotifyTokenFromCode(&quot;code&quot;)).thenReturn(map);</span>
+<span class="fc" id="L216">    db.setApi(mockApi);</span>
+<span class="fc" id="L217">    assertEquals(&quot;New user&quot;, db.authenticateUser(&quot;code&quot;, &quot;sessionId&quot;));</span>
+<span class="fc" id="L218">  }</span>
+
+  @Test
+  public void testAuthenticateUserNullCode() {
+<span class="fc" id="L222">    assertEquals(&quot;No code&quot;, db.authenticateUser(null, &quot;sessionId&quot;));</span>
+<span class="fc" id="L223">  }</span>
+
+  @Test
+  public void testAuthenticateUserEmptyCode() {
+<span class="fc" id="L227">    assertEquals(&quot;No code&quot;, db.authenticateUser(&quot;&quot;, &quot;sessionId&quot;));</span>
+<span class="fc" id="L228">  }</span>
+
+  @Test
+  public void testAuthenticateUserNoSessionId() {
+<span class="fc" id="L232">    assertEquals(&quot;No session id&quot;, db.authenticateUser(&quot;code&quot;, null));</span>
+<span class="fc" id="L233">  }</span>
+
+  @Test
+  public void testAuthenticateUserEmptySessionId() {
+<span class="fc" id="L237">    assertEquals(&quot;No session id&quot;, db.authenticateUser(&quot;code&quot;, &quot;&quot;));</span>
+<span class="fc" id="L238">  }</span>
+
+  //--------------------------------- GetUserCount ------------------------------------------ //
+  @Test
+  public void testGetUserCountOK() {
+<span class="fc" id="L243">    db.insertAuthenticatedUser(&quot;m&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;sessionId&quot;);</span>
+<span class="fc" id="L244">    assertEquals(1, db.getUserCount(&quot;m&quot;));</span>
+<span class="fc" id="L245">  }</span>
+
+  @Test
+  public void testGetUserCountNullUsername() {
+<span class="fc" id="L249">    assertEquals(0, db.getUserCount(null));</span>
+<span class="fc" id="L250">  }</span>
+
+  @Test
+  public void testGetUserCountEmptyUsername() {
+<span class="fc" id="L254">    assertEquals(0, db.getUserCount(&quot;&quot;));</span>
+<span class="fc" id="L255">  }</span>
+
+  //--------------------------------- GetGenreUser ------------------------------------------ //
+  @Test
+  public void testGetGenreUserOK() {
+<span class="fc" id="L260">    db.insertUserwithGenre(&quot;m&quot;, &quot;jazz&quot;);</span>
+<span class="fc" id="L261">    assertEquals(&quot;jazz&quot;, db.getGenreUser(&quot;m&quot;));</span>
+<span class="fc" id="L262">  }</span>
+
+  @Test
+  public void testGetGenreUserNullUsername() {
+<span class="fc" id="L266">    assertNull(db.getGenreUser(null));</span>
+<span class="fc" id="L267">  }</span>
+
+  @Test
+  public void testGetGenreUserEmptyUsername() {
+<span class="fc" id="L271">    assertNull(db.getGenreUser(&quot;&quot;));</span>
+<span class="fc" id="L272">  }</span>
+
+  //------------------------------- GetUserBySessionId --------------------------------------- //
+  @Test
+  public void testGetUserBySessionIdOK() {
+<span class="fc" id="L277">    db.insertAuthenticatedUser(&quot;m&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;s&quot;);</span>
+<span class="fc" id="L278">    assertEquals(&quot;m&quot;, db.getUserBySessionId(&quot;s&quot;).getUsername());</span>
+<span class="fc" id="L279">  }</span>
+
+  @Test
+  public void testGetUserBySessionIdNullSessionId() {
+<span class="fc" id="L283">    assertNull(db.getUserBySessionId(null));</span>
+<span class="fc" id="L284">  }</span>
+
+  @Test
+  public void testGetUserBySessionIdEmptySessionId() {
+<span class="fc" id="L288">    assertNull(db.getUserBySessionId(&quot;&quot;));</span>
+<span class="fc" id="L289">  }</span>
+
+  //---------------------------------- InsertChatRoom ----------------------------------------- //
+  @Test
+  public void testInsertChatRoomOK() {
+<span class="fc" id="L294">    String res = db.insertChatRoom(Genre.JAZZ, &quot;l&quot;, &quot;p&quot;);</span>
+<span class="fc" id="L295">    assertEquals(&quot;OK&quot;, res);</span>
+<span class="fc" id="L296">  }</span>
+
+  @Test
+  public void testInsertChatRoomNullGenre() {
+<span class="fc" id="L300">    String res = db.insertChatRoom(null, &quot;/jazz-links&quot;, &quot;jazz-playlist&quot;);</span>
+<span class="fc" id="L301">    assertEquals(&quot;No genre&quot;, res);</span>
+<span class="fc" id="L302">  }</span>
+
+  @Test
+  public void testInsertChatRoomNullLink() {
+<span class="fc" id="L306">    String res = db.insertChatRoom(Genre.JAZZ, null, &quot;jazz-playlist&quot;);</span>
+<span class="fc" id="L307">    assertEquals(&quot;No link&quot;, res);</span>
+<span class="fc" id="L308">  }</span>
+
+  @Test
+  public void testInsertChatRoomEmptyLink() {
+<span class="fc" id="L312">    String res = db.insertChatRoom(Genre.JAZZ, &quot;&quot;, &quot;jazz-playlist&quot;);</span>
+<span class="fc" id="L313">    assertEquals(&quot;No link&quot;, res);</span>
+<span class="fc" id="L314">  }</span>
+
+  @Test
+  public void testInsertChatRoomNullPlaylist() {
+<span class="fc" id="L318">    String res = db.insertChatRoom(Genre.JAZZ, &quot;/jazz-links&quot;, null);</span>
+<span class="fc" id="L319">    assertEquals(&quot;No playlist&quot;, res);</span>
+<span class="fc" id="L320">  }</span>
+
+  @Test
+  public void testInsertChatRoomEmptyPlaylist() {
+<span class="fc" id="L324">    String res = db.insertChatRoom(Genre.JAZZ, &quot;/jazz-links&quot;, &quot;&quot;);</span>
+<span class="fc" id="L325">    assertEquals(&quot;No playlist&quot;, res);</span>
+<span class="fc" id="L326">  }</span>
+
+  //---------------------------------- InsertParticipant --------------------------------------- //
+  @Test
+  public void testInsertParticipantOK() {
+<span class="fc" id="L331">    String res = db.insertParticipant(Genre.JAZZ, &quot;m&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L332">    assertEquals(&quot;OK&quot;, res);</span>
+<span class="fc" id="L333">  }</span>
+
+  @Test
+  public void testInsertParticipantNullGenre() {
+<span class="fc" id="L337">    String res = db.insertParticipant(null, &quot;mary&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L338">    assertEquals(&quot;No genre&quot;, res);</span>
+<span class="fc" id="L339">  }</span>
+
+  @Test
+  public void testInsertParticipantNullUsername() {
+<span class="fc" id="L343">    String res = db.insertParticipant(Genre.JAZZ, null, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L344">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L345">  }</span>
+
+  @Test
+  public void testInsertParticipantEmptyUsername() {
+<span class="fc" id="L349">    String res = db.insertParticipant(Genre.JAZZ, &quot;&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L350">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L351">  }</span>
+
+  @Test
+  public void testInsertParticipantNullToken() {
+<span class="fc" id="L355">    String res = db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, null, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L356">    assertEquals(&quot;No token&quot;, res);</span>
+<span class="fc" id="L357">  }</span>
+
+  @Test
+  public void testInsertParticipantEmptyToken() {
+<span class="fc" id="L361">    String res = db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L362">    assertEquals(&quot;No token&quot;, res);</span>
+<span class="fc" id="L363">  }</span>
+
+  @Test
+  public void testInsertParticipantNullRefreshToken() {
+<span class="fc" id="L367">    String res = db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;a&quot;, null, &quot;a&quot;);</span>
+<span class="fc" id="L368">    assertEquals(&quot;No refresh token&quot;, res);</span>
+<span class="fc" id="L369">  }</span>
+
+  @Test
+  public void testInsertParticipantEmptyRefreshToken() {
+<span class="fc" id="L373">    String res = db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;a&quot;, &quot;&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L374">    assertEquals(&quot;No refresh token&quot;, res);</span>
+<span class="fc" id="L375">  }</span>
+
+  @Test
+  public void testInsertParticipantNullSessionId() {
+<span class="fc" id="L379">    String res = db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;a&quot;, &quot;a&quot;, null);</span>
+<span class="fc" id="L380">    assertEquals(&quot;No session id&quot;, res);</span>
+<span class="fc" id="L381">  }</span>
+
+  @Test
+  public void testInsertParticipantEmptySessionId() {
+<span class="fc" id="L385">    String res = db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;a&quot;, &quot;a&quot;, &quot;&quot;);</span>
+<span class="fc" id="L386">    assertEquals(&quot;No session id&quot;, res);</span>
+<span class="fc" id="L387">  }</span>
+
+  //---------------------------------- RemoveParticipant --------------------------------------- //  
+  @Test
+  public void testRemoveParticipantOK() {
+<span class="fc" id="L392">    db.insertParticipant(Genre.JAZZ, &quot;m&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L393">    assertEquals(&quot;OK&quot;, db.removeParticipant(Genre.JAZZ, &quot;m&quot;));</span>
+<span class="fc" id="L394">  }</span>
+
+  @Test
+  public void testRemoveParticipantNullGenre() {
+<span class="fc" id="L398">    db.insertParticipant(Genre.JAZZ, &quot;m&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L399">    assertEquals(&quot;No genre&quot;, db.removeParticipant(null, &quot;mary&quot;));</span>
+<span class="fc" id="L400">  }</span>
+
+  @Test
+  public void testRemoveParticipantNullUsername() {
+<span class="fc" id="L404">    db.insertParticipant(Genre.JAZZ, &quot;m&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L405">    assertEquals(&quot;No username&quot;, db.removeParticipant(Genre.JAZZ, null));</span>
+<span class="fc" id="L406">  }</span>
+
+  @Test
+  public void testRemoveParticipantEmptyUsername() {
+<span class="fc" id="L410">    db.insertParticipant(Genre.JAZZ, &quot;m&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;);</span>
+<span class="fc" id="L411">    assertEquals(&quot;No username&quot;, db.removeParticipant(Genre.JAZZ, &quot;&quot;));</span>
+<span class="fc" id="L412">  }</span>
+
+  //---------------------------------- RemoveUserGenre ---------------------------------------- //  
+  @Test
+  public void testRemoveUserGenreOK() {
+<span class="fc" id="L417">    db.insertUserwithGenre(&quot;m&quot;, &quot;blues&quot;);</span>
+<span class="fc" id="L418">    assertEquals(&quot;blues&quot;, db.getGenreUser(&quot;m&quot;));</span>
+<span class="fc" id="L419">    assertEquals(&quot;OK&quot;, db.removeUserGenre(&quot;m&quot;));</span>
+<span class="fc" id="L420">  }</span>
+
+  @Test
+  public void testRemoveUserGenreNullUsername() {
+<span class="fc" id="L424">    assertEquals(&quot;No username&quot;, db.removeUserGenre(null));</span>
+<span class="fc" id="L425">  }</span>
+
+  @Test
+  public void testRemoveUserGenreEmptyUsername() {
+<span class="fc" id="L429">    assertEquals(&quot;No username&quot;, db.removeUserGenre(&quot;&quot;));</span>
+<span class="fc" id="L430">  }</span>
+
+  //--------------------------------- GetChatRoomParticpant ------------------------------------ //
+  @Test
+  public void testGetChatRoomParticipantOK() {
+<span class="fc" id="L435">    db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;token&quot;, &quot;refresh&quot;, &quot;session&quot;);</span>
+<span class="fc" id="L436">    assertEquals(1, db.getChatRoomParticipant(Genre.JAZZ).size());</span>
+<span class="fc" id="L437">  }</span>
+
+  @Test
+  public void testGetChatRoomParticipantNullGenre() {
+<span class="fc" id="L441">    db.insertParticipant(Genre.JAZZ, &quot;mary&quot;, &quot;token&quot;, &quot;refresh&quot;, &quot;session&quot;);</span>
+<span class="fc" id="L442">    assertNull(db.getChatRoomParticipant(null));</span>
+<span class="fc" id="L443">  }</span>
+
+  //-------------------------------------- InsertSong ------------------------------------------ //  
+  @Test
+  public void testInsertSongOK() {
+<span class="fc" id="L448">    String res = db.insertSong(&quot;m&quot;, Time.valueOf(LocalTime.now()), Genre.BLUES, &quot;b&quot;);</span>
+<span class="fc" id="L449">    assertEquals(&quot;OK&quot;, res);</span>
+<span class="fc" id="L450">  }</span>
+
+  @Test
+  public void testInsertSongNullUsername() {
+<span class="fc" id="L454">    String res = db.insertSong(null, Time.valueOf(LocalTime.now()), Genre.BLUES, &quot;blues-song&quot;);</span>
+<span class="fc" id="L455">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L456">  }</span>
+
+  @Test
+  public void testInsertSongEmptyUsername() {
+<span class="fc" id="L460">    String res = db.insertSong(&quot;&quot;, Time.valueOf(LocalTime.now()), Genre.BLUES, &quot;blues-song&quot;);</span>
+<span class="fc" id="L461">    assertEquals(&quot;No username&quot;, res);</span>
+<span class="fc" id="L462">  }</span>
+
+  @Test
+  public void testInsertSongNullTimeShared() {
+<span class="fc" id="L466">    String res = db.insertSong(&quot;mary&quot;, null, Genre.BLUES, &quot;blues-song&quot;);</span>
+<span class="fc" id="L467">    assertEquals(&quot;No time&quot;, res);</span>
+<span class="fc" id="L468">  }</span>
+
+  @Test
+  public void testInsertSongNullGenre() {
+<span class="fc" id="L472">    String res = db.insertSong(&quot;mary&quot;, Time.valueOf(LocalTime.now()), null, &quot;blues-song&quot;);</span>
+<span class="fc" id="L473">    assertEquals(&quot;No genre&quot;, res);</span>
+<span class="fc" id="L474">  }</span>
+
+  @Test
+  public void testInsertSongNullSong() {
+<span class="fc" id="L478">    String res = db.insertSong(&quot;mary&quot;, Time.valueOf(LocalTime.now()), Genre.BLUES, null);</span>
+<span class="fc" id="L479">    assertEquals(&quot;No song&quot;, res);</span>
+<span class="fc" id="L480">  }</span>
+
+  @Test
+  public void testInsertSongEmptySong() {
+<span class="fc" id="L484">    String res = db.insertSong(&quot;mary&quot;, Time.valueOf(LocalTime.now()), Genre.BLUES, &quot;&quot;);</span>
+<span class="fc" id="L485">    assertEquals(&quot;No song&quot;, res);</span>
+<span class="fc" id="L486">  }</span>
+  
+  //----------------------------------- GetChatRoomPlaylist -------------------------------------- //
+  @Test
+  public void testGetChatRoomPlaylistOK() {
+<span class="fc" id="L491">    db.insertSong(&quot;m&quot;, Time.valueOf(LocalTime.now()), Genre.JAZZ, &quot;b&quot;);</span>
+<span class="fc" id="L492">    assertEquals(1, db.getChatRoomPlaylist(Genre.JAZZ).size());</span>
+<span class="fc" id="L493">  }</span>
+
+  @Test
+  public void testGetChatRoomPlaylistNullGenre() {
+<span class="fc" id="L497">    assertNull(db.getChatRoomPlaylist(null));</span>
+<span class="fc" id="L498">  }</span>
+
+  //------------------------------------- InsertSession ----------------------------------------- // 
+  @Test
+  public void testInsertSessionOK() {
+<span class="fc" id="L503">    assertEquals(&quot;OK&quot;, db.insertSession(&quot;0&quot;, &quot;1&quot;));</span>
+<span class="fc" id="L504">  }</span>
+
+  @Test
+  public void testInsertSessionNullTime() {
+<span class="fc" id="L508">    assertEquals(&quot;No time&quot;, db.insertSession(null, &quot;session1&quot;));</span>
+<span class="fc" id="L509">  }</span>
+
+  @Test
+  public void testInsertSessionEmptyTime() {
+<span class="fc" id="L513">    assertEquals(&quot;No time&quot;, db.insertSession(&quot;&quot;, &quot;session1&quot;));</span>
+<span class="fc" id="L514">  }</span>
+
+  @Test
+  public void testInsertSessionNullSessionId() {
+<span class="fc" id="L518">    assertEquals(&quot;No session id&quot;, db.insertSession(&quot;0912&quot;, null));</span>
+<span class="fc" id="L519">  }</span>
+
+  @Test
+  public void testInsertSessionEmptySessionId() {
+<span class="fc" id="L523">    assertEquals(&quot;No session id&quot;, db.insertSession(&quot;0912&quot;, &quot;&quot;));</span>
+<span class="fc" id="L524">  }</span>
+
+  //----------------------------------- UserJoin ---------------------------------------- // 
+  @Test
+  public void UserJoinOldOK() {
+<span class="fc" id="L529">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L530">    User user1 = new User();</span>
+<span class="fc" id="L531">    user1.setUsername(&quot;t&quot;);</span>
+<span class="fc" id="L532">    User user2 = new User();</span>
+<span class="fc" id="L533">    user2.setUsername(&quot;testing2&quot;);</span>
+<span class="fc" id="L534">    Map&lt;String, User&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L535">    map.put(&quot;t&quot;, user1);</span>
+<span class="fc" id="L536">    map.put(&quot;testing2&quot;, user2);</span>
+<span class="fc" id="L537">    ChatRoom chatroom = new ChatRoom();</span>
+<span class="fc" id="L538">    chatroom.setParticipant(map);</span>
+<span class="fc" id="L539">    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);</span>
+<span class="fc" id="L540">    db.userJoin(Genre.BLUES, &quot;t&quot;, mockChatlist);</span>
+<span class="fc" id="L541">    assertNull(db.getGenreUser(&quot;t&quot;));</span>
+<span class="fc" id="L542">  }</span>
+
+  @Test
+  public void testUserJoinNewOK() {
+<span class="fc" id="L546">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L547">    User user1 = new User();</span>
+<span class="fc" id="L548">    user1.setUsername(&quot;testing1&quot;);</span>
+<span class="fc" id="L549">    User user2 = new User();</span>
+<span class="fc" id="L550">    user2.setUsername(&quot;testing2&quot;);</span>
+<span class="fc" id="L551">    Map&lt;String, User&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L552">    map.put(&quot;testing2&quot;, user2);</span>
+<span class="fc" id="L553">    ChatRoom chatroom = new ChatRoom();</span>
+<span class="fc" id="L554">    chatroom.setParticipant(map);</span>
+<span class="fc" id="L555">    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);</span>
+<span class="fc" id="L556">    db.userJoin(Genre.BLUES, &quot;testing1&quot;, mockChatlist);</span>
+<span class="fc" id="L557">    assertEquals(&quot;blues&quot;, db.getGenreUser(&quot;testing1&quot;));</span>
+<span class="fc" id="L558">  }</span>
+
+  @Test
+  public void testUserJoinNullGenre() {
+<span class="fc" id="L562">    assertNull(db.userJoin(null, &quot;testing1&quot;, new ChatList()));</span>
+<span class="fc" id="L563">  }</span>
+
+  @Test
+  public void testUserJoinNullUsername() {
+<span class="fc" id="L567">    assertNull(db.userJoin(Genre.BLUES, null, new ChatList()));</span>
+<span class="fc" id="L568">  }</span>
+
+  @Test
+  public void testUserJoinEmptyUsername() {
+<span class="fc" id="L572">    assertNull(db.userJoin(Genre.BLUES, &quot;&quot;, new ChatList()));</span>
+<span class="fc" id="L573">  }</span>
+
+  @Test
+  public void testUserJoinNullChatlist() {
+<span class="fc" id="L577">    assertNull(db.userJoin(Genre.BLUES, &quot;testing1&quot;, null));</span>
+<span class="fc" id="L578">  }</span>
+
+  //----------------------------------- UserSend ---------------------------------------- //
+  @Test
+  public void testUserSendOK() {
+<span class="fc" id="L583">    db.insertUserwithGenre(&quot;t&quot;, &quot;blues&quot;);</span>
+<span class="fc" id="L584">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L585">    ChatRoom chatroom = new ChatRoom();</span>
+<span class="fc" id="L586">    List&lt;Message&gt; chat = new ArrayList&lt;&gt;();</span>
+    //chatroom.setParticipant(map);
+<span class="fc" id="L588">    chatroom.setChat(chat);</span>
+<span class="fc" id="L589">    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);</span>
+<span class="fc" id="L590">    db.userSend(&quot;t&quot;, &quot;h&quot;, mockChatlist);</span>
+<span class="fc" id="L591">    assertEquals(1, chatroom.getChat().size());</span>
+<span class="fc" id="L592">  }</span>
+
+  @Test
+  public void testUserSendNoGenreOK() {
+<span class="fc" id="L596">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L597">    ChatRoom chatroom = new ChatRoom();</span>
+<span class="fc" id="L598">    List&lt;Message&gt; chat = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L599">    chatroom.setChat(chat);</span>
+<span class="fc" id="L600">    when(mockChatlist.getChatroomByGenre(Genre.BLUES)).thenReturn(chatroom);</span>
+<span class="fc" id="L601">    assertNull(db.userSend(&quot;testing1&quot;, &quot;hello&quot;, mockChatlist));</span>
+<span class="fc" id="L602">  }</span>
+
+  @Test
+  public void testUserSendNullUsername() {
+<span class="fc" id="L606">    assertNull(db.userSend(null, &quot;hello&quot;, new ChatList()));</span>
+<span class="fc" id="L607">  }</span>
+
+  @Test
+  public void testUserSendEmptyUsername() {
+<span class="fc" id="L611">    assertNull(db.userSend(&quot;&quot;, &quot;hello&quot;, new ChatList()));</span>
+<span class="fc" id="L612">  }</span>
+
+  @Test
+  public void testUserSendNullText() {
+<span class="fc" id="L616">    assertNull(db.userSend(&quot;testing1&quot;, null, new ChatList()));</span>
+<span class="fc" id="L617">  }</span>
+
+  @Test
+  public void testUserSendEmptyText() {
+<span class="fc" id="L621">    assertNull(db.userSend(&quot;testing1&quot;, &quot;&quot;, new ChatList()));</span>
+<span class="fc" id="L622">  }</span>
+
+  @Test
+  public void testUserSendNullChatlist() {
+<span class="fc" id="L626">    assertNull(db.userSend(&quot;testing1&quot;, null, null));</span>
+<span class="fc" id="L627">  }</span>
+
+  //----------------------------------- GetLatestSession ---------------------------------------- // 
+  @Test
+  public void testGetLatestSessionOK() {
+<span class="fc" id="L632">    db.insertSession(&quot;0920&quot;, &quot;session2&quot;);</span>
+<span class="fc" id="L633">    db.insertSession(&quot;1020&quot;, &quot;session3&quot;);</span>
+<span class="fc" id="L634">    db.insertSession(&quot;0820&quot;, &quot;session1&quot;);</span>
+    
+<span class="fc" id="L636">    assertEquals(&quot;session3&quot;, db.getLatestSession());</span>
+<span class="fc" id="L637">  }</span>
+
+  @Test
+  public void testGetLatestSessionNullStmt() {
+<span class="fc" id="L641">    Statement origStmt = db.getStmt();</span>
+<span class="fc" id="L642">    db.setStmt(null);</span>
+<span class="fc" id="L643">    assertNull(db.getLatestSession());</span>
+<span class="fc" id="L644">    db.setStmt(origStmt);</span>
+<span class="fc" id="L645">  }</span>
+
+  //------------------------------------------ update -------------------------------------------- // 
+  @Test
+  public void testUpdate() {
+<span class="fc" id="L650">    ChatList chatlist = db.update();</span>
+<span class="fc" id="L651">    assertEquals(0, chatlist.getChatrooms().size());</span>
+<span class="fc" id="L652">    db.insertChatRoom(Genre.JAZZ, &quot;/jazz-links&quot;, &quot;jazz-playlist&quot;);</span>
+    
+<span class="fc" id="L654">    chatlist = db.update();</span>
+<span class="fc" id="L655">    assertEquals(1, chatlist.getChatrooms().size());</span>
+<span class="fc" id="L656">  }</span>
+
+  //----------------------------------------- Connect ------------------------------------------- // 
+  @Test
+  public void testConnectOK() {
+<span class="fc" id="L661">    db.setConn(null);</span>
+<span class="fc" id="L662">    assertEquals(&quot;OK&quot;, db.connect());</span>
+<span class="fc" id="L663">  }</span>
+
+  @Test
+  public void testConnectExists() throws SQLException {
+<span class="fc" id="L667">    SQLiteConfig config = new SQLiteConfig();</span>
+<span class="fc" id="L668">    Connection conn = DriverManager.getConnection(&quot;jdbc:sqlite:autumn.db&quot;,</span>
+<span class="fc" id="L669">            config.toProperties());</span>
+<span class="fc" id="L670">    db.setConn(conn);</span>
+<span class="fc" id="L671">    assertEquals(&quot;Connection exists&quot;, db.connect());</span>
+<span class="fc" id="L672">  }</span>
+
+  //-------------------------------------- GetAllChatRooms ---------------------------------------- //
+  @Test
+  public void testGetAllChatroomsOK() {
+<span class="fc" id="L677">    assertNotNull(db.getAllChatRooms());</span>
+<span class="fc" id="L678">  }</span>
+
+  @Test
+  public void testGetAllChatroomsNullStmt() {
+<span class="fc" id="L682">    Statement origStmt = db.getStmt();</span>
+<span class="fc" id="L683">    db.setStmt(null);</span>
+<span class="fc" id="L684">    assertNull(db.getAllChatRooms());</span>
+<span class="fc" id="L685">    db.setStmt(origStmt);</span>
+<span class="fc" id="L686">  }</span>
+
+  @AfterEach
+  public void afterEach() {
+<span class="fc" id="L690">    db.clear();</span>
+<span class="fc" id="L691">    db.close();	  </span>
+<span class="fc" id="L692">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>
