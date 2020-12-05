@@ -28,11 +28,20 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import io.javalin.Javalin;
 
 
 
 @TestMethodOrder(OrderAnnotation.class) 
 public class StartChatTest {
+
+  private static int getHerokuAssignedPort() {
+    String herokuPort = System.getenv("PORT");
+    if (herokuPort != null) {
+      return Integer.parseInt(herokuPort);
+    }
+    return 7000;
+  }
 
   /**
   * Runs only once before the testing starts.
@@ -52,7 +61,8 @@ public class StartChatTest {
     // If you do not wish to have this end point, it is okay to not have anything in this method.
     // Create HTTP request and get response
     StartChat.main(null);
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/lobby").asString();
+    String port = Integer.toString(getHerokuAssignedPort());
+    HttpResponse<String> response = Unirest.get("http://localhost:" + port + "/lobby").asString();
     assertEquals(200, response.getStatus());
     
     SqLite db = StartChat.getDb();
@@ -103,9 +113,9 @@ public class StartChatTest {
   public void chatroomsRestartTest() {
     StartChat.stop();
     StartChat.main(null);
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/chatrooms/").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:" + port + "/chatrooms/").asString();
     assertEquals(200, response.getStatus());
     
     // sessionId is new after restarting, need to log again
@@ -115,7 +125,7 @@ public class StartChatTest {
     
     
     
-    response = Unirest.get("http://localhost:8080/chatrooms/").asString();
+    response = Unirest.get("http://localhost:" + port + "/chatrooms/").asString();
 
     assertEquals(200, response.getStatus());
 
@@ -144,9 +154,9 @@ public class StartChatTest {
   @Test
   @Order(3)
   public void joinRoomTest() {
-
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").body("username=ben").asString();
-    response = Unirest.get("http://localhost:8080/chatroom/blues/?user=ben").asString();
+    String port = Integer.toString(getHerokuAssignedPort());
+    HttpResponse<String> response = Unirest.post("http://localhost:" + port + "/joinroom/blues/").body("username=ben").asString();
+    response = Unirest.get("http://localhost:" + port + "/chatroom/blues/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
 
@@ -175,11 +185,11 @@ public class StartChatTest {
   @Test
   @Order(4)
   public void rejoinRoomTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/jazz/").asString();
-    response = Unirest.post("http://localhost:8080/joinroom/jazz/").asString();
-    response = Unirest.get("http://localhost:8080/chatroom/jazz/?user=ben").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:" + port + "/joinroom/jazz/").asString();
+    response = Unirest.post("http://localhost:" + port + "/joinroom/jazz/").asString();
+    response = Unirest.get("http://localhost:" + port + "/chatroom/jazz/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
 
@@ -207,9 +217,9 @@ public class StartChatTest {
   @Test
   @Order(5)
   public void invalidJoinRoomTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/metal").asString();
+    HttpResponse<String> response = Unirest.post("http://localhost:" + port + "/joinroom/metal").asString();
     
     assertEquals("Invalid Room", response.getBody());
   
@@ -238,9 +248,9 @@ public class StartChatTest {
   @Test
   @Order(6)
   public void invalidChatroomGenreTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/chatroom/metal/?user=ben").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:" + port + "/chatroom/metal/?user=ben").asString();
 
     assertEquals(200, response.getStatus());
     assertEquals("Invalid Room", response.getBody());
@@ -267,8 +277,8 @@ public class StartChatTest {
     // Check if user is present after joinroom
     assertEquals(1, chatroom.getParticipant().size());
 	
-    response = Unirest.delete("http://localhost:8080/leaveroom/country").body("username=sean").asString();
-    response = Unirest.get("http://localhost:8080/chatroom/country/?user=sean").asString(); 
+    response = Unirest.delete("http://localhost:" + port + "/leaveroom/country").body("username=sean").asString();
+    response = Unirest.get("http://localhost:" + port + "/chatroom/country/?user=sean").asString(); 
     assertEquals(200, response.getStatus());
     System.out.println("/leaveroom/[user] Response: " + response.getBody());
 
@@ -331,9 +341,9 @@ public class StartChatTest {
   @Test
   @Order(9)
   public void invalidLeaveRoomTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
-    HttpResponse<String> response = Unirest.delete("http://localhost:8080/leaveroom/pop/").asString();
+    HttpResponse<String> response = Unirest.delete("http://localhost:" + port + "/leaveroom/pop/").asString();
 	
     assertEquals(200, response.getStatus());
     assertEquals("You are not in the room", response.getBody());
@@ -348,7 +358,7 @@ public class StartChatTest {
   @Test
   @Order(10)
   public void processAuthTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
     Unirest.config().reset();
     Unirest.config().followRedirects(false);
@@ -420,12 +430,12 @@ public class StartChatTest {
   @Test
   @Order(13)
   public void LoginRedirectionTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // reset sessionId to enable redirection
     StartChat.stop();
     StartChat.main(null);
     
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:" + port + "/").asString();
     assertEquals(200, response.getStatus());
 	
     System.out.println("/ Response: " + response.getBody());
@@ -438,10 +448,10 @@ public class StartChatTest {
   @Test
   @Order(14)
   public void frontPageTest() {
-
+    String port = Integer.toString(getHerokuAssignedPort());
     // Create HTTP request and get response
 
-    HttpResponse<String> response = Unirest.get("http://localhost:8080/").asString();
+    HttpResponse<String> response = Unirest.get("http://localhost:" + port + "/").asString();
     
     assertEquals(200, response.getStatus());
   
@@ -472,12 +482,13 @@ public class StartChatTest {
   @Test
   @Order(16)
   public void sendMessageTest() {
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
-    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    String port = Integer.toString(getHerokuAssignedPort());
+    HttpResponse<String> response = Unirest.post("http://localhost:" + port + "/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:" + port + "/chatroom/blues").asString();
     assertEquals(200, response.getStatus());
 
-    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
-    response1 = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    HttpResponse<String> response1 = Unirest.post("http://localhost:" + port + "/send").body("text=hello").asString();
+    response1 = Unirest.get("http://localhost:" + port + "/chatroom/blues").asString();
     System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
     // Parse the response to JSON object
     JSONObject jsonObject = new JSONObject(response1.getBody());
@@ -496,19 +507,20 @@ public class StartChatTest {
   @Test
   @Order(17)
   public void sendMessageInvalidUserTest() {
-    HttpResponse<String> response = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
+    String port = Integer.toString(getHerokuAssignedPort());
+    HttpResponse<String> response = Unirest.post("http://localhost:" + port + "/send").body("text=hello").asString();
     assertEquals("User not in any chatroom", response.getBody());
   }
   
   @Test
   @Order(18)
   public void webSocketTest() {
-	
+	  String port = Integer.toString(getHerokuAssignedPort());
     WebSocketClient client = new WebSocketClient();
     SimpleWebSocket socket = new SimpleWebSocket();
     try {
       client.start();
-      URI uri = new URI("ws://localhost:8080/chatroom");
+      URI uri = new URI("ws://localhost:" + port + "/chatroom");
       //ClientUpgradeRequest request = new ClientUpgradeRequest();
       Future<Session> future = client.connect(socket, uri);
       System.out.printf("Connecting to : %s%n", uri);

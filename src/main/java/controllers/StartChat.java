@@ -66,6 +66,14 @@ public final class StartChat {
     return db;
   }
 
+  private static int getHerokuAssignedPort() {
+    String herokuPort = System.getenv("PORT");
+    if (herokuPort != null) {
+      return Integer.parseInt(herokuPort);
+    }
+    return 7000;
+  }
+
   /**
    * set current database.
    * @param database SqLite
@@ -156,7 +164,7 @@ public final class StartChat {
     }
     app = Javalin.create(config -> {
       config.addStaticFiles("/public");
-    }).start(PORT_NUMBER);
+    }).start(getHerokuAssignedPort());
     app.get("/", ctx -> {
       ctx.redirect("/home");
     });
