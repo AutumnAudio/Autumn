@@ -131,7 +131,6 @@ public final class StartChat {
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
     refreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
       public void run() {
-        System.out.println("scheduled run");
         SqLite db2 = new SqLite();
         db2.connect();
         ChatList chatListData = db2.update();
@@ -152,13 +151,21 @@ public final class StartChat {
   public static void main(final String[] args) {
     db.start();
     chatlist = db.update();
-    if (chatlist.size() == 0) {
+    if (chatlist.getChatrooms().size() == 0) {
       initializeChatlist();
     }
-
     app = Javalin.create(config -> {
       config.addStaticFiles("/public");
     }).start(PORT_NUMBER);
+    app.get("/", ctx -> {
+      ctx.redirect("/home");
+    });
+    app.get("/home", ctx -> {
+      ctx.redirect("index.html");
+    });
+    app.get("/lobby", ctx -> {
+      ctx.redirect("index.html?place=lobby");
+    });
 
     app.get("/auth", ctx -> {
       String sessionId = (String) ctx.sessionAttribute("sessionId");
@@ -194,18 +201,6 @@ public final class StartChat {
               ctx.sessionAttribute("sessionId"));
       ctx.result(response);
       ctx.redirect("http://localhost:3000"); //TODO change to HOME constant
-    });
-
-    app.get("/", ctx -> {
-      ctx.redirect("/home");
-    });
-
-    app.get("/home", ctx -> {
-      ctx.redirect("index.html");
-    });
-
-    app.get("/lobby", ctx -> {
-      ctx.redirect("index.html?place=lobby");
     });
 
     app.get("/chatrooms", ctx -> {
@@ -255,6 +250,10 @@ public final class StartChat {
 
     app.post("/add", ctx -> {
       String uri = ctx.formParam("uri");
+      if (uri == null) {
+        ctx.result("no song uri");
+        return;
+      }
       String username = db.getUserBySessionId(
               (String) ctx.sessionAttribute("sessionId")).getUsername();
       User user = db.getUserByName(username);
@@ -296,7 +295,6 @@ public final class StartChat {
       }
     });
 
-    // Web sockets - DO NOT DELETE or CHANGE
     app.ws("/chatroom", new UiWebSocket());
   }
 

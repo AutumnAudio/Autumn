@@ -20,11 +20,6 @@ public class User {
   private String username;
 
   /**
-   * hashed password.
-   */
-  private String passwordHash;
-
-  /**
    * sessionId.
    */
   private String sessionId;
@@ -255,28 +250,6 @@ public class User {
   }
 
   /**
-   * Get recently played.
-   * @return recentlyPlayed Song[]
-   */
-  public Song[] getRecentlyPlayed() {
-    Song[] ret = new Song[LIMIT];
-    for (int i = 0; i < LIMIT; i++) {
-      ret[i] = recentlyPlayed[i];
-    }
-    return ret;
-  }
-
-  /**
-   * Set recently played.
-   * @param recentlyPlayedList Song[]
-   */
-  public void setRecentlyPlayed(final Song[] recentlyPlayedList) {
-    for (int i = 0; i < LIMIT; i++) {
-      recentlyPlayed[i] = recentlyPlayedList[i];
-    }
-  }
-
-  /**
    * Get current track.
    * @return currentTrack Song
    */
@@ -290,22 +263,6 @@ public class User {
    */
   public void setCurrentTrack(final Song track) {
     this.currentTrack = track;
-  }
-
-  /**
-   * get password.
-   * @return passwordHash String
-   */
-  public String getPasswordHash() {
-    return passwordHash;
-  }
-
-  /**
-   * set password.
-   * @param password String
-   */
-  public void setPasswordHash(final String password) {
-    this.passwordHash = password;
   }
 
   /**
@@ -405,14 +362,6 @@ public class User {
   }
 
   /**
-   * get database.
-   * @return db SqLite
-   */
-  public SqLite getDb() {
-    return db;
-  }
-
-  /**
    * set database.
    * @param database SqLite
    */
@@ -435,14 +384,6 @@ public class User {
    */
   public void setUsername(final String name) {
     this.username = name;
-  }
-
-  /**
-   * get Api.
-   * @return api String
-   */
-  public MyApi getApi() {
-    return this.api;
   }
 
   /**

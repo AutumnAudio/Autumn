@@ -38,12 +38,37 @@ public class SqLite {
   }
 
   /**
-   * connect to autumn database.
+   * set conn.
+   * @param newConn Connection
    */
-  public synchronized void connect() {
+  public synchronized void setConn(final Connection newConn) {
+    this.conn = newConn;
+  }
+
+  /**
+   * set stmt.
+   * @param newStmt Statement
+   */
+  public synchronized void setStmt(final Statement newStmt) {
+    this.stmt = newStmt;
+  }
+
+  /**
+   * get stmt.
+   * @return stmt Statement
+   */
+  public synchronized Statement getStmt() {
+    return this.stmt;
+  }
+
+  /**
+   * connect to autumn database.
+   * @return response String
+   */
+  public synchronized String connect() {
     try {
       if (conn != null && !conn.isClosed()) {
-        return;
+        return "Connection exists";
       }
     } catch (SQLException e1) {
       // TODO Auto-generated catch block
@@ -65,6 +90,7 @@ public class SqLite {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    return "OK";
   }
 
   /**
@@ -81,7 +107,6 @@ public class SqLite {
     try {
       String sql = "CREATE TABLE IF NOT EXISTS USERS "
                      + " (USERNAME              VARCHAR PRIMARY KEY NOT NULL, "
-                     + " PASSWORD_HASH          VARCHAR, "
                      + " SPOTIFY_TOKEN          VARCHAR UNIQUE, "
                      + " SPOTIFY_REFRESH_TOKEN  VARCHAR UNIQUE, "
                      + " SESSION_ID             VARCHAR) ";
@@ -252,7 +277,6 @@ public class SqLite {
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
-          user.setPasswordHash(rs.getString("PASSWORD_HASH"));
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
@@ -376,7 +400,6 @@ public class SqLite {
       try {
         while (rs.next()) {
           user.setUsername(rs.getString("USERNAME"));
-          user.setPasswordHash(rs.getString("PASSWORD_HASH"));
           user.setSpotifyToken(rs.getString("SPOTIFY_TOKEN"));
           user.setSpotifyRefreshToken(rs.getString("SPOTIFY_REFRESH_TOKEN"));
           user.setSessionId(rs.getString("SESSION_ID"));
@@ -429,6 +452,9 @@ public class SqLite {
    * @return Chatroom list List
    */
   public synchronized Map<String, ChatRoom> getAllChatRooms() {
+    if (stmt == null) {
+      return null;
+    }
     Map<String, ChatRoom> map = new HashMap<>();
     List<Genre> genres = new ArrayList<>();
     try {
@@ -737,6 +763,9 @@ public class SqLite {
    * @return sessionId
    */
   public synchronized String getLatestSession() {
+    if (stmt == null) {
+      return null;
+    }
     String sessionId = "";
     try {
       ResultSet rs;
