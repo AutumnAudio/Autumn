@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package models;
+
+import java.sql.Time;
+import java.time.LocalTime;
+
+import com.google.gson.Gson;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.model_objects.IPlaylistItem;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.PlayHistory;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.TrackSimplified;
+
+public class User {
+
+  /**
+   * email associated to spotify account.
+   */
+  private String username;
+
+  /**
+   * sessionId.
+   */
+  private String sessionId;
+
+  /**
+   * Spotify access token.
+   */
+  private String spotifyToken;
+
+  /**
+   * Spotify Refresh Token.
+   */
+  private String spotifyRefreshToken;
+
+  /**
+   * SqLite database.
+   */
+  private SqLite db;
+
+  /**
+   * Recently played song limit.
+   */
+  private static final int LIMIT = 10;
+
+  /**
+   * min length for uri.
+   */
+  private static final int URILIMIT = 14;
+
+  /**
+   * Recently Played song list.
+   */
+<span class="fc" id="L55">  private Song[] recentlyPlayed = new Song[LIMIT];</span>
+
+  /**
+   * currently playing track.
+   */
+  private Song currentTrack;
+
+  /**
+   * Spotify api object associated with user.
+   */
+<span class="fc" id="L65">  private MyApi api = new MyApi();</span>
+
+  /**
+   * refresh recently playing.
+   * @return response String
+   */
+  public String refreshRecentlyPlayed() {
+<span class="fc" id="L72">    String ret = &quot;OK&quot;;</span>
+<span class="fc" id="L73">    PlayHistory[] playHistory = null;</span>
+<span class="fc" id="L74">    spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);</span>
+    try {
+<span class="fc" id="L76">      api.setApi(new SpotifyApi.Builder()</span>
+<span class="fc" id="L77">            .setAccessToken(spotifyToken)</span>
+<span class="fc" id="L78">            .build());</span>
+<span class="fc" id="L79">      playHistory = api.recentlyPlayed();</span>
+<span class="fc bfc" id="L80" title="All 4 branches covered.">      if (playHistory.length &lt;  LIMIT || playHistory.length &gt; LIMIT) {</span>
+<span class="fc" id="L81">        return &quot;Number of items return not matched.&quot;;</span>
+      }
+<span class="fc bfc" id="L83" title="All 2 branches covered.">      for (int i = 0; i &lt; playHistory.length; i++) {</span>
+<span class="fc" id="L84">        TrackSimplified track = playHistory[i].getTrack();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (track == null) {</span>
+<span class="fc" id="L86">          return &quot;List contains null track&quot;;</span>
+        }
+<span class="fc" id="L88">        ArtistSimplified[] artists = track.getArtists();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (artists == null) {</span>
+<span class="fc" id="L90">          return &quot;List contains null artist list&quot;;</span>
+        }
+<span class="fc" id="L92">        String[] songArtists = new String[artists.length];</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for (int j = 0; j &lt; artists.length; j++) {</span>
+<span class="fc" id="L94">          songArtists[j] = artists[j].getName();</span>
+        }
+<span class="fc" id="L96">        Song song = new Song();</span>
+<span class="fc" id="L97">        song.setUsername(username);</span>
+<span class="fc" id="L98">        String trackName = track.getName();</span>
+<span class="fc bfc" id="L99" title="All 4 branches covered.">        if (trackName == null || trackName.length() == 0) {</span>
+<span class="fc" id="L100">          return &quot;List contains invalid track name&quot;;</span>
+        }
+<span class="fc" id="L102">        song.setName(trackName);</span>
+<span class="fc" id="L103">        song.setArtists(songArtists);</span>
+<span class="fc" id="L104">        song.setUri(track.getUri());</span>
+<span class="fc" id="L105">        recentlyPlayed[i] = song;</span>
+      }
+<span class="pc" id="L107">    } catch (Exception e) {</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">      if (e.getMessage().equals(&quot;The access token expired&quot;)) {</span>
+<span class="nc" id="L109">        refreshRecentlyPlayed();</span>
+<span class="nc" id="L110">      } else {</span>
+<span class="nc" id="L111">        System.out.println(&quot;Something went wrong!\n&quot;</span>
+<span class="nc" id="L112">          + e.getMessage());</span>
+      }
+    }
+<span class="fc" id="L115">    return ret;</span>
+  }
+
+  /**
+   * refresh currently playing.
+   * @return response String
+   */
+  public String refreshCurrentlyPlaying() {
+<span class="fc" id="L123">    String ret = &quot;OK&quot;;</span>
+<span class="fc" id="L124">    CurrentlyPlaying currentlyPlaying = null;</span>
+<span class="fc" id="L125">    spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);</span>
+    try {
+<span class="fc" id="L127">      api.setApi(new SpotifyApi.Builder()</span>
+<span class="fc" id="L128">                .setAccessToken(spotifyToken)</span>
+<span class="fc" id="L129">                .build());</span>
+<span class="fc" id="L130">      currentlyPlaying = api.currentlyPlaying();</span>
+<span class="pc" id="L131">    } catch (Exception e) {</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">      if (e.getMessage().equals(&quot;The access token expired&quot;)) {</span>
+<span class="nc" id="L133">        refreshCurrentlyPlaying();</span>
+<span class="nc" id="L134">      } else {</span>
+<span class="nc" id="L135">        System.out.println(&quot;Something went wrong!\n&quot;</span>
+<span class="nc" id="L136">            + e.getMessage());</span>
+      }
+    }
+<span class="fc bfc" id="L139" title="All 2 branches covered.">    if (currentlyPlaying != null) {</span>
+<span class="fc" id="L140">      IPlaylistItem playlistItem = currentlyPlaying.getItem();</span>
+<span class="fc" id="L141">      Track track = (Track) playlistItem;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">      if (track == null) {</span>
+<span class="fc" id="L143">        return &quot;Null track&quot;;</span>
+      }
+<span class="fc" id="L145">      ArtistSimplified[] artists = track.getArtists();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">      if (artists == null) {</span>
+<span class="fc" id="L147">        return &quot;Null artist list&quot;;</span>
+      }
+<span class="fc" id="L149">      String[] songArtists = new String[artists.length];</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">      for (int j = 0; j &lt; artists.length; j++) {</span>
+<span class="fc" id="L151">        songArtists[j] = artists[j].getName();</span>
+      }
+<span class="fc" id="L153">      Song song = new Song();</span>
+<span class="fc" id="L154">      song.setUsername(username);</span>
+<span class="fc" id="L155">      String trackName = track.getName();</span>
+<span class="fc bfc" id="L156" title="All 4 branches covered.">      if (trackName == null || trackName.length() == 0) {</span>
+<span class="fc" id="L157">        ret = &quot;Invalid track name&quot;;</span>
+      }
+<span class="fc" id="L159">      song.setName(trackName);</span>
+<span class="fc" id="L160">      song.setArtists(songArtists);</span>
+<span class="fc" id="L161">      song.setUri(track.getUri());</span>
+<span class="fc" id="L162">      currentTrack = song;</span>
+<span class="fc" id="L163">    } else {</span>
+<span class="fc" id="L164">      currentTrack = null;</span>
+<span class="fc" id="L165">      ret = &quot;Currently not playing any tracks&quot;;</span>
+    }
+<span class="fc" id="L167">    return ret;</span>
+  }
+
+  /**
+   * add song to queue.
+   * @param uri String
+   * @return response String
+   */
+  public String addToQueue(final String uri) {
+<span class="fc" id="L176">    spotifyToken = api.refreshSpotifyToken(spotifyRefreshToken);</span>
+<span class="fc bfc" id="L177" title="All 4 branches covered.">    if (uri.length() &lt;= URILIMIT || !uri.contains(&quot;spotify:track:&quot;)) {</span>
+<span class="fc" id="L178">      return &quot;invalid uri&quot;;</span>
+    }
+<span class="fc" id="L180">    String ret = &quot;&quot;;</span>
+    try {
+<span class="fc" id="L182">      api.setApi(new SpotifyApi.Builder()</span>
+<span class="fc" id="L183">          .setAccessToken(spotifyToken)</span>
+<span class="fc" id="L184">          .build());</span>
+<span class="fc" id="L185">      ret = api.addSong(uri);</span>
+<span class="pc" id="L186">    } catch (Exception e) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">      if (e.getMessage().equals(&quot;The access token expired&quot;)) {</span>
+<span class="nc" id="L188">        addToQueue(uri);</span>
+<span class="nc" id="L189">      } else {</span>
+<span class="nc" id="L190">        System.out.println(&quot;Something went wrong!\n&quot;</span>
+<span class="nc" id="L191">            + e.getMessage());</span>
+      }
+    }
+<span class="fc" id="L194">    return ret;</span>
+  }
+
+  /**
+   * share user currently playing song.
+   * @param chatlist ChatList
+   * @param database SqLite
+   * @return message Message
+   */
+  public Message share(final ChatList chatlist, final SqLite database) {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">    if (chatlist == null) {</span>
+<span class="fc" id="L205">      return null;</span>
+    }
+<span class="fc" id="L207">    Message message = new Message();</span>
+<span class="fc" id="L208">    message.setUsername(username);</span>
+<span class="fc" id="L209">    refreshCurrentlyPlaying();</span>
+<span class="fc" id="L210">    String genreStr = database.getGenreUser(username);</span>
+<span class="fc bfc" id="L211" title="All 4 branches covered.">    if (getCurrentTrack() == null || genreStr == null) {</span>
+<span class="fc" id="L212">      return null;</span>
+    }
+<span class="fc" id="L214">    Song song = new Song();</span>
+<span class="fc" id="L215">    song.setUsername(username);</span>
+<span class="fc" id="L216">    song.setName(getCurrentTrack().getName());</span>
+<span class="fc" id="L217">    song.setArtists(getCurrentTrack().getArtists());</span>
+<span class="fc" id="L218">    song.setUri(getCurrentTrack().getUri());</span>
+<span class="fc" id="L219">    Genre genre = Genre.valueOf(genreStr.toUpperCase());</span>
+<span class="fc" id="L220">    ChatRoom chatroom = chatlist.getChatroomByGenre(genre);</span>
+    // share song with participants
+<span class="fc bfc" id="L222" title="All 2 branches covered.">    for (User sharee : chatroom.getParticipant().values()) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">      if (!getUsername().equals(sharee.getUsername())) {</span>
+<span class="fc" id="L224">        sharee.addToQueue(song.getUri());</span>
+      }
+    }
+    // add song to group playlist
+<span class="fc" id="L228">    chatroom.addSong(song);</span>
+<span class="fc" id="L229">    database.insertSong(username, Time.valueOf(LocalTime.now()),</span>
+<span class="fc" id="L230">            genre, new Gson().toJson(song));</span>
+    // send message to chat
+<span class="fc" id="L232">    message.setUsername(username);</span>
+<span class="fc" id="L233">    message.setMessage(&quot;I just shared &quot; + song.getName()</span>
+<span class="fc" id="L234">            + &quot; by &quot; + song.getArtists()[0]);</span>
+<span class="fc" id="L235">    return message;</span>
+  }
+
+  /**
+   * Public constructor.
+   * @param newApi MyApi
+   */
+<span class="fc" id="L242">  public User(final MyApi newApi) {</span>
+<span class="fc" id="L243">    this.api = newApi;</span>
+<span class="fc" id="L244">  }</span>
+
+  /**
+   * Public Constructor.
+   */
+<span class="fc" id="L249">  public User() {</span>
+<span class="fc" id="L250">  }</span>
+
+  /**
+   * Get current track.
+   * @return currentTrack Song
+   */
+  public Song getCurrentTrack() {
+<span class="fc" id="L257">    return this.currentTrack;</span>
+  }
+
+  /**
+   * set current track.
+   * @param track Song
+   */
+  public void setCurrentTrack(final Song track) {
+<span class="fc" id="L265">    this.currentTrack = track;</span>
+<span class="fc" id="L266">  }</span>
+
+  /**
+   * Get session id.
+   * @return sessionId String
+   */
+  public String getSessionId() {
+<span class="fc" id="L273">    return sessionId;</span>
+  }
+
+  /**
+   * set session id.
+   * @param id String
+   */
+  public void setSessionId(final String id) {
+<span class="fc" id="L281">    this.sessionId = id;</span>
+<span class="fc" id="L282">  }</span>
+
+  /**
+   * set session id and save to DB.
+   * @param id String
+   */
+  public void setSessionIdDb(final String id) {
+<span class="fc" id="L289">    setSessionId(id);</span>
+<span class="fc" id="L290">    db.updateUserAttribute(&quot;SESSION_ID&quot;, id, username);</span>
+<span class="fc" id="L291">  }</span>
+
+  /**
+   * Get Spotify token.
+   * @return spotifyToken String
+   */
+  public String getSpotifyToken() {
+<span class="fc" id="L298">    return spotifyToken;</span>
+  }
+
+  /**
+   * Set Spotify token.
+   * @param token String
+   */
+  public void setSpotifyToken(final String token) {
+<span class="fc" id="L306">    this.spotifyToken = token;</span>
+<span class="fc" id="L307">  }</span>
+
+  /**
+   * Set Spotify token and save to DB.
+   * @param token String
+   */
+  public void setSpotifyTokenDb(final String token) {
+<span class="fc" id="L314">    setSpotifyToken(token);</span>
+<span class="fc" id="L315">    db.updateUserAttribute(&quot;SPOTIFY_TOKEN&quot;,</span>
+<span class="fc" id="L316">        token, username);</span>
+<span class="fc" id="L317">  }</span>
+
+  /**
+   * get Spotify refresh token.
+   * @return refresh token String
+   */
+  public String getSpotifyRefreshToken() {
+<span class="fc" id="L324">    return spotifyRefreshToken;</span>
+  }
+
+  /**
+   * Refresh Spotify token.
+   * @return token String
+   * @throws Exception Exception
+   */
+  public String refreshSpotifyToken() throws Exception {
+<span class="fc" id="L333">    String newToken = api.refreshSpotifyToken(spotifyRefreshToken);</span>
+<span class="fc bfc" id="L334" title="All 4 branches covered.">    if (newToken == null || newToken.length() == 0) {</span>
+<span class="fc" id="L335">      throw new Exception(&quot;Invalid Token&quot;);</span>
+    }
+<span class="fc" id="L337">    setSpotifyToken(newToken);</span>
+<span class="fc" id="L338">    return newToken;</span>
+  }
+
+  /**
+   * Set Spotify refresh token.
+   * @param refreshToken String
+   */
+  public void setSpotifyRefreshToken(final String refreshToken) {
+<span class="fc" id="L346">    this.spotifyRefreshToken = refreshToken;</span>
+<span class="fc" id="L347">  }</span>
+
+  /**
+   * Set Spotify refresh token and save to DB.
+   * @param refreshToken String
+   * @return response String
+   */
+  public String setSpotifyRefreshTokenDb(final String refreshToken) {
+<span class="fc bfc" id="L355" title="All 4 branches covered.">    if (refreshToken == null || refreshToken.length() == 0) {</span>
+<span class="fc" id="L356">      return &quot;No token&quot;;</span>
+    }
+<span class="fc" id="L358">    setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L359">    db.updateUserAttribute(&quot;SPOTIFY_REFRESH_TOKEN&quot;,</span>
+<span class="fc" id="L360">        refreshToken, username);</span>
+<span class="fc" id="L361">    return &quot;OK&quot;;</span>
+  }
+
+  /**
+   * set database.
+   * @param database SqLite
+   */
+  public void setDb(final SqLite database) {
+<span class="fc" id="L369">    this.db = database;</span>
+<span class="fc" id="L370">  }</span>
+
+
+  /**
+   * Get name of the user.
+   * @return String
+   */
+  public String getUsername() {
+<span class="fc" id="L378">    return this.username;</span>
+  }
+
+  /**
+   * Set username for the user.
+   * @param name String
+   */
+  public void setUsername(final String name) {
+<span class="fc" id="L386">    this.username = name;</span>
+<span class="fc" id="L387">  }</span>
+
+  /**
+   * set Api.
+   * @param spotifyApi SpotifyApi
+   */
+  public void setApi(final MyApi spotifyApi) {
+<span class="fc" id="L394">    this.api = spotifyApi;</span>
+<span class="fc" id="L395">  }</span>
+ }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>Message.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">Message.java</span></div><h1>Message.java</h1><pre class="source lang-java linenums">package models;
+
+<span class="fc" id="L3">public class Message {</span>
+
+  /**
+   * User who sent the message.
+   */
+  private String username;
+
+  /**
+   * Message content.
+   */
+  private String message;
+
+  /**
+   * Genre of chatroom message.
+   */
+  private Genre genre;
+
+  /**
+   * Set genre of a message.
+   * @param newGenre Genre
+   */
+  public void setGenre(final Genre newGenre) {
+<span class="fc" id="L25">    this.genre = newGenre;</span>
+<span class="fc" id="L26">  }</span>
+
+  /**
+   * Get genre of a message.
+   * @return genre Genre
+   */
+  public Genre getGenre() {
+<span class="fc" id="L33">    return this.genre;</span>
+  }
+
+  /**
+   * Set user of a message.
+   * @param name String
+   */
+  public void setUsername(final String name) {
+<span class="fc" id="L41">    this.username = name;</span>
+<span class="fc" id="L42">  }</span>
+
+  /**
+   * Get user of a message.
+   * @return username String
+   */
+  public String getUsername() {
+<span class="fc" id="L49">    return this.username;</span>
+  }
+
+  /**
+   * Set message.
+   * @param msg String
+   */
+  public void setMessage(final String msg) {
+<span class="fc" id="L57">    this.message = msg;</span>
+<span class="fc" id="L58">  }</span>
+
+  /**
+   * Get message.
+   * @return message string
+   */
+  public String getMessage() {
+<span class="fc" id="L65">    return this.message;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>

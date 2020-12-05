@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>UserTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">UserTest.java</span></div><h1>UserTest.java</h1><pre class="source lang-java linenums">import models.ChatList;
+import models.ChatRoom;
+import models.Genre;
+import models.MyApi;
+import models.Song;
+import models.SqLite;
+import models.User;
+
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.PagingCursorbased;
+import com.wrapper.spotify.model_objects.specification.PlayHistory;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.model_objects.specification.TrackSimplified;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.hc.core5.http.ParseException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mock;
+
+
+@TestMethodOrder(OrderAnnotation.class) 
+<span class="fc" id="L38">public class UserTest {</span>
+  
+  //String refreshToken = SpotifyAccount.getRefreshToken();
+  //String token = Login.refreshSpotifyToken(refreshToken);
+  //SpotifyApi api = new SpotifyApi.Builder()
+  //        .setAccessToken(Login.refreshSpotifyToken(refreshToken))
+  //        .build();
+  
+<span class="fc" id="L46">  SqLite db = new SqLite();</span>
+  
+  @Mock
+  PagingCursorbased&lt;PlayHistory&gt; pcb;
+  
+  @BeforeEach
+  public void beforeEach() {
+<span class="fc" id="L53">    db.start();</span>
+    
+<span class="fc" id="L55">  }</span>
+
+// ----------------------------- Refresh Recently Played --------------------------------------------- //
+  @Test
+  public void testResfreshRecentlyPlayed() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L60">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L61">	PlayHistory[] history = new PlayHistory[10];</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L63">      TrackSimplified mockTrack = mock(TrackSimplified.class);</span>
+<span class="fc" id="L64">      when(mockTrack.getName()).thenReturn(&quot;a&quot;);</span>
+<span class="fc" id="L65">      ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L66">      ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L67">      when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L68">      artistList[0] = artist;</span>
+<span class="fc" id="L69">      when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L70">      when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+      
+<span class="fc" id="L72">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L73">      when(mockHistory.getTrack()).thenReturn(mockTrack);</span>
+<span class="fc" id="L74">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L76">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L77">    User user = new User(mockAPI);</span>
+<span class="fc" id="L78">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L79">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L80">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L81">    assertEquals(&quot;OK&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L82">  }</span>
+
+  @Test
+  public void testResfreshRecentlyPlayedLessThan10() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L86">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L87">	PlayHistory[] history = new PlayHistory[9];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L89">      TrackSimplified mockTrack = mock(TrackSimplified.class);</span>
+<span class="fc" id="L90">      when(mockTrack.getName()).thenReturn(&quot;song&quot; + i);</span>
+<span class="fc" id="L91">      ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L92">      ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L93">      when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L94">      artistList[0] = artist;</span>
+<span class="fc" id="L95">      when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L96">      when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+      
+<span class="fc" id="L98">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L99">      when(mockHistory.getTrack()).thenReturn(mockTrack);</span>
+<span class="fc" id="L100">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L102">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L103">    User user = new User(mockAPI);</span>
+<span class="fc" id="L104">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L105">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L106">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L107">    assertEquals(&quot;Number of items return not matched.&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L108">  }</span>
+
+  @Test
+  public void testResfreshRecentlyPlayedMoreThan10() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L112">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L113">	PlayHistory[] history = new PlayHistory[11];</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L115">      TrackSimplified mockTrack = mock(TrackSimplified.class);</span>
+<span class="fc" id="L116">      when(mockTrack.getName()).thenReturn(&quot;song&quot; + i);</span>
+<span class="fc" id="L117">      ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L118">      ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L119">      when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L120">      artistList[0] = artist;</span>
+<span class="fc" id="L121">      when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L122">      when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+      
+<span class="fc" id="L124">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L125">      when(mockHistory.getTrack()).thenReturn(mockTrack);</span>
+<span class="fc" id="L126">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L128">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L129">    User user = new User(mockAPI);</span>
+<span class="fc" id="L130">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L131">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L132">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L133">    assertEquals(&quot;Number of items return not matched.&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L134">  }</span>
+
+  @Test
+  public void testResfreshRecentlyPlayedNullTrack() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L138">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L139">	PlayHistory[] history = new PlayHistory[10];</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L141">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L142">      when(mockHistory.getTrack()).thenReturn(null);</span>
+<span class="fc" id="L143">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L145">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L146">    User user = new User(mockAPI);</span>
+<span class="fc" id="L147">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L148">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L149">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L150">    assertEquals(&quot;List contains null track&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L151">  }</span>
+
+  @Test
+  public void testResfreshRecentlyPlayedNullArtist() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L155">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L156">	PlayHistory[] history = new PlayHistory[10];</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L158">      TrackSimplified mockTrack = mock(TrackSimplified.class);</span>
+<span class="fc" id="L159">      when(mockTrack.getName()).thenReturn(&quot;song&quot; + i);</span>
+<span class="fc" id="L160">      when(mockTrack.getArtists()).thenReturn(null);</span>
+<span class="fc" id="L161">      when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+      
+<span class="fc" id="L163">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L164">      when(mockHistory.getTrack()).thenReturn(mockTrack);</span>
+<span class="fc" id="L165">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L167">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L168">    User user = new User(mockAPI);</span>
+<span class="fc" id="L169">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L170">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L171">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L172">    assertEquals(&quot;List contains null artist list&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L173">  }</span>
+
+  @Test
+  public void testResfreshRecentlyPlayedNullTrackName() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L177">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L178">	PlayHistory[] history = new PlayHistory[10];</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L180">      TrackSimplified mockTrack = mock(TrackSimplified.class);</span>
+<span class="fc" id="L181">      when(mockTrack.getName()).thenReturn(null);</span>
+<span class="fc" id="L182">      ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L183">      ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L184">      when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L185">      artistList[0] = artist;</span>
+<span class="fc" id="L186">      when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L187">      when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+      
+<span class="fc" id="L189">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L190">      when(mockHistory.getTrack()).thenReturn(mockTrack);</span>
+<span class="fc" id="L191">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L193">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L194">    User user = new User(mockAPI);</span>
+<span class="fc" id="L195">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L196">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L197">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L198">    assertEquals(&quot;List contains invalid track name&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L199">  }</span>
+
+  @Test
+  public void testResfreshRecentlyPlayedEmptyTrackName() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L203">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L204">	PlayHistory[] history = new PlayHistory[10];</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">	for (int i = 0; i &lt; history.length; i++) {</span>
+<span class="fc" id="L206">      TrackSimplified mockTrack = mock(TrackSimplified.class);</span>
+<span class="fc" id="L207">      when(mockTrack.getName()).thenReturn(&quot;&quot;);</span>
+<span class="fc" id="L208">      ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L209">      ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L210">      when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L211">      artistList[0] = artist;</span>
+<span class="fc" id="L212">      when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L213">      when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+      
+<span class="fc" id="L215">      PlayHistory mockHistory = mock(PlayHistory.class);</span>
+<span class="fc" id="L216">      when(mockHistory.getTrack()).thenReturn(mockTrack);</span>
+<span class="fc" id="L217">      history[i] = mockHistory;</span>
+    }
+<span class="fc" id="L219">    when(mockAPI.recentlyPlayed()).thenReturn(history);</span>
+<span class="fc" id="L220">    User user = new User(mockAPI);</span>
+<span class="fc" id="L221">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L222">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L223">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L224">    assertEquals(&quot;List contains invalid track name&quot;, user.refreshRecentlyPlayed());</span>
+<span class="fc" id="L225">  }</span>
+  
+//----------------------------- Refresh Currently Playing --------------------------------------------- //
+  @Test
+  public void testResfreshCurrentlyPlayingNull() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L230">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L231">    when(mockAPI.currentlyPlaying()).thenReturn(null);</span>
+<span class="fc" id="L232">    User user = new User(mockAPI);</span>
+<span class="fc" id="L233">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L234">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L235">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L236">	assertEquals(&quot;Currently not playing any tracks&quot;, user.refreshCurrentlyPlaying());</span>
+<span class="fc" id="L237">  }</span>
+
+  @Test
+  public void testResfreshCurrentlyPlayingNotNull() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L241">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L242">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L243">    when(mockAPI.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L244">    Track mockTrack = mock(Track.class);</span>
+<span class="fc" id="L245">    when(currentlyPlaying.getItem()).thenReturn(mockTrack);</span>
+<span class="fc" id="L246">    when(mockTrack.getName()).thenReturn(&quot;a&quot;);</span>
+<span class="fc" id="L247">    ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L248">    ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L249">    when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L250">    artistList[0] = artist;</span>
+<span class="fc" id="L251">    when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L252">    when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+<span class="fc" id="L253">    User user = new User(mockAPI);</span>
+<span class="fc" id="L254">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L255">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L256">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L257">	assertEquals(&quot;OK&quot;, user.refreshCurrentlyPlaying());</span>
+<span class="fc" id="L258">  }</span>
+
+  @Test
+  public void testResfreshCurrentlyPlayingNullTrack() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L262">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L263">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L264">    when(mockAPI.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L265">    when(currentlyPlaying.getItem()).thenReturn(null);</span>
+<span class="fc" id="L266">    User user = new User(mockAPI);</span>
+<span class="fc" id="L267">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L268">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L269">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L270">	assertEquals(&quot;Null track&quot;, user.refreshCurrentlyPlaying());</span>
+<span class="fc" id="L271">  }</span>
+
+  @Test
+  public void testResfreshCurrentlyPlayingNullArtist() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L275">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L276">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L277">    when(mockAPI.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L278">    Track mockTrack = mock(Track.class);</span>
+<span class="fc" id="L279">    when(currentlyPlaying.getItem()).thenReturn(mockTrack);</span>
+<span class="fc" id="L280">    when(mockTrack.getName()).thenReturn(&quot;song name&quot;);</span>
+<span class="fc" id="L281">    ArtistSimplified[] artistList = null;</span>
+<span class="fc" id="L282">    when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L283">    when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+<span class="fc" id="L284">    User user = new User(mockAPI);</span>
+<span class="fc" id="L285">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L286">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L287">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L288">	assertEquals(&quot;Null artist list&quot;, user.refreshCurrentlyPlaying());</span>
+<span class="fc" id="L289">  }</span>
+
+  @Test
+  public void testResfreshCurrentlyPlayingNullTrackName() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L293">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L294">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L295">    when(mockAPI.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L296">    Track mockTrack = mock(Track.class);</span>
+<span class="fc" id="L297">    when(currentlyPlaying.getItem()).thenReturn(mockTrack);</span>
+<span class="fc" id="L298">    when(mockTrack.getName()).thenReturn(null);</span>
+<span class="fc" id="L299">    ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L300">    ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L301">    when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L302">    artistList[0] = artist;</span>
+<span class="fc" id="L303">    when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L304">    when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+<span class="fc" id="L305">    User user = new User(mockAPI);</span>
+<span class="fc" id="L306">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L307">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L308">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L309">	assertEquals(&quot;Invalid track name&quot;, user.refreshCurrentlyPlaying());</span>
+<span class="fc" id="L310">  }</span>
+
+  @Test
+  public void testResfreshCurrentlyPlayingEmptyTrackName() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L314">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L315">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L316">    when(mockAPI.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L317">    Track mockTrack = mock(Track.class);</span>
+<span class="fc" id="L318">    when(currentlyPlaying.getItem()).thenReturn(mockTrack);</span>
+<span class="fc" id="L319">    when(mockTrack.getName()).thenReturn(&quot;&quot;);</span>
+<span class="fc" id="L320">    ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L321">    ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L322">    when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L323">    artistList[0] = artist;</span>
+<span class="fc" id="L324">    when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L325">    when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+<span class="fc" id="L326">    User user = new User(mockAPI);</span>
+<span class="fc" id="L327">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L328">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L329">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L330">	assertEquals(&quot;Invalid track name&quot;, user.refreshCurrentlyPlaying());</span>
+<span class="fc" id="L331">  }</span>
+
+//---------------------------------------- Add to queue -------------------------------------------- //
+  @Test
+  public void testAddToQueueValidUri() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L336">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L337">    when(mockAPI.addSong(&quot;song uri&quot;)).thenReturn(null);</span>
+<span class="fc" id="L338">    User user = new User(mockAPI);</span>
+<span class="fc" id="L339">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L340">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L341">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L342">	assertEquals(null, user.addToQueue(&quot;spotify:track:x&quot;));</span>
+<span class="fc" id="L343">  }</span>
+
+  @Test
+  public void testAddToQueueshortUri() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L347">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L348">    when(mockAPI.addSong(&quot;song uri&quot;)).thenReturn(null);</span>
+<span class="fc" id="L349">    User user = new User(mockAPI); </span>
+<span class="fc" id="L350">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L351">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L352">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L353">	assertEquals(&quot;invalid uri&quot;, user.addToQueue(&quot;spotifytrack:&quot;));</span>
+<span class="fc" id="L354">  }</span>
+
+  @Test
+  public void testAddToQueueLongInvalidUri() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L358">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L359">    when(mockAPI.addSong(&quot;song uri&quot;)).thenReturn(null);</span>
+<span class="fc" id="L360">    User user = new User(mockAPI);</span>
+<span class="fc" id="L361">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L362">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L363">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L364">	assertEquals(&quot;invalid uri&quot;, user.addToQueue(&quot;longSongUriHere&quot;));</span>
+<span class="fc" id="L365">  }</span>
+
+  @Test
+  public void testAddToQueueLongShortInvalidUri() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L369">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L370">    when(mockAPI.addSong(&quot;song uri&quot;)).thenReturn(null);</span>
+<span class="fc" id="L371">    User user = new User(mockAPI);</span>
+<span class="fc" id="L372">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L373">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;newToken&quot;);</span>
+<span class="fc" id="L374">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L375">	assertEquals(&quot;invalid uri&quot;, user.addToQueue(&quot;shortSongUri..&quot;));</span>
+<span class="fc" id="L376">  }</span>
+
+  // -------------------------------------- share ------------------------------------//
+  @Test
+  public void shareTestOK() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L381">	SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L382">	when(mockDb.getGenreUser(&quot;testing1&quot;)).thenReturn(&quot;blues&quot;);</span>
+<span class="fc" id="L383">    User sharer = new User();</span>
+<span class="fc" id="L384">    sharer.setUsername(&quot;testing1&quot;);</span>
+<span class="fc" id="L385">    sharer.setSpotifyToken(&quot;123&quot;);</span>
+<span class="fc" id="L386">    MyApi mockApi = mock(MyApi.class);</span>
+    
+<span class="fc" id="L388">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L389">    when(mockApi.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L390">    Track mockTrack = mock(Track.class);</span>
+<span class="fc" id="L391">    when(currentlyPlaying.getItem()).thenReturn(mockTrack);</span>
+<span class="fc" id="L392">    when(mockTrack.getName()).thenReturn(&quot;a&quot;);</span>
+<span class="fc" id="L393">    ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L394">    ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L395">    when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L396">    artistList[0] = artist;</span>
+<span class="fc" id="L397">    when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L398">    when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+    
+<span class="fc" id="L400">    sharer.setApi(mockApi);</span>
+<span class="fc" id="L401">    sharer.setDb(mockDb);</span>
+<span class="fc" id="L402">    Song song = new Song();</span>
+<span class="fc" id="L403">    song.setName(&quot;song name&quot;);</span>
+<span class="fc" id="L404">    song.setUri(&quot;uri&quot;);</span>
+<span class="fc" id="L405">    sharer.setCurrentTrack(song);</span>
+<span class="fc" id="L406">    User mockSharee = mock(User.class);</span>
+<span class="fc" id="L407">    when(mockSharee.getUsername()).thenReturn(&quot;testing2&quot;);</span>
+<span class="fc" id="L408">    when(mockSharee.addToQueue(&quot;uri&quot;)).thenReturn(&quot;OK&quot;);</span>
+    
+<span class="fc" id="L410">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L411">    ChatRoom mockChatroom = mock(ChatRoom.class);</span>
+<span class="fc" id="L412">    when(mockChatlist.getChatroomByGenre(Genre.valueOf(&quot;BLUES&quot;))).thenReturn(mockChatroom);</span>
+<span class="fc" id="L413">    Map&lt;String, User&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L414">    map.put(&quot;testing1&quot;, sharer);</span>
+<span class="fc" id="L415">    map.put(&quot;testing2&quot;, mockSharee);</span>
+<span class="fc" id="L416">    when(mockChatroom.getParticipant()).thenReturn(map);</span>
+<span class="fc" id="L417">    assertNotNull(sharer.share(mockChatlist, mockDb));</span>
+    
+<span class="fc" id="L419">  }</span>
+
+  @Test
+  public void shareTestNullChatlist() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L423">    User sharer = new User();</span>
+<span class="fc" id="L424">    assertNull(sharer.share(null, null));</span>
+    
+<span class="fc" id="L426">  }</span>
+
+  @Test
+  public void shareTestNullCurrentTrack() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L430">	SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L431">	when(mockDb.getGenreUser(&quot;testing1&quot;)).thenReturn(&quot;blues&quot;);</span>
+<span class="fc" id="L432">    User sharer = new User();</span>
+<span class="fc" id="L433">    sharer.setUsername(&quot;testing1&quot;);</span>
+<span class="fc" id="L434">    sharer.setSpotifyToken(&quot;123&quot;);</span>
+<span class="fc" id="L435">    MyApi mockApi = mock(MyApi.class);</span>
+<span class="fc" id="L436">    when(mockApi.currentlyPlaying()).thenReturn(null);</span>
+    
+<span class="fc" id="L438">    sharer.setApi(mockApi);</span>
+<span class="fc" id="L439">    sharer.setDb(mockDb);</span>
+<span class="fc" id="L440">    assertNull(sharer.share(new ChatList(), mockDb));</span>
+<span class="fc" id="L441">  }</span>
+
+  @Test
+  public void shareTestNullGenreStr() throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc" id="L445">	SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L446">	when(mockDb.getGenreUser(&quot;testing1&quot;)).thenReturn(null);</span>
+<span class="fc" id="L447">    User sharer = new User();</span>
+<span class="fc" id="L448">    sharer.setUsername(&quot;testing1&quot;);</span>
+<span class="fc" id="L449">    MyApi mockApi = mock(MyApi.class);</span>
+    
+<span class="fc" id="L451">    CurrentlyPlaying currentlyPlaying = mock(CurrentlyPlaying.class);</span>
+<span class="fc" id="L452">    when(mockApi.currentlyPlaying()).thenReturn(currentlyPlaying);</span>
+<span class="fc" id="L453">    Track mockTrack = mock(Track.class);</span>
+<span class="fc" id="L454">    when(currentlyPlaying.getItem()).thenReturn(mockTrack);</span>
+<span class="fc" id="L455">    when(mockTrack.getName()).thenReturn(&quot;a&quot;);</span>
+<span class="fc" id="L456">    ArtistSimplified[] artistList = new ArtistSimplified[1];</span>
+<span class="fc" id="L457">    ArtistSimplified artist = mock(ArtistSimplified.class);</span>
+<span class="fc" id="L458">    when(artist.getName()).thenReturn(&quot;test artist&quot;);</span>
+<span class="fc" id="L459">    artistList[0] = artist;</span>
+<span class="fc" id="L460">    when(mockTrack.getArtists()).thenReturn(artistList);</span>
+<span class="fc" id="L461">    when(mockTrack.getUri()).thenReturn(&quot;song uri&quot;);</span>
+    
+<span class="fc" id="L463">    sharer.setApi(mockApi);</span>
+<span class="fc" id="L464">    sharer.setDb(mockDb);</span>
+<span class="fc" id="L465">    assertNull(sharer.share(new ChatList(), mockDb));</span>
+<span class="fc" id="L466">  }</span>
+  // ------------------------------ SetSpotifyRefreshToken ---------------------------//
+  @Test
+  public void testSetSpotifyRefreshToken() {
+<span class="fc" id="L470">    User user = new User();</span>
+<span class="fc" id="L471">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;token&quot;, &quot;123&quot;, &quot;sessionId&quot;);</span>
+    
+<span class="fc" id="L473">    assertEquals(&quot;123&quot;, db.getUserByName(&quot;mary&quot;).getSpotifyRefreshToken());</span>
+<span class="fc" id="L474">    user.setDb(db);</span>
+<span class="fc" id="L475">    user.setUsername(&quot;mary&quot;);</span>
+<span class="fc" id="L476">    assertEquals(&quot;OK&quot;, user.setSpotifyRefreshTokenDb(&quot;new_refresh_token&quot;));</span>
+<span class="fc" id="L477">  }</span>
+
+  @Test
+  public void testSetSpotifyRefreshTokenNullRefreshToken() {
+<span class="fc" id="L481">    User user = new User();</span>
+<span class="fc" id="L482">    assertEquals(&quot;No token&quot;, user.setSpotifyRefreshTokenDb(null));</span>
+<span class="fc" id="L483">  }</span>
+
+  @Test
+  public void testSetSpotifyRefreshTokenEmptyRefreshToken() {
+<span class="fc" id="L487">    User user = new User();</span>
+<span class="fc" id="L488">    assertEquals(&quot;No token&quot;, user.setSpotifyRefreshTokenDb(&quot;&quot;));</span>
+<span class="fc" id="L489">  }</span>
+
+  //---------------------------------- RefreshSpotifyToken ---------------------------------------- //
+  @Test
+  public void testRefreshSpotifyTokenValid() throws Exception {
+<span class="fc" id="L494">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L495">    User user = new User(mockAPI);</span>
+<span class="fc" id="L496">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L497">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;t&quot;);</span>
+<span class="fc" id="L498">    user.setSpotifyRefreshToken(refreshToken);</span>
+<span class="fc" id="L499">    String newToken = user.refreshSpotifyToken();</span>
+<span class="fc" id="L500">    assertEquals(&quot;t&quot;, newToken);</span>
+<span class="fc" id="L501">  }</span>
+
+  @Test
+  public void testRefreshSpotifyEmptyToken() {
+<span class="fc" id="L505">    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L506">    User user = new User(mockAPI);</span>
+<span class="fc" id="L507">    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L508">    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(&quot;&quot;);</span>
+<span class="fc" id="L509">    user.setSpotifyRefreshToken(refreshToken);</span>
+    
+<span class="fc" id="L511">    Exception thrown = assertThrows(</span>
+<span class="fc" id="L512">            Exception.class,</span>
+<span class="pc" id="L513">            () -&gt; user.refreshSpotifyToken()</span>
+     );
+
+<span class="fc" id="L516">     assertEquals(&quot;Invalid Token&quot;, thrown.getMessage());</span>
+<span class="fc" id="L517">  }</span>
+
+  @Test
+  public void testRefreshSpotifyNullToken() {
+<span class="fc" id="L521">	    MyApi mockAPI = mock(MyApi.class);</span>
+<span class="fc" id="L522">	    User user = new User(mockAPI);</span>
+<span class="fc" id="L523">	    String refreshToken = &quot;refresh&quot;;</span>
+<span class="fc" id="L524">	    when(mockAPI.refreshSpotifyToken(&quot;refresh&quot;)).thenReturn(null);</span>
+<span class="fc" id="L525">	    user.setSpotifyRefreshToken(refreshToken);</span>
+    
+<span class="fc" id="L527">    Exception thrown = assertThrows(</span>
+<span class="fc" id="L528">            Exception.class,</span>
+<span class="pc" id="L529">            () -&gt; user.refreshSpotifyToken()</span>
+     );
+
+<span class="fc" id="L532">     assertEquals(&quot;Invalid Token&quot;, thrown.getMessage());</span>
+<span class="fc" id="L533">  }</span>
+
+  //---------------------------------- Minor setter methods ---------------------------------------- //
+  @Test
+  public void testSetSessionId() {
+<span class="fc" id="L538">    User user = new User();</span>
+<span class="fc" id="L539">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;spotify_token&quot;, &quot;refresh_token&quot;, &quot;session&quot;);</span>
+    
+<span class="fc" id="L541">    assertEquals(&quot;session&quot;, db.getUserByName(&quot;mary&quot;).getSessionId());</span>
+<span class="fc" id="L542">    user.setDb(db);</span>
+<span class="fc" id="L543">    user.setUsername(&quot;mary&quot;);</span>
+<span class="fc" id="L544">    user.setSessionIdDb(&quot;new_session&quot;);</span>
+<span class="fc" id="L545">    assertEquals(&quot;new_session&quot;, db.getUserByName(&quot;mary&quot;).getSessionId());</span>
+<span class="fc" id="L546">  }</span>
+
+  @Test
+  public void testSetSpotifyToken() {
+<span class="fc" id="L550">    User user = new User();</span>
+<span class="fc" id="L551">    db.insertAuthenticatedUser(&quot;mary&quot;, &quot;token&quot;, &quot;refresh_token&quot;, &quot;session&quot;);</span>
+    
+<span class="fc" id="L553">    assertEquals(&quot;token&quot;, db.getUserByName(&quot;mary&quot;).getSpotifyToken());</span>
+<span class="fc" id="L554">    user.setDb(db);</span>
+<span class="fc" id="L555">    user.setUsername(&quot;mary&quot;);</span>
+<span class="fc" id="L556">    user.setSpotifyTokenDb(&quot;new_token&quot;);</span>
+<span class="fc" id="L557">    assertEquals(&quot;new_token&quot;, db.getUserByName(&quot;mary&quot;).getSpotifyToken());</span>
+<span class="fc" id="L558">  }</span>
+
+  @AfterEach
+  public void afterEach() {
+<span class="fc" id="L562">    db.clear();</span>
+    
+<span class="fc" id="L564">    db.close();</span>
+<span class="fc" id="L565">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StartChat.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">controllers</a> &gt; <span class="el_source">StartChat.java</span></div><h1>StartChat.java</h1><pre class="source lang-java linenums">package controllers;
+
+import com.google.gson.Gson;
+import io.javalin.Javalin;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+import java.util.UUID;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import models.ChatList;
+import models.ChatRoom;
+import models.Genre;
+import models.Login;
+import models.Message;
+import models.Song;
+import models.SqLite;
+import models.User;
+import org.eclipse.jetty.websocket.api.Session;
+
+
+public final class StartChat {
+
+  /**
+   * Private constructor that prevents utility class instantiation.
+   */
+  private StartChat() {
+  }
+
+  /**
+   * Static method that called private constructor for testing.
+   * @return StartChat object
+   */
+  public static StartChat make() {
+<span class="nc" id="L38">    return new StartChat();</span>
+  }
+
+  /**
+   * Set listening port.
+   */
+  private static final int PORT_NUMBER = 8080;
+
+  /**
+   * Set time interval (seconds) for refreshChatList().
+   */
+  private static final int INTERVAL = 1;
+
+  /**
+   * Create Javalin instance.
+   */
+  private static Javalin app;
+
+  /**
+   * Create database instance.
+   */
+<span class="fc" id="L59">  private static SqLite db = new SqLite();</span>
+
+  /**
+   * get current database.
+   * @return database SqLite
+   */
+  public static SqLite getDb() {
+<span class="fc" id="L66">    return db;</span>
+  }
+
+  /**
+   * set current database.
+   * @param database SqLite
+   */
+  public static void setDb(final SqLite database) {
+<span class="fc" id="L74">    db = database;</span>
+<span class="fc" id="L75">  }</span>
+
+  /**
+   * Create ChatList.
+   */
+<span class="fc" id="L80">  private static ChatList chatlist = new ChatList();</span>
+
+  /**
+   * get chatlist.
+   * @return chatlist ChatList
+   */
+  public static ChatList getChatlist() {
+<span class="fc" id="L87">    return chatlist;</span>
+  }
+
+  /**
+   * set chatlist.
+   * @param list ChatList
+   */
+  public static void setChatlist(final ChatList list) {
+<span class="fc" id="L95">    chatlist = list;</span>
+<span class="fc" id="L96">  }</span>
+
+  /**
+   * Initialize Chatrooms.
+   */
+  public static void initializeChatlist() {
+<span class="fc" id="L102">    Map&lt;String, ChatRoom&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L103">    Genre[] genres = Genre.class.getEnumConstants();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    for (Genre genre : genres) {</span>
+<span class="fc" id="L105">      ChatRoom chatroom = new ChatRoom();</span>
+<span class="fc" id="L106">      chatroom.setParticipant(new HashMap&lt;String, User&gt;());</span>
+<span class="fc" id="L107">      chatroom.setChat(new ArrayList&lt;Message&gt;());</span>
+<span class="fc" id="L108">      chatroom.setPlaylist(new ArrayList&lt;Song&gt;());</span>
+<span class="fc" id="L109">      chatroom.setGenre(genre);</span>
+<span class="fc" id="L110">      chatroom.setLink(&quot;/joinroom/&quot; + genre.getGenre());</span>
+<span class="fc" id="L111">      map.put(genre.getGenre(), chatroom);</span>
+<span class="fc" id="L112">      db.insertChatRoom(chatroom.getGenre(), chatroom.getLink(),</span>
+<span class="fc" id="L113">                                &quot;playlist-&quot; + genre.getGenre());</span>
+    }
+<span class="fc" id="L115">    chatlist.setChatrooms(map);</span>
+<span class="fc" id="L116">  }</span>
+
+  /**
+   * Start a thread that read DB periodically.
+   */
+<span class="fc" id="L121">  private static ScheduledFuture&lt;?&gt; refreshDataInterval;</span>
+
+  /**
+   * refresh song data in separate thread.
+   */
+  private static void refreshSongDataRepeatly() {
+<span class="fc" id="L127">    ScheduledFuture&lt;?&gt; running = refreshDataInterval;</span>
+<span class="fc bfc" id="L128" title="All 4 branches covered.">    if (running != null &amp;&amp; !running.isCancelled()) {</span>
+<span class="fc" id="L129">      return;</span>
+    }
+<span class="fc" id="L131">    ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);</span>
+<span class="fc" id="L132">    refreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {</span>
+      public void run() {
+<span class="fc" id="L134">        SqLite db2 = new SqLite();</span>
+<span class="fc" id="L135">        db2.connect();</span>
+<span class="fc" id="L136">        ChatList chatListData = db2.update();</span>
+<span class="nc" id="L137">        chatListData.refreshChatList();</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        for (ChatRoom chatroom : chatListData.getChatrooms().values()) {</span>
+<span class="nc" id="L139">          String genre = chatroom.getGenre().getGenre();</span>
+<span class="nc" id="L140">          sendChatRoomToAllParticipants(genre,</span>
+<span class="nc" id="L141">                  new Gson().toJson(chatroom));</span>
+        }
+<span class="nc" id="L143">        db2.close();</span>
+<span class="nc" id="L144">      }</span>
+<span class="fc" id="L145">    }, 0, INTERVAL, TimeUnit.SECONDS);</span>
+<span class="fc" id="L146">  }</span>
+
+  /** Main method of the application.
+   * @param args Command line arguments
+   */
+  public static void main(final String[] args) {
+<span class="fc" id="L152">    db.start();</span>
+<span class="fc" id="L153">    chatlist = db.update();</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">    if (chatlist.getChatrooms().size() == 0) {</span>
+<span class="fc" id="L155">      initializeChatlist();</span>
+    }
+<span class="fc" id="L157">    app = Javalin.create(config -&gt; {</span>
+<span class="fc" id="L158">      config.addStaticFiles(&quot;/public&quot;);</span>
+<span class="fc" id="L159">    }).start(PORT_NUMBER);</span>
+<span class="fc" id="L160">    app.get(&quot;/&quot;, ctx -&gt; {</span>
+<span class="fc" id="L161">      ctx.redirect(&quot;/home&quot;);</span>
+<span class="fc" id="L162">    });</span>
+<span class="fc" id="L163">    app.get(&quot;/home&quot;, ctx -&gt; {</span>
+<span class="fc" id="L164">      ctx.redirect(&quot;index.html&quot;);</span>
+<span class="fc" id="L165">    });</span>
+<span class="fc" id="L166">    app.get(&quot;/lobby&quot;, ctx -&gt; {</span>
+<span class="fc" id="L167">      ctx.redirect(&quot;index.html?place=lobby&quot;);</span>
+<span class="fc" id="L168">    });</span>
+
+<span class="fc" id="L170">    app.get(&quot;/auth&quot;, ctx -&gt; {</span>
+<span class="fc" id="L171">      String sessionId = (String) ctx.sessionAttribute(&quot;sessionId&quot;);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">      if (db.getUserBySessionId(sessionId).getUsername() == null) {</span>
+<span class="fc" id="L173">        db.insertSession(&quot;&quot; + System.currentTimeMillis(), sessionId);</span>
+<span class="fc" id="L174">        System.out.println(Login.getSpotifyAuthUrl());</span>
+<span class="fc" id="L175">        ctx.result(&quot;{\&quot;error\&quot;:\&quot;not authenticated\&quot;,\&quot;auth_url\&quot;:\&quot;&quot;</span>
+<span class="fc" id="L176">                + Login.getSpotifyAuthUrl() + &quot;\&quot;}&quot;);</span>
+<span class="fc" id="L177">      } else {</span>
+<span class="fc" id="L178">        ctx.result(&quot;{}&quot;);</span>
+      }
+<span class="fc" id="L180">    });</span>
+
+<span class="fc" id="L182">    app.before(ctx -&gt; {</span>
+<span class="fc" id="L183">      String sessionId = (String) ctx.sessionAttribute(&quot;sessionId&quot;);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">      if (ctx.url().contains(&quot;/process_auth&quot;)</span>
+<span class="fc bfc" id="L185" title="All 4 branches covered.">             &amp;&amp; ctx.queryParam(&quot;code&quot;) != null &amp;&amp; sessionId != null) {</span>
+<span class="fc" id="L186">        return;</span>
+      }
+<span class="fc bfc" id="L188" title="All 2 branches covered.">      if (sessionId == null) {</span>
+<span class="fc" id="L189">        sessionId = UUID.randomUUID().toString();</span>
+<span class="fc" id="L190">        ctx.sessionAttribute(&quot;sessionId&quot;, sessionId);</span>
+      }
+<span class="fc bfc" id="L192" title="All 2 branches covered.">      if (db.getUserBySessionId(sessionId).getUsername() == null) {</span>
+<span class="fc" id="L193">        db.insertSession(&quot;&quot; + System.currentTimeMillis(), sessionId);</span>
+<span class="fc" id="L194">        ctx.result(&quot;{\&quot;error\&quot;:\&quot;not authenticated\&quot;,\&quot;auth_url\&quot;:\&quot;&quot;</span>
+<span class="fc" id="L195">                + Login.getSpotifyAuthUrl() + &quot;\&quot;}&quot;);</span>
+      }
+<span class="fc" id="L197">    });</span>
+
+<span class="fc" id="L199">    app.get(&quot;/process_auth&quot;, ctx -&gt; {</span>
+<span class="fc" id="L200">      String response = db.authenticateUser(ctx.queryParam(&quot;code&quot;),</span>
+<span class="fc" id="L201">              ctx.sessionAttribute(&quot;sessionId&quot;));</span>
+<span class="fc" id="L202">      ctx.result(response);</span>
+<span class="fc" id="L203">      ctx.redirect(&quot;http://localhost:3000&quot;); //TODO change to HOME constant</span>
+<span class="fc" id="L204">    });</span>
+
+<span class="fc" id="L206">    app.get(&quot;/chatrooms&quot;, ctx -&gt; {</span>
+<span class="fc" id="L207">      chatlist.setChatrooms(db.getAllChatRooms());</span>
+<span class="fc" id="L208">      ctx.result(new Gson().toJson(chatlist));</span>
+<span class="fc" id="L209">    });</span>
+
+<span class="fc" id="L211">    app.post(&quot;/joinroom/:genre&quot;, ctx -&gt; {</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">      if (Genre.isValidGenre(ctx.pathParam(&quot;genre&quot;).toUpperCase())) {</span>
+<span class="fc" id="L213">        Genre genre = Genre.valueOf(ctx.pathParam(&quot;genre&quot;).toUpperCase());</span>
+<span class="fc" id="L214">        String username = db.getUserBySessionId(</span>
+<span class="fc" id="L215">                (String) ctx.sessionAttribute(&quot;sessionId&quot;)).getUsername();</span>
+<span class="fc" id="L216">        chatlist = db.userJoin(genre, username, chatlist);</span>
+<span class="fc" id="L217">        chatlist = db.update();</span>
+<span class="fc" id="L218">        sendChatRoomToAllParticipants(genre.getGenre(),</span>
+<span class="fc" id="L219">              new Gson().toJson(chatlist.getChatroomByGenre(genre)));</span>
+<span class="fc" id="L220">        ctx.result(&quot;success&quot;);</span>
+<span class="fc" id="L221">        refreshSongDataRepeatly();</span>
+<span class="fc" id="L222">      } else {</span>
+<span class="fc" id="L223">        ctx.result(&quot;Invalid Room&quot;);</span>
+      }
+<span class="fc" id="L225">    });</span>
+
+<span class="fc" id="L227">    app.get(&quot;/chatroom/:genre&quot;, ctx -&gt; {</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">      if (Genre.isValidGenre(ctx.pathParam(&quot;genre&quot;).toUpperCase())) {</span>
+<span class="fc" id="L229">        Genre genre = Genre.valueOf(ctx.pathParam(&quot;genre&quot;).toUpperCase());</span>
+<span class="fc" id="L230">        ChatRoom chatroom = chatlist.getChatroomByGenre(genre);</span>
+<span class="fc" id="L231">        ctx.result(new Gson().toJson(chatroom));</span>
+<span class="fc" id="L232">      } else {</span>
+<span class="fc" id="L233">        ctx.result(&quot;Invalid Room&quot;);</span>
+      }
+<span class="fc" id="L235">    });</span>
+
+<span class="fc" id="L237">    app.post(&quot;/send&quot;, ctx -&gt; {</span>
+<span class="fc" id="L238">      String username = db.getUserBySessionId(</span>
+<span class="fc" id="L239">                (String) ctx.sessionAttribute(&quot;sessionId&quot;)).getUsername();</span>
+<span class="fc" id="L240">      String text = ctx.formParam(&quot;text&quot;);</span>
+<span class="fc" id="L241">      Message message = db.userSend(username, text, chatlist);</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">      if (message == null) {</span>
+<span class="fc" id="L243">        ctx.result(&quot;User not in any chatroom&quot;);</span>
+<span class="fc" id="L244">      } else {</span>
+<span class="fc" id="L245">        sendChatMsgToAllParticipants(message.getGenre().getGenre(),</span>
+<span class="fc" id="L246">                new Gson().toJson(message));</span>
+<span class="fc" id="L247">        ctx.result(&quot;chat sent&quot;);</span>
+      }
+<span class="fc" id="L249">    });</span>
+
+<span class="fc" id="L251">    app.post(&quot;/add&quot;, ctx -&gt; {</span>
+<span class="fc" id="L252">      String uri = ctx.formParam(&quot;uri&quot;);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">      if (uri == null) {</span>
+<span class="fc" id="L254">        ctx.result(&quot;no song uri&quot;);</span>
+<span class="fc" id="L255">        return;</span>
+      }
+<span class="fc" id="L257">      String username = db.getUserBySessionId(</span>
+<span class="fc" id="L258">              (String) ctx.sessionAttribute(&quot;sessionId&quot;)).getUsername();</span>
+<span class="fc" id="L259">      User user = db.getUserByName(username);</span>
+<span class="fc" id="L260">      user.addToQueue(uri);</span>
+<span class="fc" id="L261">      ctx.result(&quot;song added to your queue&quot;);</span>
+<span class="fc" id="L262">    });</span>
+
+<span class="fc" id="L264">    app.post(&quot;/share&quot;, ctx -&gt; {</span>
+<span class="fc" id="L265">      String username = db.getUserBySessionId(</span>
+<span class="fc" id="L266">                (String) ctx.sessionAttribute(&quot;sessionId&quot;)).getUsername();</span>
+<span class="fc" id="L267">      User sharer = db.getUserByName(username);</span>
+<span class="fc" id="L268">      Message message = sharer.share(chatlist, db);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">      if (message == null) {</span>
+<span class="fc" id="L270">        ctx.result(&quot;no song shared&quot;);</span>
+<span class="fc" id="L271">      } else {</span>
+<span class="fc" id="L272">        sendChatMsgToAllParticipants(db.getGenreUser(username),</span>
+<span class="fc" id="L273">                new Gson().toJson(message));</span>
+<span class="fc" id="L274">        ctx.result(&quot;song shared&quot;);</span>
+      }
+<span class="fc" id="L276">    });</span>
+
+<span class="fc" id="L278">    app.delete(&quot;/leaveroom/:genre&quot;, ctx -&gt; {</span>
+<span class="fc" id="L279">      Genre genre = Genre.valueOf(ctx.pathParam(&quot;genre&quot;).toUpperCase());</span>
+<span class="fc" id="L280">      String username = db.getUserBySessionId(</span>
+<span class="fc" id="L281">              (String) ctx.sessionAttribute(&quot;sessionId&quot;)).getUsername();</span>
+<span class="fc" id="L282">      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">      if (chatroom.getParticipant().containsKey(username)) {</span>
+<span class="fc" id="L284">        db.removeUserGenre(username);</span>
+<span class="fc" id="L285">        db.removeParticipant(genre, username);</span>
+<span class="fc" id="L286">        chatlist = db.update();</span>
+<span class="fc" id="L287">        sendChatRoomToAllParticipants(genre.getGenre(),</span>
+<span class="fc" id="L288">              new Gson().toJson(chatroom));</span>
+<span class="fc" id="L289">        ctx.result(new Gson().toJson(chatroom));</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (chatlist.getTotalParticipants() == 0) {</span>
+<span class="fc" id="L291">          refreshDataInterval.cancel(false);</span>
+        }
+<span class="fc" id="L293">      } else {</span>
+<span class="fc" id="L294">        ctx.result(&quot;You are not in the room&quot;);</span>
+      }
+<span class="fc" id="L296">    });</span>
+
+<span class="fc" id="L298">    app.ws(&quot;/chatroom&quot;, new UiWebSocket());</span>
+<span class="fc" id="L299">  }</span>
+
+  /**
+   * Send chatroom to all participants.
+   * @param genre String
+   * @param chatRoomJson String
+   */
+  private static void sendChatRoomToAllParticipants(final String genre,
+        final String chatRoomJson) {
+<span class="fc" id="L308">    Queue&lt;Session&gt; sessions = UiWebSocket.getSessions();</span>
+<span class="pc bpc" id="L309" title="1 of 2 branches missed.">    for (Session sessionPlayer : sessions) {</span>
+      try {
+<span class="nc" id="L311">        sessionPlayer.getRemote().sendString(chatRoomJson);</span>
+<span class="nc" id="L312">      } catch (IOException e) {</span>
+        // Add logger here
+      }
+    }
+<span class="fc" id="L316">  }</span>
+
+  private static void sendChatMsgToAllParticipants(
+      final String genre, final String msg) {
+<span class="fc" id="L320">    Queue&lt;Session&gt; sessions = UiWebSocket.getSessions();</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">    for (Session sessionPlayer : sessions) {</span>
+      try {
+<span class="nc" id="L323">        sessionPlayer.getRemote().sendString(msg);</span>
+<span class="nc" id="L324">      } catch (IOException e) {</span>
+        // Add logger here
+      }
+    }
+<span class="fc" id="L328">  }</span>
+
+  /**
+   * Stop the application.
+   */
+  public static void stop() {
+<span class="fc" id="L334">    db.close();</span>
+<span class="fc" id="L335">    app.stop();</span>
+<span class="fc" id="L336">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>

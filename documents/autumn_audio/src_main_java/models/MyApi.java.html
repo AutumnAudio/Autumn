@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>MyApi.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">MyApi.java</span></div><h1>MyApi.java</h1><pre class="source lang-java linenums">package models;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.hc.core5.http.ParseException;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.exceptions.detailed.NotFoundException;
+import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
+import com.wrapper.spotify.model_objects.specification.PlayHistory;
+
+<span class="fc" id="L25">public class MyApi {</span>
+
+  /**
+   * spotify api.
+   */
+  private SpotifyApi api;
+
+  /**
+   * set spotify api.
+   * @param newApi SpotifyAPI
+   */
+  public void setApi(final SpotifyApi newApi) {
+<span class="fc" id="L37">    this.api = newApi;</span>
+<span class="fc" id="L38">  }</span>
+
+  /**
+   * Number of recently played objects.
+   */
+  private static final int LIMIT = 10;
+
+  /**
+   * call recently played api.
+   * @return playHistory PlayHistory[]
+   * @throws ParseException Exception
+   * @throws SpotifyWebApiException Exception
+   * @throws IOException Exception
+   */
+  public PlayHistory[] recentlyPlayed()
+        throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    if (api == null) {</span>
+<span class="fc" id="L55">      return null;</span>
+    }
+<span class="fc" id="L57">    PlayHistory[] playHistory = api</span>
+<span class="fc" id="L58">            .getCurrentUsersRecentlyPlayedTracks()</span>
+<span class="fc" id="L59">            .limit(LIMIT)</span>
+<span class="fc" id="L60">            .build()</span>
+<span class="fc" id="L61">            .execute()</span>
+<span class="fc" id="L62">            .getItems();</span>
+<span class="fc" id="L63">    return playHistory;</span>
+  }
+
+  /**
+   * call currently playing api.
+   * @return currentTrack CurrentlyPlaying
+   * @throws ParseException Exception
+   * @throws SpotifyWebApiException Exception
+   * @throws IOException Exception
+   */
+  public CurrentlyPlaying currentlyPlaying()
+          throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (api == null) {</span>
+<span class="fc" id="L76">      return null;</span>
+    }
+<span class="fc" id="L78">    CurrentlyPlaying currentTrack = api</span>
+<span class="fc" id="L79">        .getUsersCurrentlyPlayingTrack()</span>
+<span class="fc" id="L80">        .build()</span>
+<span class="fc" id="L81">        .execute();</span>
+<span class="fc" id="L82">    return currentTrack;</span>
+  }
+
+  /**
+   * add song to user play queue.
+   * @param uri String
+   * @return response String
+   * @throws ParseException Exception
+   * @throws SpotifyWebApiException Exception
+   * @throws IOException Exception
+   */
+  public String addSong(final String uri)
+          throws ParseException, SpotifyWebApiException, IOException {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    if (api == null) {</span>
+<span class="fc" id="L96">      return null;</span>
+    }
+    try {
+<span class="pc" id="L99">      String ret = api</span>
+<span class="fc" id="L100">            .addItemToUsersPlaybackQueue(uri)</span>
+<span class="fc" id="L101">            .build()</span>
+<span class="nc" id="L102">            .execute();</span>
+<span class="nc" id="L103">      return ret;</span>
+<span class="fc" id="L104">    } catch (NotFoundException e) {</span>
+<span class="fc" id="L105">      System.out.println(&quot;Spotify player is not being used actively&quot;);</span>
+<span class="fc" id="L106">      return null;</span>
+    }
+  }
+
+  /**
+   * Get Spotify token from given code.
+   * @param code String
+   * @return response Map
+   */
+  public Map&lt;String, String&gt; getSpotifyTokenFromCode(final String code) {
+    //https://mkyong.com/java/how-to-send-http-request-getpost-in-java/
+<span class="fc bfc" id="L117" title="All 4 branches covered.">    if (code == null || code.length() == 0) {</span>
+<span class="fc" id="L118">      return null;</span>
+    }
+<span class="fc" id="L120">    HttpClient httpClient = HttpClient.newBuilder()</span>
+<span class="fc" id="L121">        .version(HttpClient.Version.HTTP_2)</span>
+<span class="fc" id="L122">        .build();</span>
+
+    // form parameters
+<span class="fc" id="L125">    Map&lt;Object, Object&gt; data = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L126">    data.put(&quot;grant_type&quot;, &quot;authorization_code&quot;);</span>
+<span class="fc" id="L127">    data.put(&quot;code&quot;, code);</span>
+<span class="fc" id="L128">    data.put(&quot;redirect_uri&quot;, Login.getRedirectURI());</span>
+
+<span class="fc" id="L130">    HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L131">            .POST(buildFormDataFromMap(data))</span>
+<span class="fc" id="L132">            .uri(URI.create(&quot;https://accounts.spotify.com/api/token&quot;))</span>
+<span class="fc" id="L133">            .setHeader(&quot;User-Agent&quot;, &quot;Java 11 HttpClient Bot&quot;)</span>
+<span class="fc" id="L134">            .header(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;)</span>
+<span class="fc" id="L135">            .header(&quot;Authorization&quot;, &quot;Basic &quot;</span>
+<span class="fc" id="L136">                + Base64.getEncoder().encodeToString((Login.getClientId() + &quot;:&quot;</span>
+<span class="fc" id="L137">                + Login.getClientSecret()).getBytes(Charset.forName(&quot;UTF-8&quot;))))</span>
+<span class="fc" id="L138">            .build();</span>
+
+<span class="fc" id="L140">    HttpResponse&lt;String&gt; response = null;</span>
+    try {
+<span class="fc" id="L142">      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L143">      Gson gson = new Gson();</span>
+<span class="fc" id="L144">      Map&lt;String, String&gt; result = gson.fromJson(response.body(),</span>
+<span class="fc" id="L145">          new TypeToken&lt;Map&lt;String, Object&gt;&gt;() { }.getType());</span>
+<span class="fc" id="L146">      return result;</span>
+<span class="nc" id="L147">    } catch (IOException | InterruptedException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L149">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L151">    return null;</span>
+  }
+
+  /**
+   * Get new Spotify token with refresh token.
+   * @param refreshToken String
+   * @return token String
+   */
+  public String refreshSpotifyToken(final String refreshToken) {
+<span class="fc bfc" id="L160" title="All 4 branches covered.">    if (refreshToken == null || refreshToken.length() == 0) {</span>
+<span class="fc" id="L161">      return null;</span>
+    }
+<span class="fc" id="L163">    HttpClient httpClient = HttpClient.newBuilder()</span>
+<span class="fc" id="L164">        .version(HttpClient.Version.HTTP_2)</span>
+<span class="fc" id="L165">        .build();</span>
+
+    // form parameters
+<span class="fc" id="L168">    Map&lt;Object, Object&gt; data = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L169">    data.put(&quot;grant_type&quot;, &quot;refresh_token&quot;);</span>
+<span class="fc" id="L170">    data.put(&quot;refresh_token&quot;, refreshToken);</span>
+
+<span class="fc" id="L172">    HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L173">            .POST(buildFormDataFromMap(data))</span>
+<span class="fc" id="L174">            .uri(URI.create(&quot;https://accounts.spotify.com/api/token&quot;))</span>
+<span class="fc" id="L175">            .setHeader(&quot;User-Agent&quot;, &quot;Java 11 HttpClient Bot&quot;)</span>
+<span class="fc" id="L176">            .header(&quot;Content-Type&quot;, &quot;application/x-www-form-urlencoded&quot;)</span>
+<span class="fc" id="L177">            .header(&quot;Authorization&quot;, &quot;Basic &quot;</span>
+<span class="fc" id="L178">                + Base64.getEncoder().encodeToString((Login.getClientId() + &quot;:&quot;</span>
+<span class="fc" id="L179">                + Login.getClientSecret()).getBytes(Charset.forName(&quot;UTF-8&quot;))))</span>
+<span class="fc" id="L180">            .build();</span>
+
+<span class="fc" id="L182">    HttpResponse&lt;String&gt; response = null;</span>
+    try {
+<span class="fc" id="L184">      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L185">      Gson gson = new Gson();</span>
+<span class="fc" id="L186">      Map&lt;String, String&gt; result = gson.fromJson(response.body(),</span>
+<span class="fc" id="L187">          new TypeToken&lt;Map&lt;String, Object&gt;&gt;() { }.getType());</span>
+
+<span class="fc" id="L189">      return result.get(&quot;access_token&quot;);</span>
+<span class="nc" id="L190">    } catch (IOException | InterruptedException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L192">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L194">    return null;</span>
+  }
+
+  /**
+   * get email from given Spotify token.
+   * @param spotifyToken String
+   * @return email String
+   */
+  public String getEmailFromSpotifyToken(final String spotifyToken) {
+<span class="fc bfc" id="L203" title="All 4 branches covered.">    if (spotifyToken == null || spotifyToken.length() == 0) {</span>
+<span class="fc" id="L204">      return null;</span>
+    }
+<span class="fc" id="L206">    HttpClient httpClient = HttpClient.newBuilder()</span>
+<span class="fc" id="L207">        .version(HttpClient.Version.HTTP_2)</span>
+<span class="fc" id="L208">        .build();</span>
+
+<span class="fc" id="L210">    HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L211">            .uri(URI.create(&quot;https://api.spotify.com/v1/me&quot;))</span>
+<span class="fc" id="L212">            .setHeader(&quot;User-Agent&quot;, &quot;Java 11 HttpClient Bot&quot;)</span>
+<span class="fc" id="L213">            .header(&quot;Authorization&quot;, &quot;Bearer &quot; + spotifyToken)</span>
+<span class="fc" id="L214">            .build();</span>
+
+<span class="fc" id="L216">    HttpResponse&lt;String&gt; response = null;</span>
+    try {
+<span class="fc" id="L218">      response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L219">      Gson gson = new Gson();</span>
+<span class="fc" id="L220">      Map&lt;String, String&gt; result = gson.fromJson(response.body(),</span>
+<span class="fc" id="L221">          new TypeToken&lt;Map&lt;String, Object&gt;&gt;() { }.getType());</span>
+
+<span class="fc" id="L223">      return result.get(&quot;email&quot;);</span>
+<span class="nc" id="L224">    } catch (IOException | InterruptedException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L226">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L228">    return null;</span>
+  }
+
+  /**
+   * Build HTTP Form Data with given data.
+   * @param data Map
+   * @return Form data HTTPRequest
+   */
+  private static HttpRequest.BodyPublisher buildFormDataFromMap(
+        final Map&lt;Object, Object&gt; data) {
+<span class="fc" id="L238">    var builder = new StringBuilder();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : data.entrySet()) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">      if (builder.length() &gt; 0) {</span>
+<span class="fc" id="L241">        builder.append(&quot;&amp;&quot;);</span>
+      }
+<span class="fc" id="L243">      builder.append(URLEncoder.encode(entry.getKey().toString(),</span>
+<span class="fc" id="L244">                StandardCharsets.UTF_8));</span>
+<span class="fc" id="L245">      builder.append(&quot;=&quot;);</span>
+<span class="fc" id="L246">      builder.append(URLEncoder.encode(entry.getValue().toString(),</span>
+<span class="fc" id="L247">                StandardCharsets.UTF_8));</span>
+    }
+<span class="fc" id="L249">    return HttpRequest.BodyPublishers.ofString(builder.toString());</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>
