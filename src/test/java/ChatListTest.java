@@ -1,4 +1,5 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
@@ -19,11 +20,12 @@ public class ChatListTest {
     Map<String, ChatRoom> map = new HashMap<>();
     map.put("testRoom", chatroom);
     chatlist.setChatrooms(map);
-	assertEquals(1, chatlist.size());
+	assertEquals(1, chatlist.getChatrooms().size());
   }
 
+  //---------------------- getChatroomByGenre -------------------------- //
   @Test
-  public void getChatroomByGenreTest() {
+  public void getChatroomByGenreTestOK() {
     ChatList chatlist = new ChatList();
     ChatRoom chatroom = new ChatRoom();
     chatroom.setGenre(Genre.BLUES);
@@ -33,6 +35,11 @@ public class ChatListTest {
 	assertEquals(chatroom, chatlist.getChatroomByGenre(Genre.BLUES));
   }
 
+  @Test
+  public void getChatroomByGenreTestNullGenre() {
+    ChatList chatlist = new ChatList();
+	assertNull(chatlist.getChatroomByGenre(null));
+  }
   //---------------------- getTotalParticipants ------------------------- //
   @Test
   public void getTotalParticipantsTest() {
@@ -85,7 +92,7 @@ public class ChatListTest {
     doNothing().when(mockUser).setApi(null);
     chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();
-    assertEquals(1, chatlist.size());
+    assertEquals(1, chatlist.getChatrooms().size());
     assertEquals(1, chatroom.getParticipant().size());
   }
 
@@ -103,7 +110,7 @@ public class ChatListTest {
     when(mockUser.getSpotifyToken()).thenReturn("null");
     chatroom.addParticipant(mockUser);
     chatlist.refreshChatList();
-    assertEquals(1, chatlist.size());
+    assertEquals(1, chatlist.getChatrooms().size());
     assertEquals(1, chatroom.getParticipant().size());
   }
 

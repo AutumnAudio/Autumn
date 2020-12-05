@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.exceptions.detailed.NotFoundException;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.PlayHistory;
 
@@ -37,14 +38,6 @@ public class MyApi {
   }
 
   /**
-   * get spotify api.
-   * @return api SpotifyAPI
-   */
-  public SpotifyApi getApi() {
-    return this.api;
-  }
-
-  /**
    * Number of recently played objects.
    */
   private static final int LIMIT = 10;
@@ -58,6 +51,9 @@ public class MyApi {
    */
   public PlayHistory[] recentlyPlayed()
         throws ParseException, SpotifyWebApiException, IOException {
+    if (api == null) {
+      return null;
+    }
     PlayHistory[] playHistory = api
             .getCurrentUsersRecentlyPlayedTracks()
             .limit(LIMIT)
@@ -76,6 +72,9 @@ public class MyApi {
    */
   public CurrentlyPlaying currentlyPlaying()
           throws ParseException, SpotifyWebApiException, IOException {
+    if (api == null) {
+      return null;
+    }
     CurrentlyPlaying currentTrack = api
         .getUsersCurrentlyPlayingTrack()
         .build()
@@ -93,11 +92,19 @@ public class MyApi {
    */
   public String addSong(final String uri)
           throws ParseException, SpotifyWebApiException, IOException {
-    String ret = api
-          .addItemToUsersPlaybackQueue(uri)
-          .build()
-          .execute();
-    return ret;
+    if (api == null) {
+      return null;
+    }
+    try {
+      String ret = api
+            .addItemToUsersPlaybackQueue(uri)
+            .build()
+            .execute();
+      return ret;
+    } catch (NotFoundException e) {
+      System.out.println("Spotify player is not being used actively");
+      return null;
+    }
   }
 
   /**

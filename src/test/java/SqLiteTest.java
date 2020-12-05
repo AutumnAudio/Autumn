@@ -1,6 +1,10 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -17,10 +21,12 @@ import models.SqLite;
 import models.User;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.sqlite.SQLiteConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import java.sql.Connection;
 import static org.mockito.Mockito.*;
 
 
@@ -173,7 +179,7 @@ public class SqLiteTest {
 
   //---------------------------------- GetUserByName ----------------------------------------- //
   @Test
-  public void testGetUserByName() {
+  public void testGetUserByNameOK() {
     db.insertAuthenticatedUser("m", "spotify_token", "refresh_token", "sessionId");
     assertEquals("m", db.getUserByName("m").getUsername());
   }
@@ -622,7 +628,7 @@ public class SqLiteTest {
 
   //----------------------------------- GetLatestSession ---------------------------------------- // 
   @Test
-  public void testGetLatestSession() {
+  public void testGetLatestSessionOK() {
     db.insertSession("0920", "session2");
     db.insertSession("1020", "session3");
     db.insertSession("0820", "session1");
@@ -630,37 +636,58 @@ public class SqLiteTest {
     assertEquals("session3", db.getLatestSession());
   }
 
+  @Test
+  public void testGetLatestSessionNullStmt() {
+    Statement origStmt = db.getStmt();
+    db.setStmt(null);
+    assertNull(db.getLatestSession());
+    db.setStmt(origStmt);
+  }
+
   //------------------------------------------ update -------------------------------------------- // 
   @Test
   public void testUpdate() {
     ChatList chatlist = db.update();
-    assertEquals(0, chatlist.size());
+    assertEquals(0, chatlist.getChatrooms().size());
     db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
     
     chatlist = db.update();
-    assertEquals(1, chatlist.size());
+    assertEquals(1, chatlist.getChatrooms().size());
   }
 
   //----------------------------------------- Connect ------------------------------------------- // 
   @Test
-  public void testConnect() {
-    ChatList chatlist = db.update();
-    assertEquals(0, chatlist.size());
-    db.insertChatRoom(Genre.JAZZ, "/jazz-links", "jazz-playlist");
-    
-    chatlist = db.update();
-    assertEquals(1, chatlist.size());
-    SqLite db2 = new SqLite();
-    db2.connect();
-    ChatList chatlist2 = db2.update();
-    assertEquals(1, chatlist2.size());
-    db2.close();
+  public void testConnectOK() {
+    db.setConn(null);
+    assertEquals("OK", db.connect());
+  }
+
+  @Test
+  public void testConnectExists() throws SQLException {
+    SQLiteConfig config = new SQLiteConfig();
+    Connection conn = DriverManager.getConnection("jdbc:sqlite:autumn.db",
+            config.toProperties());
+    db.setConn(conn);
+    assertEquals("Connection exists", db.connect());
+  }
+
+  //-------------------------------------- GetAllChatRooms ---------------------------------------- //
+  @Test
+  public void testGetAllChatroomsOK() {
+    assertNotNull(db.getAllChatRooms());
+  }
+
+  @Test
+  public void testGetAllChatroomsNullStmt() {
+    Statement origStmt = db.getStmt();
+    db.setStmt(null);
+    assertNull(db.getAllChatRooms());
+    db.setStmt(origStmt);
   }
 
   @AfterEach
   public void afterEach() {
     db.clear();
-    
     db.close();	  
   }
 }

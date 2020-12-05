@@ -354,14 +354,25 @@ public class UserTest {
   }
 
   @Test
-  public void testAddToQueueInvalidUri() throws ParseException, SpotifyWebApiException, IOException {
+  public void testAddToQueueLongInvalidUri() throws ParseException, SpotifyWebApiException, IOException {
     MyApi mockAPI = mock(MyApi.class);
     when(mockAPI.addSong("song uri")).thenReturn(null);
     User user = new User(mockAPI);
     String refreshToken = "refresh";
     when(mockAPI.refreshSpotifyToken("refresh")).thenReturn("newToken");
     user.setSpotifyRefreshToken(refreshToken);
-	assertEquals("invalid uri", user.addToQueue("song uri"));
+	assertEquals("invalid uri", user.addToQueue("longSongUriHere"));
+  }
+
+  @Test
+  public void testAddToQueueLongShortInvalidUri() throws ParseException, SpotifyWebApiException, IOException {
+    MyApi mockAPI = mock(MyApi.class);
+    when(mockAPI.addSong("song uri")).thenReturn(null);
+    User user = new User(mockAPI);
+    String refreshToken = "refresh";
+    when(mockAPI.refreshSpotifyToken("refresh")).thenReturn("newToken");
+    user.setSpotifyRefreshToken(refreshToken);
+	assertEquals("invalid uri", user.addToQueue("shortSongUri.."));
   }
 
   // -------------------------------------- share ------------------------------------//

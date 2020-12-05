@@ -31,15 +31,10 @@ public class ChatList {
    * @return chatroom Chatroom.
    */
   public ChatRoom getChatroomByGenre(final Genre genre) {
+    if (genre == null) {
+      return null;
+    }
     return chatrooms.get(genre.getGenre());
-  }
-
-  /**
-   * Return size of ArrayList.
-   * @return size integer
-   */
-  public int size() {
-    return this.chatrooms.size();
   }
 
   /**

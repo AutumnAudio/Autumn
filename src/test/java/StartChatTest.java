@@ -89,7 +89,7 @@ public class StartChatTest {
     ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);
     
     // Check if player type is correct
-    assertEquals(6, chatlist.size());
+    assertEquals(6, chatlist.getChatrooms().size());
   
     System.out.println("Test /chatrooms");
   }
@@ -133,7 +133,7 @@ public class StartChatTest {
     ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);
     
     // Check if player type is correct
-    assertEquals(6, chatlist.size());
+    assertEquals(6, chatlist.getChatrooms().size());
   
     System.out.println("Test /chatrooms");
   }
@@ -214,6 +214,22 @@ public class StartChatTest {
     assertEquals("Invalid Room", response.getBody());
   
     System.out.println("Test invalid join chatroom");
+  }
+
+  /**
+  * This is a test case to evaluate the chatroom/genre endpoint.
+  */
+  @Test
+  @Order(6)
+  public void validChatroomGenreTest() {
+
+    // Create HTTP request and get response
+    HttpResponse<String> response = Unirest.get("http://localhost:8080/chatroom/pop/?user=ben").asString();
+
+    assertEquals(200, response.getStatus());
+    assertNotEquals("Invalid Room", response.getBody());
+  
+    System.out.println("Test invalid chatroom genre");
   }
 
   /**
@@ -443,12 +459,12 @@ public class StartChatTest {
     db.clear();
     
     ChatList chatlist = new ChatList();
-    assertEquals(0, chatlist.size());
+    assertEquals(0, chatlist.getChatrooms().size());
     StartChat.setChatlist(chatlist);
     StartChat.initializeChatlist();
     chatlist = StartChat.getChatlist();
     
-    assertEquals(6, chatlist.size());
+    assertEquals(6, chatlist.getChatrooms().size());
   
     System.out.println("Test initializeChatlist function");
   }
@@ -644,6 +660,35 @@ public class StartChatTest {
     System.out.println("/add Response: " + response1.getBody());
 
     assertEquals("song added to your queue", response1.getBody());
+    
+    StartChat.setDb(origDb);
+  }
+
+  @Test
+  @Order(22)
+  public void addSongTestNoSong() {
+    HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+    response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+    assertEquals(200, response.getStatus());
+    
+    SqLite mockDb = mock(SqLite.class);
+    User mockUser = mock(User.class);
+    when(mockUser.getUsername()).thenReturn("testing1");
+    when(mockUser.addToQueue("hello")).thenReturn("song added");
+    
+    SqLite origDb = StartChat.getDb();
+    String sessionId = origDb.getLatestSession();
+    
+    
+    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);
+    when(mockDb.getUserByName("testing1")).thenReturn(mockUser);
+    
+    StartChat.setDb(mockDb);
+
+    HttpResponse<String> response1 = Unirest.post("http://localhost:8080/add").asString();
+    System.out.println("/add Response: " + response1.getBody());
+
+    assertEquals("no song uri", response1.getBody());
     
     StartChat.setDb(origDb);
   }

@@ -17,8 +17,9 @@ public class MyApiTest {
   String refreshToken = SpotifyAccount.getRefreshToken();
   String token = api.refreshSpotifyToken(refreshToken);
 
+  //------------------------------ recentlyPlayed -------------------------------- //
   @Test
-  public void recentlyPlayedTest() {
+  public void recentlyPlayedTestOK() {
     SpotifyApi api = new SpotifyApi.Builder()
             .setAccessToken(token)
             .build();
@@ -34,7 +35,21 @@ public class MyApiTest {
   }
 
   @Test
-  public void currentlyPlayedTest() {
+  public void recentlyPlayedTestNullApi() {
+    MyApi myApi = new MyApi();
+    myApi.setApi(null);
+    try {
+    	PlayHistory[] playHistory = myApi.recentlyPlayed();
+		assertNull(playHistory);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+  }
+
+  //------------------------------ currentlyPlaying -------------------------------- //
+  @Test
+  public void currentlyPlayingTestOK() {
     SpotifyApi api = new SpotifyApi.Builder()
             .setAccessToken(token)
             .build();
@@ -49,7 +64,20 @@ public class MyApiTest {
   }
 
   @Test
-  public void addSongTest() {
+  public void currentlyPlayingTestNullApi() {
+    MyApi myApi = new MyApi();
+    myApi.setApi(null);
+    try {
+    	assertNull(myApi.currentlyPlaying());
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+  }
+
+  //--------------------------------- addSong --------------------------------- //
+  @Test
+  public void addSongTestOK() {
     SpotifyApi api = new SpotifyApi.Builder()
             .setAccessToken(token)
             .build();
@@ -64,6 +92,18 @@ public class MyApiTest {
 	}
   }
 
+  @Test
+  public void addSongTestNullApi() {
+    MyApi myApi = new MyApi();
+    myApi.setApi(null);
+    try {
+    	String ret = myApi.addSong("spotify:track:4jAIqgrPjKLTY9Gbez25Qb");
+    	assertNull(ret);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+  }
   // ------------------------- GetSpotifyTokenFromCode ------------------------- //
   @Test
   public void getSpotifyTokenFromCodeTestOK() {
