@@ -38,9 +38,16 @@ const Person = (props) => {
     var recentlyPlayedSong = ''
     var recentlyPlayedArtist = ''
     var recentlyPlayedSongs = person['recentlyPlayed']
+    var currentSong = ''
+    var currentArtist = ''
+    var currentlyPlayingSong = person['currentTrack']
     if (person['recentlyPlayed'][0] != null) {
         recentlyPlayedSong = person['recentlyPlayed'][0]['name']
         recentlyPlayedArtist = person['recentlyPlayed'][0]['artists'][0]
+    }
+    if (person['currentTrack'] != null) {
+        currentSong = person['currentTrack']['name']
+        currentArtist = person['currentTrack']['artists'][0]
     }
     return (
         <div className={classes.personDiv}>
@@ -48,7 +55,7 @@ const Person = (props) => {
             <div className={classes.nameDiv}>{person.username}</div>
             <AddIcon className={classes.addIcon}/>
             <div className={classes.currentSongDiv} onClick={() => updatePlayListSongs(recentlyPlayedSongs)}>
-                {recentlyPlayedSong} - {recentlyPlayedArtist}
+                {currentSong} - {currentArtist}
             </div>
         </div>
     )
