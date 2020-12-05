@@ -75,27 +75,11 @@ public class Song {
   }
 
   /**
-   * Get user of a song.
-   * @return username String
-   */
-  public String getUsername() {
-    return this.username;
-  }
-
-  /**
    * Set song.
    * @param spotifySong String
    */
   public void setSong(final String spotifySong) {
     this.song = spotifySong;
-  }
-
-  /**
-   * Get song.
-   * @return song name String
-   */
-  public String getSong() {
-    return this.song;
   }
 
   /**
