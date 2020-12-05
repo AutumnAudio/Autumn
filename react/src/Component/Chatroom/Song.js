@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-
+import { addSong } from '../AutumnApi/AutumnApi'
 const styles = {
     songItem: {
         marginLeft: '100px',
@@ -14,19 +14,34 @@ const styles = {
     },
     songNum: {
         float: 'left',
+        width: '14.5%',
     },
     songTitle: {
         float: 'left',
-        marginLeft: '13.5%',
+        // marginLeft: '13.5%',
         width: '47.5%',
-        borderBottom: '1px solid #FFFFFF',
+        // borderBottom: '1px solid #FFFFFF',
         paddingBottom: '10px'
     },
     songArtist: {
-        marginLeft: '62%',
-        borderBottom: '1px solid #FFFFFF',
-        paddingBottom: '10px'
+        // marginLeft: '62%',
+        float: 'left',
+        // borderBottom: '1px solid #FFFFFF',
+        paddingBottom: '10px',
+        width: '31%',
     },
+    addButton: {
+        borderRadius: '10px',
+        background: 'transparent',
+        boxShadow: 'none',
+        color: 'white',
+        border: '1px solid #707070',
+        marginBottom: '10px'
+    },
+    addButtonDiv: {
+        borderBottom: '1px solid #FFFFFF',
+        
+    }
 }
 const formatString = (str, len) => {
     let spaceToAdd = 0
@@ -47,11 +62,24 @@ const cutString = (str) => {
         return str
     }
 }
+const addCurrentSong = (uri, setIsAdded) => {
+    addSong(uri).then((response) => {
+        return response.text()
+    }).then((text) => {
+        console.log(text)
+        if (text == 'song added to your queue') {
+            setIsAdded(true)
+        }
+    })
+}
 const Song = (props) => {
     const { classes, song, index } = props
+    const [isAdded, setIsAdded] = useState(false)
     if (song == null) {
         return null
     }
+    const uri = song.uri
+    
     return (
         
         <div className={classes.songItem}>
@@ -59,6 +87,9 @@ const Song = (props) => {
             <div>
                 <div className={classes.songTitle}>{cutString(song.name)}</div>
                 <div className={classes.songArtist}>{cutString(song.artists[0])}</div>
+                <div className={classes.addButtonDiv}><button className={classes.addButton} onClick={() => addCurrentSong(uri, setIsAdded)}>
+                    {isAdded ? ('Added') : ('Add')}
+                </button></div>
             </div>
             
         </div>

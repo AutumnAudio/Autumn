@@ -31,7 +31,7 @@ const styles = {
         marginLeft: '270px',
         marginTop: '-10px',
     }
-};
+}
 
 const Person = (props) => {
     const { classes, person, updatePlayListSongs } = props
