@@ -11,3 +11,6 @@ TO RUN REACT FRONTEND:
 1. cd react
 2. npm install
 3. npm start
+
+Deploy without running the test:
+mvn -Dmaven.test.skip=true heroku:deploy
