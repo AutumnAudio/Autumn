@@ -2,6 +2,8 @@
 > autumn-react@0.1.0 test /home/travis/build/AutumnAudio/AutumnAudio/react
 > jest
 
+PASS src/Component/Chatroom/PersonPanel.test.js
+PASS src/Component/Chatroom/PersonList.test.js
 PASS src/Component/Lobby/ChatroomCardGrid.test.js
   ● Console
 
@@ -27,8 +29,6 @@ PASS src/Component/Lobby/ChatroomCardGrid.test.js
 
       at ChatroomCard (src/Component/Lobby/ChatroomCard.js:46:13)
 
-PASS src/Component/Chatroom/PersonPanel.test.js
-PASS src/Component/Chatroom/PersonList.test.js
 PASS src/Component/Lobby/ChatroomCard.test.js
   ● Console
 
@@ -44,7 +44,6 @@ PASS src/Component/Lobby/ChatroomCard.test.js
       at ChatroomCard (src/Component/Lobby/ChatroomCard.js:46:13)
 
 PASS src/Component/Chatroom/ChatMessageList.test.js
-PASS src/Component/Chatroom/ChatBoard.test.js
 PASS src/Component/Chatroom/Person.test.js
   ● Console
 
@@ -62,10 +61,11 @@ PASS src/Component/Chatroom/Person.test.js
       at renderWithHooks (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:6016:18)
       at updateForwardRef (node_modules/react-test-renderer/cjs/react-test-renderer.development.js:8038:20)
 
+PASS src/Component/Chatroom/ChatBoard.test.js
 PASS src/Component/Chatroom/ChatMessage.test.js
 
 Test Suites: 8 passed, 8 total
 Tests:       8 passed, 8 total
 Snapshots:   8 passed, 8 total
-Time:        2.88 s
+Time:        2.973 s
 Ran all test suites.
