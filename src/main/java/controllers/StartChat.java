@@ -71,7 +71,8 @@ public final class StartChat {
     if (herokuPort != null) {
       return Integer.parseInt(herokuPort);
     }
-    return 7000;
+    // return 7000;
+    return 8080;
   }
 
   /**
