@@ -13,7 +13,7 @@ public class Message {
   private String message;
 
   /**
-   * Genre of chatroom message
+   * Genre of chatroom message.
    */
   private Genre genre;
 

@@ -115,23 +115,6 @@ public final class StartChat {
     chatlist.setChatrooms(map);
   }
 
-  private static String userSend(final String username, final String text) {
-    Message message = new Message();
-    message.setUsername(username);
-    message.setMessage(text);
-    String genreStr = db.getGenreUser(username);
-    if (genreStr != null) {
-      Genre genre = Genre.valueOf(genreStr.toUpperCase());
-      ChatRoom chatroom = chatlist.getChatroomByGenre(genre);
-      chatroom.addMessage(message);
-      sendChatMsgToAllParticipants(genre.getGenre(),
-              new Gson().toJson(message));
-      return "chat sent";
-    } else {
-      return "User not in any chatroom";
-    }
-  }
-
   /**
    * Start a thread that read DB periodically.
    */
@@ -189,10 +172,8 @@ public final class StartChat {
       }
     });
 
-    //authentication
     app.before(ctx -> {
       String sessionId = (String) ctx.sessionAttribute("sessionId");
-      //if /auth and code present skip rest
       if (ctx.url().contains("/process_auth")
              && ctx.queryParam("code") != null && sessionId != null) {
         return;
@@ -208,7 +189,6 @@ public final class StartChat {
       }
     });
 
-    //handle spotify authentication
     app.get("/process_auth", ctx -> {
       String response = db.authenticateUser(ctx.queryParam("code"),
               ctx.sessionAttribute("sessionId"));
@@ -216,7 +196,6 @@ public final class StartChat {
       ctx.redirect("http://localhost:3000"); //TODO change to HOME constant
     });
 
-    // Front pages
     app.get("/", ctx -> {
       ctx.redirect("/home");
     });
@@ -240,6 +219,7 @@ public final class StartChat {
         String username = db.getUserBySessionId(
                 (String) ctx.sessionAttribute("sessionId")).getUsername();
         chatlist = db.userJoin(genre, username, chatlist);
+        chatlist = db.update();
         sendChatRoomToAllParticipants(genre.getGenre(),
               new Gson().toJson(chatlist.getChatroomByGenre(genre)));
         ctx.result("success");
@@ -249,7 +229,6 @@ public final class StartChat {
       }
     });
 
-    // user chatroom view
     app.get("/chatroom/:genre", ctx -> {
       if (Genre.isValidGenre(ctx.pathParam("genre").toUpperCase())) {
         Genre genre = Genre.valueOf(ctx.pathParam("genre").toUpperCase());
@@ -272,7 +251,6 @@ public final class StartChat {
                 new Gson().toJson(message));
         ctx.result("chat sent");
       }
-      
     });
 
     app.post("/add", ctx -> {
