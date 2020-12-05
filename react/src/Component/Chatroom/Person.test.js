@@ -4,7 +4,8 @@ import Person from './Person'
 
 test('should be able to render people', () => {
     const personMock = {username: 'testUser',
-                        recentlyPlayed: [{name: 'song name', artists: ['testArtist']}]}
+                        recentlyPlayed: [{name: 'song name', artists: ['testArtist']}],
+                        currentTrack: {name: 'song name', artists: ['testArtist']}}
     const component = renderer.create(
         <Person person={personMock} />,
     )

@@ -46,7 +46,7 @@ public final class StartChat {
   /**
    * Set time interval (seconds) for refreshChatList().
    */
-  private static final int INTERVAL = 30;
+  private static final int INTERVAL = 1;
 
   /**
    * Create Javalin instance.
