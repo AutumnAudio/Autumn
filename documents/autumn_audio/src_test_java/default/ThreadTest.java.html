@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>ThreadTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 10:25:25 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">ThreadTest.java</span></div><h1>ThreadTest.java</h1><pre class="source lang-java linenums">import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
+
+import models.Thread;
+import models.ChatList;
+import models.ChatRoom;
+import models.Genre;
+import models.SqLite;
+
+<span class="fc" id="L16">public class ThreadTest {</span>
+  @Test
+  public void runTest() throws InterruptedException {
+<span class="fc" id="L19">    ChatRoom pop = new ChatRoom();</span>
+<span class="fc" id="L20">    pop.setGenre(Genre.POP);</span>
+<span class="fc" id="L21">    Map&lt;String, ChatRoom&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L22">    map.put(&quot;pop&quot;, pop);</span>
+<span class="fc" id="L23">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L24">    when(mockChatlist.getChatrooms()).thenReturn(map);</span>
+<span class="fc" id="L25">    SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L26">    when(mockDb.update()).thenReturn(mockChatlist);</span>
+<span class="fc" id="L27">    Thread thread = new Thread(mockDb);</span>
+
+<span class="fc" id="L29">    ExecutorService service = Executors.newSingleThreadExecutor();</span>
+<span class="fc" id="L30">    service.execute(thread);</span>
+
+    // Add something like this.
+<span class="fc" id="L33">    service.shutdown();</span>
+<span class="fc" id="L34">    service.awaitTermination(5, TimeUnit.SECONDS);</span>
+<span class="fc" id="L35">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 10:25:25 PM)</div></body></html>

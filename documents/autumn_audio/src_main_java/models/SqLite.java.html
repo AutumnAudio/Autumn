@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SqLite.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">SqLite.java</span></div><h1>SqLite.java</h1><pre class="source lang-java linenums">package models;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>SqLite.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 10:25:25 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">SqLite.java</span></div><h1>SqLite.java</h1><pre class="source lang-java linenums">package models;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -73,23 +73,23 @@ import org.sqlite.SQLiteConfig;
 <span class="nc" id="L73">    } catch (SQLException e1) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L75">      e1.printStackTrace();</span>
-    }
+<span class="fc" id="L76">    }</span>
     try {
 <span class="fc" id="L78">      Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
-<span class="pc" id="L79">    } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L79">    } catch (ClassNotFoundException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L81">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L82">    }</span>
     try {
 <span class="fc" id="L84">      SQLiteConfig config = new SQLiteConfig();</span>
 <span class="fc" id="L85">      conn = DriverManager.getConnection(&quot;jdbc:sqlite:autumn.db&quot;,</span>
 <span class="fc" id="L86">              config.toProperties());</span>
 <span class="fc" id="L87">      conn.setAutoCommit(true);</span>
 <span class="fc" id="L88">      stmt = conn.createStatement();</span>
-<span class="pc" id="L89">    } catch (SQLException e) {</span>
+<span class="nc" id="L89">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L91">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L92">    }</span>
 <span class="fc" id="L93">    return &quot;OK&quot;;</span>
   }
 
@@ -100,10 +100,10 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L100">    connect();</span>
     try {
 <span class="fc" id="L102">      Class.forName(&quot;org.sqlite.JDBC&quot;);</span>
-<span class="pc" id="L103">    } catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L103">    } catch (ClassNotFoundException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L105">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L106">    }</span>
     try {
 <span class="fc" id="L108">      String sql = &quot;CREATE TABLE IF NOT EXISTS USERS &quot;</span>
                      + &quot; (USERNAME              VARCHAR PRIMARY KEY NOT NULL, &quot;
@@ -141,10 +141,10 @@ import org.sqlite.SQLiteConfig;
             + &quot;(USERNAME VARCHAR NOT NULL, &quot;
             + &quot; GENRE     VARCHAR NOT NULL)&quot;;
 <span class="fc" id="L143">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L144">    } catch (SQLException e) {</span>
+<span class="nc" id="L144">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L146">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L147">    }</span>
 <span class="fc" id="L148">  }</span>
 
   /**
@@ -164,10 +164,10 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L164">      stmt.executeUpdate(sql);</span>
 <span class="fc" id="L165">      sql = &quot;DELETE FROM USERGENRE&quot;;</span>
 <span class="fc" id="L166">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L167">    } catch (SQLException e) {</span>
+<span class="nc" id="L167">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L169">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L170">    }</span>
 <span class="fc" id="L171">  }</span>
 
   /**
@@ -196,12 +196,12 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L196">      String sql = String.format(&quot;INSERT INTO USERS (USERNAME, SPOTIFY_TOKEN, &quot;</span>
             + &quot;SPOTIFY_REFRESH_TOKEN, SESSION_ID) &quot;
             + &quot;VALUES ('%s','%s','%s','%s');&quot;,
-<span class="fc" id="L199">            username, token, refreshToken, sessionId);</span>
+            username, token, refreshToken, sessionId);
 <span class="fc" id="L200">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L201">    } catch (SQLException e) {</span>
+<span class="nc" id="L201">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L203">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L204">    }</span>
 <span class="fc" id="L205">    return &quot;OK&quot;;</span>
   }
 
@@ -225,12 +225,12 @@ import org.sqlite.SQLiteConfig;
     }
     try {
 <span class="fc" id="L227">      String sql = String.format(&quot;UPDATE USERS SET %s = '%s'&quot;</span>
-<span class="fc" id="L228">                     + &quot; WHERE USERNAME = '%s';&quot;, attribute, value, username);</span>
+                     + &quot; WHERE USERNAME = '%s';&quot;, attribute, value, username);
 <span class="fc" id="L229">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L230">    } catch (SQLException e) {</span>
+<span class="nc" id="L230">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L232">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L233">    }</span>
 <span class="fc" id="L234">    return &quot;OK&quot;;</span>
   }
 
@@ -250,12 +250,12 @@ import org.sqlite.SQLiteConfig;
     }
     try {
 <span class="fc" id="L252">      String sql = String.format(&quot;INSERT INTO USERGENRE (USERNAME, GENRE) &quot;</span>
-<span class="fc" id="L253">                  + &quot;VALUES ('%s','%s');&quot;, username, genre);</span>
+                  + &quot;VALUES ('%s','%s');&quot;, username, genre);
 <span class="fc" id="L254">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L255">    } catch (SQLException e) {</span>
+<span class="nc" id="L255">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L257">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L258">    }</span>
 <span class="fc" id="L259">    return &quot;OK&quot;;</span>
   }
 
@@ -272,7 +272,7 @@ import org.sqlite.SQLiteConfig;
     try {
       ResultSet rs;
 <span class="fc" id="L274">      String sql = String.format(&quot;SELECT * FROM USERS &quot;</span>
-<span class="fc" id="L275">              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);</span>
+              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);
 <span class="fc" id="L276">      rs = stmt.executeQuery(sql);</span>
       try {
 <span class="fc bfc" id="L278" title="All 2 branches covered.">        while (rs.next()) {</span>
@@ -282,13 +282,13 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L282">          user.setSessionId(rs.getString(&quot;SESSION_ID&quot;));</span>
           //user.setLastConnectionTime(rs.getInt(&quot;LAST_CONNECTION_TIME&quot;));
         }
-<span class="fc" id="L285">      } finally {</span>
+      } finally {
 <span class="fc" id="L286">        rs.close();</span>
       }
 <span class="nc" id="L288">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L290">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L291">    }</span>
 <span class="fc" id="L292">    return user;</span>
   }
 
@@ -316,7 +316,7 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L316">              response.get(&quot;refresh_token&quot;), email);</span>
 <span class="fc" id="L317">      updateUserAttribute(&quot;SESSION_ID&quot;, sessionId, email);</span>
 <span class="fc" id="L318">      ret = &quot;User exists&quot;;</span>
-<span class="fc" id="L319">    } else {</span>
+    } else {
 <span class="fc" id="L320">      insertAuthenticatedUser(email, response.get(&quot;access_token&quot;),</span>
 <span class="fc" id="L321">              response.get(&quot;refresh_token&quot;), sessionId);</span>
 <span class="fc" id="L322">      ret = &quot;New user&quot;;</span>
@@ -337,19 +337,19 @@ import org.sqlite.SQLiteConfig;
     try {
       ResultSet rs;
 <span class="fc" id="L339">      String sql = String.format(&quot;SELECT * FROM USERS &quot;</span>
-<span class="fc" id="L340">              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);</span>
+              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);
 <span class="fc" id="L341">      rs = stmt.executeQuery(sql);</span>
       try {
 <span class="fc bfc" id="L343" title="All 2 branches covered.">        while (rs.next()) {</span>
 <span class="fc" id="L344">          count++;</span>
         }
-<span class="fc" id="L346">      } finally {</span>
+      } finally {
 <span class="fc" id="L347">        rs.close();</span>
       }
 <span class="nc" id="L349">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L351">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L352">    }</span>
 <span class="fc" id="L353">    return count;</span>
   }
 
@@ -366,19 +366,19 @@ import org.sqlite.SQLiteConfig;
     try {
       ResultSet rs;
 <span class="fc" id="L368">      String sql = String.format(&quot;SELECT * FROM USERGENRE &quot;</span>
-<span class="fc" id="L369">              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);</span>
+              + &quot;WHERE USERNAME = '%s' LIMIT 1&quot;, username);
 <span class="fc" id="L370">      rs = stmt.executeQuery(sql);</span>
       try {
 <span class="fc bfc" id="L372" title="All 2 branches covered.">        while (rs.next()) {</span>
 <span class="fc" id="L373">          gen = rs.getString(&quot;GENRE&quot;);</span>
         }
-<span class="fc" id="L375">      } finally {</span>
+      } finally {
 <span class="fc" id="L376">        rs.close();</span>
       }
 <span class="nc" id="L378">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L380">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L381">    }</span>
 <span class="fc" id="L382">    return gen;</span>
   }
 
@@ -395,7 +395,7 @@ import org.sqlite.SQLiteConfig;
     try {
       ResultSet rs;
 <span class="fc" id="L397">      String sql = String.format(&quot;SELECT * FROM USERS &quot;</span>
-<span class="fc" id="L398">              + &quot;WHERE SESSION_ID = '%s'&quot;, sessionId);</span>
+              + &quot;WHERE SESSION_ID = '%s'&quot;, sessionId);
 <span class="fc" id="L399">      rs = stmt.executeQuery(sql);</span>
       try {
 <span class="fc bfc" id="L401" title="All 2 branches covered.">        while (rs.next()) {</span>
@@ -404,13 +404,13 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L404">          user.setSpotifyRefreshToken(rs.getString(&quot;SPOTIFY_REFRESH_TOKEN&quot;));</span>
 <span class="fc" id="L405">          user.setSessionId(rs.getString(&quot;SESSION_ID&quot;));</span>
         }
-<span class="fc" id="L407">      } finally {</span>
+      } finally {
 <span class="fc" id="L408">        rs.close();</span>
       }
 <span class="nc" id="L410">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L412">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L413">    }</span>
 <span class="fc" id="L414">    return user;</span>
   }
 
@@ -440,10 +440,10 @@ import org.sqlite.SQLiteConfig;
                    + &quot;VALUES ('%s','%s','%s');&quot;,
 <span class="fc" id="L441">                   genre.getGenre(), link, spotifyPlaylist);</span>
 <span class="fc" id="L442">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L443">    } catch (SQLException e) {</span>
+<span class="nc" id="L443">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L445">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L446">    }</span>
 <span class="fc" id="L447">    return &quot;OK&quot;;</span>
   }
 
@@ -468,14 +468,14 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L468">          room.setLink(rs.getString(&quot;LINK&quot;));</span>
 <span class="fc" id="L469">          genres.add(genre);</span>
 <span class="fc" id="L470">          map.put(genre.getGenre(), room);</span>
-        }
-<span class="fc" id="L472">      } finally {</span>
+<span class="fc" id="L471">        }</span>
+      } finally {
 <span class="fc" id="L473">        rs.close();</span>
       }
 <span class="nc" id="L475">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L477">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L478">    }</span>
 <span class="fc bfc" id="L479" title="All 2 branches covered.">    for (int i = 0; i &lt; genres.size(); i++) {</span>
 <span class="fc" id="L480">      ChatRoom chatroom = map.get(genres.get(i).getGenre());</span>
 <span class="fc" id="L481">      Map&lt;String, User&gt; participants = getChatRoomParticipant(genres.get(i));</span>
@@ -523,10 +523,10 @@ import org.sqlite.SQLiteConfig;
                    + &quot;VALUES ('%s','%s','%s','%s','%s');&quot;,
 <span class="fc" id="L524">                   genre.getGenre(), username, token, refreshToken, sessionId);</span>
 <span class="fc" id="L525">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L526">    } catch (SQLException e) {</span>
+<span class="nc" id="L526">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L528">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L529">    }</span>
 <span class="fc" id="L530">    return &quot;OK&quot;;</span>
   }
 
@@ -549,10 +549,10 @@ import org.sqlite.SQLiteConfig;
                    + &quot;WHERE GENRE = '%s' AND USERNAME = '%s';&quot;,
 <span class="fc" id="L550">                   genre.getGenre(), username);</span>
 <span class="fc" id="L551">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L552">    } catch (SQLException e) {</span>
+<span class="nc" id="L552">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L554">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L555">    }</span>
 <span class="fc" id="L556">    return &quot;OK&quot;;</span>
   }
 
@@ -568,12 +568,12 @@ import org.sqlite.SQLiteConfig;
     try {
 <span class="fc" id="L569">      String sql = String.format(&quot;DELETE FROM USERGENRE &quot;</span>
                    + &quot;WHERE USERNAME = '%s';&quot;,
-<span class="fc" id="L571">                   username);</span>
+                   username);
 <span class="fc" id="L572">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L573">    } catch (SQLException e) {</span>
+<span class="nc" id="L573">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L575">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L576">    }</span>
 <span class="fc" id="L577">    return &quot;OK&quot;;</span>
   }
 
@@ -601,14 +601,14 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L601">          user.setSpotifyRefreshToken(rs.getString(&quot;SPOTIFY_REFRESH_TOKEN&quot;));</span>
 <span class="fc" id="L602">          user.setSessionId(rs.getString(&quot;SESSION_ID&quot;));</span>
 <span class="fc" id="L603">          list.put(user.getUsername(), user);</span>
-        }
-<span class="fc" id="L605">      } finally {</span>
+<span class="fc" id="L604">        }</span>
+      } finally {
 <span class="fc" id="L606">        rs.close();</span>
       }
 <span class="nc" id="L608">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L610">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L611">    }</span>
 <span class="fc" id="L612">    return list;</span>
   }
 
@@ -641,10 +641,10 @@ import org.sqlite.SQLiteConfig;
                    + &quot;VALUES ('%s','%s','%s','%s');&quot;,
 <span class="fc" id="L642">                   username, timeShared, genre.getGenre(), song);</span>
 <span class="fc" id="L643">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L644">    } catch (SQLException e) {</span>
+<span class="nc" id="L644">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L646">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L647">    }</span>
 <span class="fc" id="L648">    return &quot;OK&quot;;</span>
   }
 
@@ -669,14 +669,14 @@ import org.sqlite.SQLiteConfig;
 <span class="fc" id="L669">          song.setUsername(rs.getString(&quot;USERNAME&quot;));</span>
 <span class="fc" id="L670">          song.setSong(rs.getString(&quot;SONG&quot;));</span>
 <span class="fc" id="L671">          list.add(song);</span>
-        }
-<span class="fc" id="L673">      } finally {</span>
+<span class="fc" id="L672">        }</span>
+      } finally {
 <span class="fc" id="L674">        rs.close();</span>
       }
 <span class="nc" id="L676">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L678">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L679">    }</span>
 <span class="fc" id="L680">    return list;</span>
   }
 
@@ -697,12 +697,12 @@ import org.sqlite.SQLiteConfig;
     try {
 <span class="fc" id="L698">      String sql = String.format(&quot;REPLACE INTO SESSIONS &quot;</span>
                    + &quot;(TIME_VISITED, SESSION_ID) &quot;
-<span class="fc" id="L700">                   + &quot;VALUES ('%s','%s');&quot;, time, sessionId);</span>
+                   + &quot;VALUES ('%s','%s');&quot;, time, sessionId);
 <span class="fc" id="L701">      stmt.executeUpdate(sql);</span>
-<span class="pc" id="L702">    } catch (SQLException e) {</span>
+<span class="nc" id="L702">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L704">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L705">    }</span>
 <span class="fc" id="L706">    return &quot;OK&quot;;</span>
   }
 
@@ -739,8 +739,8 @@ import org.sqlite.SQLiteConfig;
    */
   public Message userSend(final String username, final String text,
           final ChatList chatlist) {
-<span class="fc bfc" id="L742" title="All 6 branches covered.">    if (chatlist == null || username == null || username.length() == 0</span>
-<span class="fc bfc" id="L743" title="All 4 branches covered.">      || text == null || text.length() == 0) {</span>
+<span class="fc bfc" id="L742" title="All 8 branches covered.">    if (chatlist == null || username == null || username.length() == 0</span>
+<span class="fc bfc" id="L743" title="All 2 branches covered.">      || text == null || text.length() == 0) {</span>
 <span class="fc" id="L744">    return null;</span>
     }
 <span class="fc" id="L746">    Message message = new Message();</span>
@@ -775,13 +775,13 @@ import org.sqlite.SQLiteConfig;
 <span class="fc bfc" id="L775" title="All 2 branches covered.">        while (rs.next()) {</span>
 <span class="fc" id="L776">          sessionId = rs.getString(&quot;SESSION_ID&quot;);</span>
         }
-<span class="fc" id="L778">      } finally {</span>
+      } finally {
 <span class="fc" id="L779">        rs.close();</span>
       }
 <span class="nc" id="L781">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L783">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L784">    }</span>
 <span class="fc" id="L785">    return sessionId;</span>
   }
 
@@ -803,11 +803,11 @@ import org.sqlite.SQLiteConfig;
     try {
 <span class="fc" id="L804">      stmt.close();</span>
 <span class="fc" id="L805">      conn.close();</span>
-<span class="pc" id="L806">    } catch (SQLException e) {</span>
+<span class="nc" id="L806">    } catch (SQLException e) {</span>
       // TODO Auto-generated catch block
 <span class="nc" id="L808">      e.printStackTrace();</span>
-    }
+<span class="fc" id="L809">    }</span>
 <span class="fc" id="L810">  }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 10:25:25 PM)</div></body></html>

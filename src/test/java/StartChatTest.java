@@ -5,7 +5,11 @@ import static org.mockito.Mockito.*;
 import com.google.gson.Gson;
 import controllers.StartChat;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import kong.unirest.HttpResponse;
@@ -13,6 +17,7 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import models.ChatList;
 import models.ChatRoom;
+import models.Genre;
 import models.Message;
 import models.Song;
 import models.SqLite;
@@ -165,7 +170,7 @@ public class StartChatTest {
     
     // Check if player type is correct
     assertEquals(1, chatroom.getParticipant().size());
-  
+
     System.out.println("Test join chatroom");
   }
 
@@ -516,6 +521,56 @@ public class StartChatTest {
       session.getRemote().sendString("hi");
       session.close();
 
+      // wait for closed socket connection.
+      socket.awaitClose(5, TimeUnit.SECONDS);
+    } catch (Throwable t) {
+      t.printStackTrace();
+    } finally {
+      try {
+        client.stop();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  @Test
+  @Order(18)
+  public void sendJsonToAllParticipants() {
+	
+    WebSocketClient client = new WebSocketClient();
+    SimpleWebSocket socket = new SimpleWebSocket();
+    try {
+      client.start();
+      URI uri = new URI("ws://localhost:8080/chatroom");
+      //ClientUpgradeRequest request = new ClientUpgradeRequest();
+      Future<Session> future = client.connect(socket, uri);
+      System.out.printf("Connecting to : %s%n", uri);
+      Session session = future.get();
+      session.getRemote().sendString("hi");
+      
+      
+      HttpResponse<String> response = Unirest.post("http://localhost:8080/joinroom/blues/").asString();
+      response = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+      assertEquals(200, response.getStatus());
+
+      HttpResponse<String> response1 = Unirest.post("http://localhost:8080/send").body("text=hello").asString();
+      response1 = Unirest.get("http://localhost:8080/chatroom/blues").asString();
+      System.out.println("/[chatroom]/[user] Response: " + response1.getBody());
+      // Parse the response to JSON object
+      JSONObject jsonObject = new JSONObject(response1.getBody());
+
+      // GSON use to parse data to object
+      Gson gson = new Gson();
+      ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);
+      List<Message> msgList = chatroom.getChat();
+      assertEquals(1, msgList.size());
+      Message msg = msgList.get(0);
+      System.out.println(msg.getUsername());
+      assertEquals("testing1", msg.getUsername());
+      assertEquals("hello", msg.getMessage());
+
+      session.close();
       // wait for closed socket connection.
       socket.awaitClose(5, TimeUnit.SECONDS);
     } catch (Throwable t) {
