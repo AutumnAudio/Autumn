@@ -64,7 +64,6 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://autumn-audio.herokuapp.com",
-  "poxy": "https://autumn-audio.herokuapp.com",
+  "poxy": "autumn-audio.herokuapp.com",
   "devDependencies": {}
 }
