@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 5:30:23 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package models;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 10:25:25 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/main/java</a> &gt; <a href="index.source.html" class="el_package">models</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package models;
 
 import java.sql.Time;
 import java.time.LocalTime;
@@ -104,14 +104,14 @@ public class User {
 <span class="fc" id="L104">        song.setUri(track.getUri());</span>
 <span class="fc" id="L105">        recentlyPlayed[i] = song;</span>
       }
-<span class="pc" id="L107">    } catch (Exception e) {</span>
+<span class="nc" id="L107">    } catch (Exception e) {</span>
 <span class="nc bnc" id="L108" title="All 2 branches missed.">      if (e.getMessage().equals(&quot;The access token expired&quot;)) {</span>
 <span class="nc" id="L109">        refreshRecentlyPlayed();</span>
-<span class="nc" id="L110">      } else {</span>
+      } else {
 <span class="nc" id="L111">        System.out.println(&quot;Something went wrong!\n&quot;</span>
 <span class="nc" id="L112">          + e.getMessage());</span>
       }
-    }
+<span class="fc" id="L114">    }</span>
 <span class="fc" id="L115">    return ret;</span>
   }
 
@@ -128,14 +128,14 @@ public class User {
 <span class="fc" id="L128">                .setAccessToken(spotifyToken)</span>
 <span class="fc" id="L129">                .build());</span>
 <span class="fc" id="L130">      currentlyPlaying = api.currentlyPlaying();</span>
-<span class="pc" id="L131">    } catch (Exception e) {</span>
+<span class="nc" id="L131">    } catch (Exception e) {</span>
 <span class="nc bnc" id="L132" title="All 2 branches missed.">      if (e.getMessage().equals(&quot;The access token expired&quot;)) {</span>
 <span class="nc" id="L133">        refreshCurrentlyPlaying();</span>
-<span class="nc" id="L134">      } else {</span>
+      } else {
 <span class="nc" id="L135">        System.out.println(&quot;Something went wrong!\n&quot;</span>
 <span class="nc" id="L136">            + e.getMessage());</span>
       }
-    }
+<span class="fc" id="L138">    }</span>
 <span class="fc bfc" id="L139" title="All 2 branches covered.">    if (currentlyPlaying != null) {</span>
 <span class="fc" id="L140">      IPlaylistItem playlistItem = currentlyPlaying.getItem();</span>
 <span class="fc" id="L141">      Track track = (Track) playlistItem;</span>
@@ -183,14 +183,14 @@ public class User {
 <span class="fc" id="L183">          .setAccessToken(spotifyToken)</span>
 <span class="fc" id="L184">          .build());</span>
 <span class="fc" id="L185">      ret = api.addSong(uri);</span>
-<span class="pc" id="L186">    } catch (Exception e) {</span>
+<span class="nc" id="L186">    } catch (Exception e) {</span>
 <span class="nc bnc" id="L187" title="All 2 branches missed.">      if (e.getMessage().equals(&quot;The access token expired&quot;)) {</span>
 <span class="nc" id="L188">        addToQueue(uri);</span>
-<span class="nc" id="L189">      } else {</span>
+      } else {
 <span class="nc" id="L190">        System.out.println(&quot;Something went wrong!\n&quot;</span>
 <span class="nc" id="L191">            + e.getMessage());</span>
       }
-    }
+<span class="fc" id="L193">    }</span>
 <span class="fc" id="L194">    return ret;</span>
   }
 
@@ -223,7 +223,7 @@ public class User {
 <span class="fc bfc" id="L223" title="All 2 branches covered.">      if (!getUsername().equals(sharee.getUsername())) {</span>
 <span class="fc" id="L224">        sharee.addToQueue(song.getUri());</span>
       }
-    }
+<span class="fc" id="L226">    }</span>
     // add song to group playlist
 <span class="fc" id="L228">    chatroom.addSong(song);</span>
 <span class="fc" id="L229">    database.insertSong(username, Time.valueOf(LocalTime.now()),</span>
@@ -313,7 +313,7 @@ public class User {
   public void setSpotifyTokenDb(final String token) {
 <span class="fc" id="L314">    setSpotifyToken(token);</span>
 <span class="fc" id="L315">    db.updateUserAttribute(&quot;SPOTIFY_TOKEN&quot;,</span>
-<span class="fc" id="L316">        token, username);</span>
+        token, username);
 <span class="fc" id="L317">  }</span>
 
   /**
@@ -357,7 +357,7 @@ public class User {
     }
 <span class="fc" id="L358">    setSpotifyRefreshToken(refreshToken);</span>
 <span class="fc" id="L359">    db.updateUserAttribute(&quot;SPOTIFY_REFRESH_TOKEN&quot;,</span>
-<span class="fc" id="L360">        refreshToken, username);</span>
+        refreshToken, username);
 <span class="fc" id="L361">    return &quot;OK&quot;;</span>
   }
 
@@ -394,4 +394,4 @@ public class User {
 <span class="fc" id="L394">    this.api = spotifyApi;</span>
 <span class="fc" id="L395">  }</span>
  }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 5:30:23 PM)</div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 10:25:25 PM)</div></body></html>

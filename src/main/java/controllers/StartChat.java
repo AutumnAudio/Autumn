@@ -19,6 +19,7 @@ import models.Message;
 import models.Song;
 import models.SqLite;
 import models.User;
+import models.Thread;
 import org.eclipse.jetty.websocket.api.Session;
 
 
@@ -123,26 +124,15 @@ public final class StartChat {
   /**
    * refresh song data in separate thread.
    */
-  private static void refreshSongDataRepeatly() {
+  public static void refreshSongDataRepeatly() {
     ScheduledFuture<?> running = refreshDataInterval;
     if (running != null && !running.isCancelled()) {
       return;
     }
     ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-    refreshDataInterval = exec.scheduleAtFixedRate(new Runnable() {
-      public void run() {
-        SqLite db2 = new SqLite();
-        db2.connect();
-        ChatList chatListData = db2.update();
-        chatListData.refreshChatList();
-        for (ChatRoom chatroom : chatListData.getChatrooms().values()) {
-          String genre = chatroom.getGenre().getGenre();
-          sendChatRoomToAllParticipants(genre,
-                  new Gson().toJson(chatroom));
-        }
-        db2.close();
-      }
-    }, 0, INTERVAL, TimeUnit.SECONDS);
+    Thread thread = new Thread(db);
+    refreshDataInterval = exec.scheduleAtFixedRate(
+            thread, 0, INTERVAL, TimeUnit.SECONDS);
   }
 
   /** Main method of the application.
@@ -303,7 +293,7 @@ public final class StartChat {
    * @param genre String
    * @param chatRoomJson String
    */
-  private static void sendChatRoomToAllParticipants(final String genre,
+  public static void sendChatRoomToAllParticipants(final String genre,
         final String chatRoomJson) {
     Queue<Session> sessions = UiWebSocket.getSessions();
     for (Session sessionPlayer : sessions) {
@@ -315,7 +305,12 @@ public final class StartChat {
     }
   }
 
-  private static void sendChatMsgToAllParticipants(
+  /**
+   * Send message to all participants.
+   * @param genre String
+   * @param msg String
+   */
+  public static void sendChatMsgToAllParticipants(
       final String genre, final String msg) {
     Queue<Session> sessions = UiWebSocket.getSessions();
     for (Session sessionPlayer : sessions) {
