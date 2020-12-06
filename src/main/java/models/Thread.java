@@ -22,6 +22,9 @@ public class Thread implements Runnable {
    */
   @Override
   public void run() {
+    if (db == null) {
+      return;
+    }
     ChatList chatListData = db.update();
     chatListData.refreshChatList();
     for (ChatRoom chatroom : chatListData.getChatrooms().values()) {

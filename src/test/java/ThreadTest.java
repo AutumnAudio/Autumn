@@ -15,7 +15,7 @@ import models.SqLite;
 
 public class ThreadTest {
   @Test
-  public void runTest() throws InterruptedException {
+  public void runTestOK() throws InterruptedException {
     ChatRoom pop = new ChatRoom();
     pop.setGenre(Genre.POP);
     Map<String, ChatRoom> map = new HashMap<>();
@@ -25,6 +25,18 @@ public class ThreadTest {
     SqLite mockDb = mock(SqLite.class);
     when(mockDb.update()).thenReturn(mockChatlist);
     Thread thread = new Thread(mockDb);
+
+    ExecutorService service = Executors.newSingleThreadExecutor();
+    service.execute(thread);
+
+    // Add something like this.
+    service.shutdown();
+    service.awaitTermination(5, TimeUnit.SECONDS);
+  }
+
+  @Test
+  public void runTestNullDb() throws InterruptedException {
+    Thread thread = new Thread(null);
 
     ExecutorService service = Executors.newSingleThreadExecutor();
     service.execute(thread);

@@ -191,6 +191,7 @@ public class User {
             + e.getMessage());
       }
     }
+    api.setApi(null);
     return ret;
   }
 
