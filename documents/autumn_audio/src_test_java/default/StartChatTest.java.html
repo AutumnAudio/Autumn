@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StartChatTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 5, 2020 10:25:25 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">StartChatTest.java</span></div><h1>StartChatTest.java</h1><pre class="source lang-java linenums">import static org.junit.jupiter.api.Assertions.assertEquals;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../jacoco-resources/report.gif" type="image/gif"/><title>StartChatTest.java</title><link rel="stylesheet" href="../../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">java (2) (Dec 6, 2020 2:15:21 PM)</a> &gt; <a href="../../index.html" class="el_group">autumn_audio</a> &gt; <a href="../index.html" class="el_bundle">src/test/java</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">StartChatTest.java</span></div><h1>StartChatTest.java</h1><pre class="source lang-java linenums">import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import controllers.StartChat;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import kong.unirest.HttpResponse;
@@ -17,7 +13,6 @@ import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import models.ChatList;
 import models.ChatRoom;
-import models.Genre;
 import models.Message;
 import models.Song;
 import models.SqLite;
@@ -37,7 +32,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 
 @TestMethodOrder(OrderAnnotation.class) 
-<span class="fc" id="L40">public class StartChatTest {</span>
+<span class="fc" id="L35">public class StartChatTest {</span>
 
   /**
   * Runs only once before the testing starts.
@@ -45,8 +40,8 @@ import org.junit.jupiter.api.TestMethodOrder;
   @BeforeAll
   public static void init() {
 
-<span class="fc" id="L48">    System.out.println(&quot;Before All&quot;);</span>
-<span class="fc" id="L49">  }</span>
+<span class="fc" id="L43">    System.out.println(&quot;Before All&quot;);</span>
+<span class="fc" id="L44">  }</span>
 
   /**
   * This method starts a new game before every test run. It will run every time before a test.
@@ -56,19 +51,19 @@ import org.junit.jupiter.api.TestMethodOrder;
     // Test if server is running. You need to have an endpoint /
     // If you do not wish to have this end point, it is okay to not have anything in this method.
     // Create HTTP request and get response
-<span class="fc" id="L59">    StartChat.main(null);</span>
-<span class="fc" id="L60">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/lobby&quot;).asString();</span>
-<span class="fc" id="L61">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L54">    StartChat.main(null);</span>
+<span class="fc" id="L55">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/lobby&quot;).asString();</span>
+<span class="fc" id="L56">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L63">    SqLite db = StartChat.getDb();</span>
+<span class="fc" id="L58">    SqLite db = StartChat.getDb();</span>
     
-<span class="fc" id="L65">    String sessionId = db.getLatestSession();</span>
+<span class="fc" id="L60">    String sessionId = db.getLatestSession();</span>
 
-<span class="fc" id="L67">    db.insertAuthenticatedUser(&quot;testing1&quot;, &quot;token1&quot;, &quot;refresh1&quot;, sessionId);</span>
+<span class="fc" id="L62">    db.insertAuthenticatedUser(&quot;testing1&quot;, &quot;token1&quot;, &quot;refresh1&quot;, sessionId);</span>
     
     
-<span class="fc" id="L70">    System.out.println(&quot;Before Each&quot;);</span>
-<span class="fc" id="L71">  }</span>
+<span class="fc" id="L65">    System.out.println(&quot;Before Each&quot;);</span>
+<span class="fc" id="L66">  }</span>
 
   /**
   * This is a test case to evaluate the chatrooms endpoint.
@@ -76,28 +71,28 @@ import org.junit.jupiter.api.TestMethodOrder;
   @Test
   @Order(1)
   public void chatroomsTest() {
-<span class="fc" id="L79">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatrooms/&quot;).asString();</span>
+<span class="fc" id="L74">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatrooms/&quot;).asString();</span>
     
     //assertEquals(200, response.getStatus());
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
-<span class="fc" id="L85">    System.out.println(&quot;/chatrooms Response: &quot; + response.getBody());</span>
+<span class="fc" id="L80">    System.out.println(&quot;/chatrooms Response: &quot; + response.getBody());</span>
 
     // Parse the response to JSON object
-<span class="fc" id="L88">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L83">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
 
     // ---------------------------- GSON Parsing -------------------------
 
     // GSON use to parse data to object
-<span class="fc" id="L93">    Gson gson = new Gson();</span>
-<span class="fc" id="L94">    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);</span>
+<span class="fc" id="L88">    Gson gson = new Gson();</span>
+<span class="fc" id="L89">    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);</span>
     
     // Check if player type is correct
-<span class="fc" id="L97">    assertEquals(6, chatlist.getChatrooms().size());</span>
+<span class="fc" id="L92">    assertEquals(6, chatlist.getChatrooms().size());</span>
   
-<span class="fc" id="L99">    System.out.println(&quot;Test /chatrooms&quot;);</span>
-<span class="fc" id="L100">  }</span>
+<span class="fc" id="L94">    System.out.println(&quot;Test /chatrooms&quot;);</span>
+<span class="fc" id="L95">  }</span>
 
   /**
   * This is a test case to evaluate the chatrooms endpoint with restart.
@@ -106,42 +101,42 @@ import org.junit.jupiter.api.TestMethodOrder;
   @Test
   @Order(2)
   public void chatroomsRestartTest() {
-<span class="fc" id="L109">    StartChat.stop();</span>
-<span class="fc" id="L110">    StartChat.main(null);</span>
+<span class="fc" id="L104">    StartChat.stop();</span>
+<span class="fc" id="L105">    StartChat.main(null);</span>
 
     // Create HTTP request and get response
-<span class="fc" id="L113">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatrooms/&quot;).asString();</span>
-<span class="fc" id="L114">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L108">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatrooms/&quot;).asString();</span>
+<span class="fc" id="L109">    assertEquals(200, response.getStatus());</span>
     
     // sessionId is new after restarting, need to log again
-<span class="fc" id="L117">    SqLite db = StartChat.getDb();</span>
-<span class="fc" id="L118">    String sessionId = db.getLatestSession();</span>
-<span class="fc" id="L119">    db.insertAuthenticatedUser(&quot;testing2&quot;, &quot;token2&quot;, &quot;refresh2&quot;, sessionId);</span>
+<span class="fc" id="L112">    SqLite db = StartChat.getDb();</span>
+<span class="fc" id="L113">    String sessionId = db.getLatestSession();</span>
+<span class="fc" id="L114">    db.insertAuthenticatedUser(&quot;testing2&quot;, &quot;token2&quot;, &quot;refresh2&quot;, sessionId);</span>
     
     
     
-<span class="fc" id="L123">    response = Unirest.get(&quot;http://localhost:8080/chatrooms/&quot;).asString();</span>
+<span class="fc" id="L118">    response = Unirest.get(&quot;http://localhost:8080/chatrooms/&quot;).asString();</span>
 
-<span class="fc" id="L125">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L120">    assertEquals(200, response.getStatus());</span>
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
-<span class="fc" id="L129">    System.out.println(&quot;/chatrooms Response: &quot; + response.getBody());</span>
+<span class="fc" id="L124">    System.out.println(&quot;/chatrooms Response: &quot; + response.getBody());</span>
 
     // Parse the response to JSON object
-<span class="fc" id="L132">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L127">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
 
     // ---------------------------- GSON Parsing -------------------------
 
     // GSON use to parse data to object
-<span class="fc" id="L137">    Gson gson = new Gson();</span>
-<span class="fc" id="L138">    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);</span>
+<span class="fc" id="L132">    Gson gson = new Gson();</span>
+<span class="fc" id="L133">    ChatList chatlist = gson.fromJson(jsonObject.toString(), ChatList.class);</span>
     
     // Check if player type is correct
-<span class="fc" id="L141">    assertEquals(6, chatlist.getChatrooms().size());</span>
+<span class="fc" id="L136">    assertEquals(6, chatlist.getChatrooms().size());</span>
   
-<span class="fc" id="L143">    System.out.println(&quot;Test /chatrooms&quot;);</span>
-<span class="fc" id="L144">  }</span>
+<span class="fc" id="L138">    System.out.println(&quot;Test /chatrooms&quot;);</span>
+<span class="fc" id="L139">  }</span>
 
   /**
   * This is a test case to evaluate the joinroom endpoint.
@@ -150,29 +145,29 @@ import org.junit.jupiter.api.TestMethodOrder;
   @Order(3)
   public void joinRoomTest() {
 
-<span class="fc" id="L153">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).body(&quot;username=ben&quot;).asString();</span>
-<span class="fc" id="L154">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues/?user=ben&quot;).asString();</span>
+<span class="fc" id="L148">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).body(&quot;username=ben&quot;).asString();</span>
+<span class="fc" id="L149">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues/?user=ben&quot;).asString();</span>
 
-<span class="fc" id="L156">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L151">    assertEquals(200, response.getStatus());</span>
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
-<span class="fc" id="L160">    System.out.println(&quot;/[chatroom]/[user] Response: &quot; + response.getBody());</span>
+<span class="fc" id="L155">    System.out.println(&quot;/[chatroom]/[user] Response: &quot; + response.getBody());</span>
 
     // Parse the response to JSON object
-<span class="fc" id="L163">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L158">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
 
     // ---------------------------- GSON Parsing -------------------------
 
     // GSON use to parse data to object
-<span class="fc" id="L168">    Gson gson = new Gson();</span>
-<span class="fc" id="L169">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L163">    Gson gson = new Gson();</span>
+<span class="fc" id="L164">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
     
     // Check if player type is correct
-<span class="fc" id="L172">    assertEquals(1, chatroom.getParticipant().size());</span>
+<span class="fc" id="L167">    assertEquals(1, chatroom.getParticipant().size());</span>
 
-<span class="fc" id="L174">    System.out.println(&quot;Test join chatroom&quot;);</span>
-<span class="fc" id="L175">  }</span>
+<span class="fc" id="L169">    System.out.println(&quot;Test join chatroom&quot;);</span>
+<span class="fc" id="L170">  }</span>
 
   /**
   * This is a test case to evaluate the joinroom endpoint.
@@ -182,29 +177,29 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void rejoinRoomTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L185">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/jazz/&quot;).asString();</span>
-<span class="fc" id="L186">    response = Unirest.post(&quot;http://localhost:8080/joinroom/jazz/&quot;).asString();</span>
-<span class="fc" id="L187">    response = Unirest.get(&quot;http://localhost:8080/chatroom/jazz/?user=ben&quot;).asString();</span>
+<span class="fc" id="L180">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/jazz/&quot;).asString();</span>
+<span class="fc" id="L181">    response = Unirest.post(&quot;http://localhost:8080/joinroom/jazz/&quot;).asString();</span>
+<span class="fc" id="L182">    response = Unirest.get(&quot;http://localhost:8080/chatroom/jazz/?user=ben&quot;).asString();</span>
 
-<span class="fc" id="L189">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L184">    assertEquals(200, response.getStatus());</span>
 
     // --------------------------- JSONObject Parsing ----------------------------------
 
-<span class="fc" id="L193">    System.out.println(&quot;/joinroom Response: &quot; + response.getBody());</span>
+<span class="fc" id="L188">    System.out.println(&quot;/joinroom Response: &quot; + response.getBody());</span>
 
     // Parse the response to JSON object
-<span class="fc" id="L196">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L191">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
 
     // ---------------------------- GSON Parsing -------------------------
 
     // GSON use to parse data to object
-<span class="fc" id="L201">    Gson gson = new Gson();</span>
-<span class="fc" id="L202">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L196">    Gson gson = new Gson();</span>
+<span class="fc" id="L197">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
 
-<span class="fc" id="L204">    assertEquals(1, chatroom.getParticipant().size());</span>
+<span class="fc" id="L199">    assertEquals(1, chatroom.getParticipant().size());</span>
   
-<span class="fc" id="L206">    System.out.println(&quot;Test rejoining chatroom&quot;);</span>
-<span class="fc" id="L207">  }</span>
+<span class="fc" id="L201">    System.out.println(&quot;Test rejoining chatroom&quot;);</span>
+<span class="fc" id="L202">  }</span>
 
   /**
   * This is a test case to evaluate the joinroom endpoint.
@@ -214,12 +209,12 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void invalidJoinRoomTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L217">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/metal&quot;).asString();</span>
+<span class="fc" id="L212">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/metal&quot;).asString();</span>
     
-<span class="fc" id="L219">    assertEquals(&quot;Invalid Room&quot;, response.getBody());</span>
+<span class="fc" id="L214">    assertEquals(&quot;Invalid Room&quot;, response.getBody());</span>
   
-<span class="fc" id="L221">    System.out.println(&quot;Test invalid join chatroom&quot;);</span>
-<span class="fc" id="L222">  }</span>
+<span class="fc" id="L216">    System.out.println(&quot;Test invalid join chatroom&quot;);</span>
+<span class="fc" id="L217">  }</span>
 
   /**
   * This is a test case to evaluate the chatroom/genre endpoint.
@@ -229,13 +224,13 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void validChatroomGenreTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L232">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatroom/pop/?user=ben&quot;).asString();</span>
+<span class="fc" id="L227">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatroom/pop/?user=ben&quot;).asString();</span>
 
-<span class="fc" id="L234">    assertEquals(200, response.getStatus());</span>
-<span class="fc" id="L235">    assertNotEquals(&quot;Invalid Room&quot;, response.getBody());</span>
+<span class="fc" id="L229">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L230">    assertNotEquals(&quot;Invalid Room&quot;, response.getBody());</span>
   
-<span class="fc" id="L237">    System.out.println(&quot;Test invalid chatroom genre&quot;);</span>
-<span class="fc" id="L238">  }</span>
+<span class="fc" id="L232">    System.out.println(&quot;Test invalid chatroom genre&quot;);</span>
+<span class="fc" id="L233">  }</span>
 
   /**
   * This is a test case to evaluate the chatroom/genre endpoint.
@@ -245,13 +240,13 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void invalidChatroomGenreTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L248">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatroom/metal/?user=ben&quot;).asString();</span>
+<span class="fc" id="L243">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/chatroom/metal/?user=ben&quot;).asString();</span>
 
-<span class="fc" id="L250">    assertEquals(200, response.getStatus());</span>
-<span class="fc" id="L251">    assertEquals(&quot;Invalid Room&quot;, response.getBody());</span>
+<span class="fc" id="L245">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L246">    assertEquals(&quot;Invalid Room&quot;, response.getBody());</span>
   
-<span class="fc" id="L253">    System.out.println(&quot;Test invalid chatroom genre&quot;);</span>
-<span class="fc" id="L254">  }</span>
+<span class="fc" id="L248">    System.out.println(&quot;Test invalid chatroom genre&quot;);</span>
+<span class="fc" id="L249">  }</span>
  
   /**
   * This is a test case to evaluate the leaveroom endpoint.
@@ -261,30 +256,30 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void lasttoleaveRoomTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L264">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/country&quot;).asString();</span>
-<span class="fc" id="L265">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country&quot;).asString();  </span>
-<span class="fc" id="L266">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L259">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/country&quot;).asString();</span>
+<span class="fc" id="L260">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country&quot;).asString();  </span>
+<span class="fc" id="L261">    assertEquals(200, response.getStatus());</span>
 
-<span class="fc" id="L268">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
-<span class="fc" id="L269">    Gson gson = new Gson();</span>
-<span class="fc" id="L270">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L263">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L264">    Gson gson = new Gson();</span>
+<span class="fc" id="L265">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
     
     // Check if user is present after joinroom
-<span class="fc" id="L273">    assertEquals(1, chatroom.getParticipant().size());</span>
+<span class="fc" id="L268">    assertEquals(1, chatroom.getParticipant().size());</span>
 	
-<span class="fc" id="L275">    response = Unirest.delete(&quot;http://localhost:8080/leaveroom/country&quot;).body(&quot;username=sean&quot;).asString();</span>
-<span class="fc" id="L276">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country/?user=sean&quot;).asString(); </span>
-<span class="fc" id="L277">    assertEquals(200, response.getStatus());</span>
-<span class="fc" id="L278">    System.out.println(&quot;/leaveroom/[user] Response: &quot; + response.getBody());</span>
+<span class="fc" id="L270">    response = Unirest.delete(&quot;http://localhost:8080/leaveroom/country&quot;).body(&quot;username=sean&quot;).asString();</span>
+<span class="fc" id="L271">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country/?user=sean&quot;).asString(); </span>
+<span class="fc" id="L272">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L273">    System.out.println(&quot;/leaveroom/[user] Response: &quot; + response.getBody());</span>
 
-<span class="fc" id="L280">    jsonObject = new JSONObject(response.getBody());</span>
-<span class="fc" id="L281">    chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L275">    jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L276">    chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
     
     // Check if user is not present after leaveroom
-<span class="fc" id="L284">    assertEquals(0, chatroom.getParticipant().size());</span>
+<span class="fc" id="L279">    assertEquals(0, chatroom.getParticipant().size());</span>
   
-<span class="fc" id="L286">    System.out.println(&quot;Test leave chatroom&quot;);</span>
-<span class="fc" id="L287">  }</span>
+<span class="fc" id="L281">    System.out.println(&quot;Test leave chatroom&quot;);</span>
+<span class="fc" id="L282">  }</span>
 
   /**
   * This is a test case to evaluate the leaveroom endpoint.
@@ -294,41 +289,41 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void notLasttoleaveRoomTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L297">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/country&quot;).asString();</span>
-<span class="fc" id="L298">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country/&quot;).asString();  </span>
-<span class="fc" id="L299">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L292">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/country&quot;).asString();</span>
+<span class="fc" id="L293">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country/&quot;).asString();  </span>
+<span class="fc" id="L294">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L301">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
-<span class="fc" id="L302">    Gson gson = new Gson();</span>
-<span class="fc" id="L303">    ChatRoom countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L296">    JSONObject jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L297">    Gson gson = new Gson();</span>
+<span class="fc" id="L298">    ChatRoom countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
     
     // Check if user is present after joinroom
-<span class="fc" id="L306">    assertEquals(1, countryChatroom.getParticipant().size());</span>
+<span class="fc" id="L301">    assertEquals(1, countryChatroom.getParticipant().size());</span>
     
-<span class="fc" id="L308">    response = Unirest.post(&quot;http://localhost:8080/joinroom/pop&quot;).asString();</span>
-<span class="fc" id="L309">    response = Unirest.get(&quot;http://localhost:8080/chatroom/pop&quot;).asString();  </span>
-<span class="fc" id="L310">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L303">    response = Unirest.post(&quot;http://localhost:8080/joinroom/pop&quot;).asString();</span>
+<span class="fc" id="L304">    response = Unirest.get(&quot;http://localhost:8080/chatroom/pop&quot;).asString();  </span>
+<span class="fc" id="L305">    assertEquals(200, response.getStatus());</span>
 
-<span class="fc" id="L312">    jsonObject = new JSONObject(response.getBody());</span>
-<span class="fc" id="L313">    gson = new Gson();</span>
-<span class="fc" id="L314">    ChatRoom popChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L307">    jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L308">    gson = new Gson();</span>
+<span class="fc" id="L309">    ChatRoom popChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
     
     // Check if user is present after joinroom
-<span class="fc" id="L317">    assertEquals(1, popChatroom.getParticipant().size());</span>
+<span class="fc" id="L312">    assertEquals(1, popChatroom.getParticipant().size());</span>
 	
-<span class="fc" id="L319">    response = Unirest.delete(&quot;http://localhost:8080/leaveroom/country&quot;).asString();</span>
-<span class="fc" id="L320">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country&quot;).asString(); </span>
-<span class="fc" id="L321">    assertEquals(200, response.getStatus());</span>
-<span class="fc" id="L322">    System.out.println(&quot;/leaveroom/[user] Response: &quot; + response.getBody());</span>
+<span class="fc" id="L314">    response = Unirest.delete(&quot;http://localhost:8080/leaveroom/country&quot;).asString();</span>
+<span class="fc" id="L315">    response = Unirest.get(&quot;http://localhost:8080/chatroom/country&quot;).asString(); </span>
+<span class="fc" id="L316">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L317">    System.out.println(&quot;/leaveroom/[user] Response: &quot; + response.getBody());</span>
 
-<span class="fc" id="L324">    jsonObject = new JSONObject(response.getBody());</span>
-<span class="fc" id="L325">    countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L319">    jsonObject = new JSONObject(response.getBody());</span>
+<span class="fc" id="L320">    countryChatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
     
     // Check if user is not present after leaveroom
-<span class="fc" id="L328">    assertEquals(0, countryChatroom.getParticipant().size());</span>
+<span class="fc" id="L323">    assertEquals(0, countryChatroom.getParticipant().size());</span>
   
-<span class="fc" id="L330">    System.out.println(&quot;Test leave chatroom&quot;);</span>
-<span class="fc" id="L331">  }</span>
+<span class="fc" id="L325">    System.out.println(&quot;Test leave chatroom&quot;);</span>
+<span class="fc" id="L326">  }</span>
 
   /**
   * This is a test case to evaluate the leaveroom endpoint.
@@ -338,13 +333,13 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void invalidLeaveRoomTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L341">    HttpResponse&lt;String&gt; response = Unirest.delete(&quot;http://localhost:8080/leaveroom/pop/&quot;).asString();</span>
+<span class="fc" id="L336">    HttpResponse&lt;String&gt; response = Unirest.delete(&quot;http://localhost:8080/leaveroom/pop/&quot;).asString();</span>
 	
-<span class="fc" id="L343">    assertEquals(200, response.getStatus());</span>
-<span class="fc" id="L344">    assertEquals(&quot;You are not in the room&quot;, response.getBody());</span>
+<span class="fc" id="L338">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L339">    assertEquals(&quot;You are not in the room&quot;, response.getBody());</span>
   
-<span class="fc" id="L346">    System.out.println(&quot;Test invalid leave chatroom&quot;);</span>
-<span class="fc" id="L347">  }</span>
+<span class="fc" id="L341">    System.out.println(&quot;Test invalid leave chatroom&quot;);</span>
+<span class="fc" id="L342">  }</span>
 
   /**
   * This is a test case to evaluate the process_auth endpoint.
@@ -355,68 +350,68 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void processAuthTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L358">    Unirest.config().reset();</span>
-<span class="fc" id="L359">    Unirest.config().followRedirects(false);</span>
+<span class="fc" id="L353">    Unirest.config().reset();</span>
+<span class="fc" id="L354">    Unirest.config().followRedirects(false);</span>
     
-<span class="fc" id="L361">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/process_auth&quot;).asString();</span>
+<span class="fc" id="L356">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/process_auth&quot;).asString();</span>
     
-<span class="fc" id="L363">    response = Unirest.get(&quot;http://localhost:8080/process_auth?code=123&quot;).asString();</span>
+<span class="fc" id="L358">    response = Unirest.get(&quot;http://localhost:8080/process_auth?code=123&quot;).asString();</span>
 	
-<span class="fc" id="L365">    assertEquals(302, response.getStatus());</span>
+<span class="fc" id="L360">    assertEquals(302, response.getStatus());</span>
     
-<span class="fc" id="L367">    assertEquals(&quot;New user&quot;, response.getBody());</span>
+<span class="fc" id="L362">    assertEquals(&quot;New user&quot;, response.getBody());</span>
 	
-<span class="fc" id="L369">    System.out.println(&quot;/process-auth Response: &quot; + response.getBody());</span>
+<span class="fc" id="L364">    System.out.println(&quot;/process-auth Response: &quot; + response.getBody());</span>
     
-<span class="fc" id="L371">    Unirest.config().reset();</span>
-<span class="fc" id="L372">    Unirest.config().followRedirects(true);</span>
-<span class="fc" id="L373">  }</span>
+<span class="fc" id="L366">    Unirest.config().reset();</span>
+<span class="fc" id="L367">    Unirest.config().followRedirects(true);</span>
+<span class="fc" id="L368">  }</span>
   
   @Test
   @Order(11)
   public void processAuthTestNoSessionId() {
-<span class="fc" id="L378">    StartChat.stop();</span>
-<span class="fc" id="L379">    StartChat.main(null);</span>
+<span class="fc" id="L373">    StartChat.stop();</span>
+<span class="fc" id="L374">    StartChat.main(null);</span>
     
-<span class="fc" id="L381">    Unirest.config().reset();</span>
-<span class="fc" id="L382">    Unirest.config().followRedirects(false);</span>
+<span class="fc" id="L376">    Unirest.config().reset();</span>
+<span class="fc" id="L377">    Unirest.config().followRedirects(false);</span>
 
-<span class="fc" id="L384">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/process_auth?code=123&quot;).asString();</span>
+<span class="fc" id="L379">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/process_auth?code=123&quot;).asString();</span>
     
-<span class="fc" id="L386">    System.out.println(&quot;/process-auth no sessionId Response: &quot; + response.getBody());</span>
+<span class="fc" id="L381">    System.out.println(&quot;/process-auth no sessionId Response: &quot; + response.getBody());</span>
     
-<span class="fc" id="L388">    assertEquals(&quot;New user&quot;, response.getBody());</span>
+<span class="fc" id="L383">    assertEquals(&quot;New user&quot;, response.getBody());</span>
     
-<span class="fc" id="L390">    assertEquals(302, response.getStatus());</span>
-<span class="fc" id="L391">    Unirest.config().reset();</span>
-<span class="fc" id="L392">    Unirest.config().followRedirects(true);</span>
-<span class="fc" id="L393">  }</span>
+<span class="fc" id="L385">    assertEquals(302, response.getStatus());</span>
+<span class="fc" id="L386">    Unirest.config().reset();</span>
+<span class="fc" id="L387">    Unirest.config().followRedirects(true);</span>
+<span class="fc" id="L388">  }</span>
   
   @Test
   @Order(12)
   public void processAuthTestNoCode() {
-<span class="fc" id="L398">    StartChat.stop();</span>
-<span class="fc" id="L399">    StartChat.main(null);</span>
+<span class="fc" id="L393">    StartChat.stop();</span>
+<span class="fc" id="L394">    StartChat.main(null);</span>
     
-<span class="fc" id="L401">    Unirest.config().reset();</span>
-<span class="fc" id="L402">    Unirest.config().followRedirects(false);</span>
+<span class="fc" id="L396">    Unirest.config().reset();</span>
+<span class="fc" id="L397">    Unirest.config().followRedirects(false);</span>
     
-<span class="fc" id="L404">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/process_auth&quot;).asString();</span>
+<span class="fc" id="L399">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/process_auth&quot;).asString();</span>
     
-<span class="fc" id="L406">    System.out.println(&quot;/process-auth no code Response: &quot; + response.getBody());</span>
+<span class="fc" id="L401">    System.out.println(&quot;/process-auth no code Response: &quot; + response.getBody());</span>
     
-<span class="fc" id="L408">    assertEquals(&quot;No code&quot;, response.getBody());</span>
+<span class="fc" id="L403">    assertEquals(&quot;No code&quot;, response.getBody());</span>
     
-<span class="fc" id="L410">    assertEquals(302, response.getStatus());</span>
+<span class="fc" id="L405">    assertEquals(302, response.getStatus());</span>
     
-<span class="fc" id="L412">    response = Unirest.get(&quot;http://localhost:8080/&quot;).asString();</span>
+<span class="fc" id="L407">    response = Unirest.get(&quot;http://localhost:8080/&quot;).asString();</span>
   
-<span class="fc" id="L414">    System.out.println(&quot;Test process authorization&quot;);</span>
+<span class="fc" id="L409">    System.out.println(&quot;Test process authorization&quot;);</span>
     
-<span class="fc" id="L416">    Unirest.config().reset();</span>
-<span class="fc" id="L417">    Unirest.config().followRedirects(true);</span>
+<span class="fc" id="L411">    Unirest.config().reset();</span>
+<span class="fc" id="L412">    Unirest.config().followRedirects(true);</span>
     
-<span class="fc" id="L419">  }</span>
+<span class="fc" id="L414">  }</span>
 
   
   /**
@@ -427,15 +422,15 @@ import org.junit.jupiter.api.TestMethodOrder;
   public void LoginRedirectionTest() {
 
     // reset sessionId to enable redirection
-<span class="fc" id="L430">    StartChat.stop();</span>
-<span class="fc" id="L431">    StartChat.main(null);</span>
+<span class="fc" id="L425">    StartChat.stop();</span>
+<span class="fc" id="L426">    StartChat.main(null);</span>
     
-<span class="fc" id="L433">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/&quot;).asString();</span>
-<span class="fc" id="L434">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L428">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/&quot;).asString();</span>
+<span class="fc" id="L429">    assertEquals(200, response.getStatus());</span>
 	
-<span class="fc" id="L436">    System.out.println(&quot;/ Response: &quot; + response.getBody());</span>
-<span class="fc" id="L437">    System.out.println(&quot;Test Login Redirection&quot;);</span>
-<span class="fc" id="L438">  }</span>
+<span class="fc" id="L431">    System.out.println(&quot;/ Response: &quot; + response.getBody());</span>
+<span class="fc" id="L432">    System.out.println(&quot;Test Login Redirection&quot;);</span>
+<span class="fc" id="L433">  }</span>
 
   /**
   * This is a test case to evaluate the / endpoint.
@@ -446,12 +441,12 @@ import org.junit.jupiter.api.TestMethodOrder;
 
     // Create HTTP request and get response
 
-<span class="fc" id="L449">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/&quot;).asString();</span>
+<span class="fc" id="L444">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/&quot;).asString();</span>
     
-<span class="fc" id="L451">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L446">    assertEquals(200, response.getStatus());</span>
   
-<span class="fc" id="L453">    System.out.println(&quot;Test front page&quot;);</span>
-<span class="fc" id="L454">  }</span>
+<span class="fc" id="L448">    System.out.println(&quot;Test front page&quot;);</span>
+<span class="fc" id="L449">  }</span>
 
   /**
   * This is a test case to evaluate initializeChatlist function.
@@ -460,358 +455,358 @@ import org.junit.jupiter.api.TestMethodOrder;
   @Order(15)
   public void initializeChatListTest() {
 
-<span class="fc" id="L463">    SqLite db = StartChat.getDb();</span>
-<span class="fc" id="L464">    db.clear();</span>
+<span class="fc" id="L458">    SqLite db = StartChat.getDb();</span>
+<span class="fc" id="L459">    db.clear();</span>
     
-<span class="fc" id="L466">    ChatList chatlist = new ChatList();</span>
-<span class="fc" id="L467">    assertEquals(0, chatlist.getChatrooms().size());</span>
-<span class="fc" id="L468">    StartChat.setChatlist(chatlist);</span>
-<span class="fc" id="L469">    StartChat.initializeChatlist();</span>
-<span class="fc" id="L470">    chatlist = StartChat.getChatlist();</span>
+<span class="fc" id="L461">    ChatList chatlist = new ChatList();</span>
+<span class="fc" id="L462">    assertEquals(0, chatlist.getChatrooms().size());</span>
+<span class="fc" id="L463">    StartChat.setChatlist(chatlist);</span>
+<span class="fc" id="L464">    StartChat.initializeChatlist();</span>
+<span class="fc" id="L465">    chatlist = StartChat.getChatlist();</span>
     
-<span class="fc" id="L472">    assertEquals(6, chatlist.getChatrooms().size());</span>
+<span class="fc" id="L467">    assertEquals(6, chatlist.getChatrooms().size());</span>
   
-<span class="fc" id="L474">    System.out.println(&quot;Test initializeChatlist function&quot;);</span>
-<span class="fc" id="L475">  }</span>
+<span class="fc" id="L469">    System.out.println(&quot;Test initializeChatlist function&quot;);</span>
+<span class="fc" id="L470">  }</span>
   
   @Test
   @Order(16)
   public void sendMessageTest() {
-<span class="fc" id="L480">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L481">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L482">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L475">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L476">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L477">    assertEquals(200, response.getStatus());</span>
 
-<span class="fc" id="L484">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/send&quot;).body(&quot;text=hello&quot;).asString();</span>
-<span class="fc" id="L485">    response1 = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L486">    System.out.println(&quot;/[chatroom]/[user] Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L479">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/send&quot;).body(&quot;text=hello&quot;).asString();</span>
+<span class="fc" id="L480">    response1 = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L481">    System.out.println(&quot;/[chatroom]/[user] Response: &quot; + response1.getBody());</span>
     // Parse the response to JSON object
-<span class="fc" id="L488">    JSONObject jsonObject = new JSONObject(response1.getBody());</span>
+<span class="fc" id="L483">    JSONObject jsonObject = new JSONObject(response1.getBody());</span>
 
     // GSON use to parse data to object
-<span class="fc" id="L491">    Gson gson = new Gson();</span>
-<span class="fc" id="L492">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
-<span class="fc" id="L493">    List&lt;Message&gt; msgList = chatroom.getChat();</span>
-<span class="fc" id="L494">    assertEquals(1, msgList.size());</span>
-<span class="fc" id="L495">    Message msg = msgList.get(0);</span>
-<span class="fc" id="L496">    System.out.println(msg.getUsername());</span>
-<span class="fc" id="L497">    assertEquals(&quot;testing1&quot;, msg.getUsername());</span>
-<span class="fc" id="L498">    assertEquals(&quot;hello&quot;, msg.getMessage());</span>
-<span class="fc" id="L499">  }</span>
+<span class="fc" id="L486">    Gson gson = new Gson();</span>
+<span class="fc" id="L487">    ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L488">    List&lt;Message&gt; msgList = chatroom.getChat();</span>
+<span class="fc" id="L489">    assertEquals(1, msgList.size());</span>
+<span class="fc" id="L490">    Message msg = msgList.get(0);</span>
+<span class="fc" id="L491">    System.out.println(msg.getUsername());</span>
+<span class="fc" id="L492">    assertEquals(&quot;testing1&quot;, msg.getUsername());</span>
+<span class="fc" id="L493">    assertEquals(&quot;hello&quot;, msg.getMessage());</span>
+<span class="fc" id="L494">  }</span>
 
   @Test
   @Order(17)
   public void sendMessageInvalidUserTest() {
-<span class="fc" id="L504">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/send&quot;).body(&quot;text=hello&quot;).asString();</span>
-<span class="fc" id="L505">    assertEquals(&quot;User not in any chatroom&quot;, response.getBody());</span>
-<span class="fc" id="L506">  }</span>
+<span class="fc" id="L499">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/send&quot;).body(&quot;text=hello&quot;).asString();</span>
+<span class="fc" id="L500">    assertEquals(&quot;User not in any chatroom&quot;, response.getBody());</span>
+<span class="fc" id="L501">  }</span>
   
   @Test
   @Order(18)
   public void webSocketTest() {
 	
-<span class="fc" id="L512">    WebSocketClient client = new WebSocketClient();</span>
-<span class="fc" id="L513">    SimpleWebSocket socket = new SimpleWebSocket();</span>
+<span class="fc" id="L507">    WebSocketClient client = new WebSocketClient();</span>
+<span class="fc" id="L508">    SimpleWebSocket socket = new SimpleWebSocket();</span>
     try {
-<span class="fc" id="L515">      client.start();</span>
-<span class="fc" id="L516">      URI uri = new URI(&quot;ws://localhost:8080/chatroom&quot;);</span>
+<span class="fc" id="L510">      client.start();</span>
+<span class="fc" id="L511">      URI uri = new URI(&quot;ws://localhost:8080/chatroom&quot;);</span>
       //ClientUpgradeRequest request = new ClientUpgradeRequest();
-<span class="fc" id="L518">      Future&lt;Session&gt; future = client.connect(socket, uri);</span>
-<span class="fc" id="L519">      System.out.printf(&quot;Connecting to : %s%n&quot;, uri);</span>
-<span class="fc" id="L520">      Session session = future.get();</span>
-<span class="fc" id="L521">      session.getRemote().sendString(&quot;hi&quot;);</span>
-<span class="fc" id="L522">      session.close();</span>
+<span class="fc" id="L513">      Future&lt;Session&gt; future = client.connect(socket, uri);</span>
+<span class="fc" id="L514">      System.out.printf(&quot;Connecting to : %s%n&quot;, uri);</span>
+<span class="fc" id="L515">      Session session = future.get();</span>
+<span class="fc" id="L516">      session.getRemote().sendString(&quot;hi&quot;);</span>
+<span class="fc" id="L517">      session.close();</span>
 
       // wait for closed socket connection.
-<span class="fc" id="L525">      socket.awaitClose(5, TimeUnit.SECONDS);</span>
-<span class="nc" id="L526">    } catch (Throwable t) {</span>
-<span class="nc" id="L527">      t.printStackTrace();</span>
+<span class="fc" id="L520">      socket.awaitClose(5, TimeUnit.SECONDS);</span>
+<span class="pc" id="L521">    } catch (Throwable t) {</span>
+<span class="nc" id="L522">      t.printStackTrace();</span>
     } finally {
       try {
-<span class="fc" id="L530">        client.stop();</span>
-<span class="nc" id="L531">      } catch (Exception e) {</span>
-<span class="nc" id="L532">        e.printStackTrace();</span>
-<span class="fc" id="L533">      }</span>
+<span class="fc" id="L525">        client.stop();</span>
+<span class="pc" id="L526">      } catch (Exception e) {</span>
+<span class="nc" id="L527">        e.printStackTrace();</span>
+      }
     }
-<span class="fc" id="L535">  }</span>
+<span class="fc" id="L530">  }</span>
 
   @Test
   @Order(18)
   public void sendJsonToAllParticipants() {
 	
-<span class="fc" id="L541">    WebSocketClient client = new WebSocketClient();</span>
-<span class="fc" id="L542">    SimpleWebSocket socket = new SimpleWebSocket();</span>
+<span class="fc" id="L536">    WebSocketClient client = new WebSocketClient();</span>
+<span class="fc" id="L537">    SimpleWebSocket socket = new SimpleWebSocket();</span>
     try {
-<span class="fc" id="L544">      client.start();</span>
-<span class="fc" id="L545">      URI uri = new URI(&quot;ws://localhost:8080/chatroom&quot;);</span>
+<span class="fc" id="L539">      client.start();</span>
+<span class="fc" id="L540">      URI uri = new URI(&quot;ws://localhost:8080/chatroom&quot;);</span>
       //ClientUpgradeRequest request = new ClientUpgradeRequest();
-<span class="fc" id="L547">      Future&lt;Session&gt; future = client.connect(socket, uri);</span>
-<span class="fc" id="L548">      System.out.printf(&quot;Connecting to : %s%n&quot;, uri);</span>
-<span class="fc" id="L549">      Session session = future.get();</span>
-<span class="fc" id="L550">      session.getRemote().sendString(&quot;hi&quot;);</span>
+<span class="fc" id="L542">      Future&lt;Session&gt; future = client.connect(socket, uri);</span>
+<span class="fc" id="L543">      System.out.printf(&quot;Connecting to : %s%n&quot;, uri);</span>
+<span class="fc" id="L544">      Session session = future.get();</span>
+<span class="fc" id="L545">      session.getRemote().sendString(&quot;hi&quot;);</span>
       
       
-<span class="fc" id="L553">      HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L554">      response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L555">      assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L548">      HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L549">      response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L550">      assertEquals(200, response.getStatus());</span>
 
-<span class="fc" id="L557">      HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/send&quot;).body(&quot;text=hello&quot;).asString();</span>
-<span class="fc" id="L558">      response1 = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L559">      System.out.println(&quot;/[chatroom]/[user] Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L552">      HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/send&quot;).body(&quot;text=hello&quot;).asString();</span>
+<span class="fc" id="L553">      response1 = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L554">      System.out.println(&quot;/[chatroom]/[user] Response: &quot; + response1.getBody());</span>
       // Parse the response to JSON object
-<span class="fc" id="L561">      JSONObject jsonObject = new JSONObject(response1.getBody());</span>
+<span class="fc" id="L556">      JSONObject jsonObject = new JSONObject(response1.getBody());</span>
 
       // GSON use to parse data to object
-<span class="fc" id="L564">      Gson gson = new Gson();</span>
-<span class="fc" id="L565">      ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
-<span class="fc" id="L566">      List&lt;Message&gt; msgList = chatroom.getChat();</span>
-<span class="fc" id="L567">      assertEquals(1, msgList.size());</span>
-<span class="fc" id="L568">      Message msg = msgList.get(0);</span>
-<span class="fc" id="L569">      System.out.println(msg.getUsername());</span>
-<span class="fc" id="L570">      assertEquals(&quot;testing1&quot;, msg.getUsername());</span>
-<span class="fc" id="L571">      assertEquals(&quot;hello&quot;, msg.getMessage());</span>
+<span class="fc" id="L559">      Gson gson = new Gson();</span>
+<span class="fc" id="L560">      ChatRoom chatroom = gson.fromJson(jsonObject.toString(), ChatRoom.class);</span>
+<span class="fc" id="L561">      List&lt;Message&gt; msgList = chatroom.getChat();</span>
+<span class="fc" id="L562">      assertEquals(1, msgList.size());</span>
+<span class="fc" id="L563">      Message msg = msgList.get(0);</span>
+<span class="fc" id="L564">      System.out.println(msg.getUsername());</span>
+<span class="fc" id="L565">      assertEquals(&quot;testing1&quot;, msg.getUsername());</span>
+<span class="fc" id="L566">      assertEquals(&quot;hello&quot;, msg.getMessage());</span>
 
-<span class="fc" id="L573">      session.close();</span>
+<span class="fc" id="L568">      session.close();</span>
       // wait for closed socket connection.
-<span class="fc" id="L575">      socket.awaitClose(5, TimeUnit.SECONDS);</span>
-<span class="nc" id="L576">    } catch (Throwable t) {</span>
-<span class="nc" id="L577">      t.printStackTrace();</span>
+<span class="fc" id="L570">      socket.awaitClose(5, TimeUnit.SECONDS);</span>
+<span class="pc" id="L571">    } catch (Throwable t) {</span>
+<span class="nc" id="L572">      t.printStackTrace();</span>
     } finally {
       try {
-<span class="fc" id="L580">        client.stop();</span>
-<span class="nc" id="L581">      } catch (Exception e) {</span>
-<span class="nc" id="L582">        e.printStackTrace();</span>
-<span class="fc" id="L583">      }</span>
+<span class="fc" id="L575">        client.stop();</span>
+<span class="pc" id="L576">      } catch (Exception e) {</span>
+<span class="nc" id="L577">        e.printStackTrace();</span>
+      }
     }
-<span class="fc" id="L585">  }</span>
+<span class="fc" id="L580">  }</span>
 
   @Test
   @Order(19)
   public void shareSongNullTest() {
-<span class="fc" id="L590">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L591">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L592">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L585">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L586">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L587">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L594">    SqLite mockDb = mock(SqLite.class);</span>
-<span class="fc" id="L595">    User mockUser = mock(User.class);</span>
-<span class="fc" id="L596">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
-<span class="fc" id="L597">    when(mockUser.getCurrentTrack()).thenReturn(null);</span>
+<span class="fc" id="L589">    SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L590">    User mockUser = mock(User.class);</span>
+<span class="fc" id="L591">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
+<span class="fc" id="L592">    when(mockUser.getCurrentTrack()).thenReturn(null);</span>
     
-<span class="fc" id="L599">    SqLite origDb = StartChat.getDb();</span>
-<span class="fc" id="L600">    String sessionId = origDb.getLatestSession();</span>
-<span class="fc" id="L601">    System.out.println(mockDb.getUserBySessionId(sessionId));</span>
+<span class="fc" id="L594">    SqLite origDb = StartChat.getDb();</span>
+<span class="fc" id="L595">    String sessionId = origDb.getLatestSession();</span>
+<span class="fc" id="L596">    System.out.println(mockDb.getUserBySessionId(sessionId));</span>
     
-<span class="fc" id="L603">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
-<span class="fc" id="L604">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
-<span class="fc" id="L605">    when(mockUser.refreshCurrentlyPlaying()).thenReturn(&quot;OK&quot;);</span>
+<span class="fc" id="L598">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
+<span class="fc" id="L599">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
+<span class="fc" id="L600">    when(mockUser.refreshCurrentlyPlaying()).thenReturn(&quot;OK&quot;);</span>
     
-<span class="fc" id="L607">    StartChat.setDb(mockDb);</span>
+<span class="fc" id="L602">    StartChat.setDb(mockDb);</span>
 
-<span class="fc" id="L609">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/share&quot;).asString();</span>
-<span class="fc" id="L610">    System.out.println(&quot;/share Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L604">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/share&quot;).asString();</span>
+<span class="fc" id="L605">    System.out.println(&quot;/share Response: &quot; + response1.getBody());</span>
 
-<span class="fc" id="L612">    assertEquals(&quot;no song shared&quot;, response1.getBody());</span>
+<span class="fc" id="L607">    assertEquals(&quot;no song shared&quot;, response1.getBody());</span>
     
-<span class="fc" id="L614">    StartChat.setDb(origDb);</span>
-<span class="fc" id="L615">  }</span>
+<span class="fc" id="L609">    StartChat.setDb(origDb);</span>
+<span class="fc" id="L610">  }</span>
 
   @Test
   @Order(20)
   public void shareSongNoGenreTest() {
-<span class="fc" id="L620">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L621">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L622">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L615">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L616">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L617">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L624">    SqLite mockDb = mock(SqLite.class);</span>
-<span class="fc" id="L625">    User mockUser = mock(User.class);</span>
-<span class="fc" id="L626">    Song song = new Song();</span>
-<span class="fc" id="L627">    song.setUsername(&quot;testing1&quot;);</span>
-<span class="fc" id="L628">    song.setName(&quot;my song&quot;);</span>
-<span class="fc" id="L629">    String[] artists = new String[1];</span>
-<span class="fc" id="L630">    artists[0] = &quot;my artist&quot;;</span>
-<span class="fc" id="L631">    song.setArtists(artists);</span>
-<span class="fc" id="L632">    song.setUri(&quot;my uri&quot;);</span>
-<span class="fc" id="L633">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
-<span class="fc" id="L634">    when(mockUser.getCurrentTrack()).thenReturn(song);</span>
+<span class="fc" id="L619">    SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L620">    User mockUser = mock(User.class);</span>
+<span class="fc" id="L621">    Song song = new Song();</span>
+<span class="fc" id="L622">    song.setUsername(&quot;testing1&quot;);</span>
+<span class="fc" id="L623">    song.setName(&quot;my song&quot;);</span>
+<span class="fc" id="L624">    String[] artists = new String[1];</span>
+<span class="fc" id="L625">    artists[0] = &quot;my artist&quot;;</span>
+<span class="fc" id="L626">    song.setArtists(artists);</span>
+<span class="fc" id="L627">    song.setUri(&quot;my uri&quot;);</span>
+<span class="fc" id="L628">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
+<span class="fc" id="L629">    when(mockUser.getCurrentTrack()).thenReturn(song);</span>
     
-<span class="fc" id="L636">    SqLite origDb = StartChat.getDb();</span>
-<span class="fc" id="L637">    String sessionId = origDb.getLatestSession();</span>
+<span class="fc" id="L631">    SqLite origDb = StartChat.getDb();</span>
+<span class="fc" id="L632">    String sessionId = origDb.getLatestSession();</span>
     
-<span class="fc" id="L639">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
-<span class="fc" id="L640">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
-<span class="fc" id="L641">    when(mockUser.refreshCurrentlyPlaying()).thenReturn(&quot;OK&quot;);</span>
+<span class="fc" id="L634">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
+<span class="fc" id="L635">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
+<span class="fc" id="L636">    when(mockUser.refreshCurrentlyPlaying()).thenReturn(&quot;OK&quot;);</span>
     
-<span class="fc" id="L643">    StartChat.setDb(mockDb);</span>
+<span class="fc" id="L638">    StartChat.setDb(mockDb);</span>
 
-<span class="fc" id="L645">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/share&quot;).asString();</span>
-<span class="fc" id="L646">    System.out.println(&quot;/share Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L640">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/share&quot;).asString();</span>
+<span class="fc" id="L641">    System.out.println(&quot;/share Response: &quot; + response1.getBody());</span>
 
-<span class="fc" id="L648">    assertEquals(&quot;no song shared&quot;, response1.getBody());</span>
+<span class="fc" id="L643">    assertEquals(&quot;no song shared&quot;, response1.getBody());</span>
     
-<span class="fc" id="L650">    StartChat.setDb(origDb);</span>
-<span class="fc" id="L651">  }</span>
+<span class="fc" id="L645">    StartChat.setDb(origDb);</span>
+<span class="fc" id="L646">  }</span>
 
   @Test
   @Order(21)
   public void shareSongNotNullTest() {
-<span class="fc" id="L656">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L657">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L658">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L651">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L652">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L653">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L660">    SqLite origDb = StartChat.getDb();</span>
-<span class="fc" id="L661">    String sessionId = origDb.getLatestSession();</span>
+<span class="fc" id="L655">    SqLite origDb = StartChat.getDb();</span>
+<span class="fc" id="L656">    String sessionId = origDb.getLatestSession();</span>
     
-<span class="fc" id="L663">    SqLite mockDb = mock(SqLite.class);</span>
-<span class="fc" id="L664">    User mockUser1 = mock(User.class);</span>
-<span class="fc" id="L665">    Message message = new Message();</span>
-<span class="fc" id="L666">    message.setMessage(&quot;I shared xxx song&quot;);</span>
+<span class="fc" id="L658">    SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L659">    User mockUser1 = mock(User.class);</span>
+<span class="fc" id="L660">    Message message = new Message();</span>
+<span class="fc" id="L661">    message.setMessage(&quot;I shared xxx song&quot;);</span>
     
-<span class="fc" id="L668">    ChatList mockChatlist = mock(ChatList.class);</span>
+<span class="fc" id="L663">    ChatList mockChatlist = mock(ChatList.class);</span>
 
-<span class="fc" id="L670">    StartChat.setDb(mockDb);</span>
-<span class="fc" id="L671">    StartChat.setChatlist(mockChatlist);</span>
+<span class="fc" id="L665">    StartChat.setDb(mockDb);</span>
+<span class="fc" id="L666">    StartChat.setChatlist(mockChatlist);</span>
     
-<span class="fc" id="L673">    when(mockUser1.share(mockChatlist, mockDb)).thenReturn(message);</span>
-<span class="fc" id="L674">    when(mockUser1.getUsername()).thenReturn(&quot;testing1&quot;);</span>
-<span class="fc" id="L675">    Song song = new Song();</span>
-<span class="fc" id="L676">    song.setName(&quot;song name&quot;);</span>
-<span class="fc" id="L677">    song.setUri(&quot;uri&quot;);</span>
-<span class="fc" id="L678">    when(mockUser1.getCurrentTrack()).thenReturn(song);</span>
+<span class="fc" id="L668">    when(mockUser1.share(mockChatlist, mockDb)).thenReturn(message);</span>
+<span class="fc" id="L669">    when(mockUser1.getUsername()).thenReturn(&quot;testing1&quot;);</span>
+<span class="fc" id="L670">    Song song = new Song();</span>
+<span class="fc" id="L671">    song.setName(&quot;song name&quot;);</span>
+<span class="fc" id="L672">    song.setUri(&quot;uri&quot;);</span>
+<span class="fc" id="L673">    when(mockUser1.getCurrentTrack()).thenReturn(song);</span>
     
-<span class="fc" id="L680">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);</span>
-<span class="fc" id="L681">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser1);</span>
-<span class="fc" id="L682">    when(mockDb.getGenreUser(&quot;testing1&quot;)).thenReturn(&quot;blues&quot;);</span>
+<span class="fc" id="L675">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser1);</span>
+<span class="fc" id="L676">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser1);</span>
+<span class="fc" id="L677">    when(mockDb.getGenreUser(&quot;testing1&quot;)).thenReturn(&quot;blues&quot;);</span>
     
 
-<span class="fc" id="L685">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/share&quot;).asString();</span>
-<span class="fc" id="L686">    System.out.println(&quot;/share Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L680">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/share&quot;).asString();</span>
+<span class="fc" id="L681">    System.out.println(&quot;/share Response: &quot; + response1.getBody());</span>
 
-<span class="fc" id="L688">    assertEquals(&quot;song shared&quot;, response1.getBody());</span>
+<span class="fc" id="L683">    assertEquals(&quot;song shared&quot;, response1.getBody());</span>
     
-<span class="fc" id="L690">    StartChat.setDb(origDb);</span>
-<span class="fc" id="L691">  }</span>
+<span class="fc" id="L685">    StartChat.setDb(origDb);</span>
+<span class="fc" id="L686">  }</span>
 
   @Test
   @Order(22)
   public void addSongTest() {
-<span class="fc" id="L696">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L697">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L698">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L691">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L692">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L693">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L700">    SqLite mockDb = mock(SqLite.class);</span>
-<span class="fc" id="L701">    User mockUser = mock(User.class);</span>
-<span class="fc" id="L702">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
-<span class="fc" id="L703">    when(mockUser.addToQueue(&quot;hello&quot;)).thenReturn(&quot;song added&quot;);</span>
+<span class="fc" id="L695">    SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L696">    User mockUser = mock(User.class);</span>
+<span class="fc" id="L697">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
+<span class="fc" id="L698">    when(mockUser.addToQueue(&quot;hello&quot;)).thenReturn(&quot;song added&quot;);</span>
     
-<span class="fc" id="L705">    SqLite origDb = StartChat.getDb();</span>
-<span class="fc" id="L706">    String sessionId = origDb.getLatestSession();</span>
+<span class="fc" id="L700">    SqLite origDb = StartChat.getDb();</span>
+<span class="fc" id="L701">    String sessionId = origDb.getLatestSession();</span>
     
     
-<span class="fc" id="L709">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
-<span class="fc" id="L710">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
+<span class="fc" id="L704">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
+<span class="fc" id="L705">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
     
-<span class="fc" id="L712">    StartChat.setDb(mockDb);</span>
+<span class="fc" id="L707">    StartChat.setDb(mockDb);</span>
 
-<span class="fc" id="L714">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/add&quot;).body(&quot;uri=hello&quot;).asString();</span>
-<span class="fc" id="L715">    System.out.println(&quot;/add Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L709">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/add&quot;).body(&quot;uri=hello&quot;).asString();</span>
+<span class="fc" id="L710">    System.out.println(&quot;/add Response: &quot; + response1.getBody());</span>
 
-<span class="fc" id="L717">    assertEquals(&quot;song added to your queue&quot;, response1.getBody());</span>
+<span class="fc" id="L712">    assertEquals(&quot;song added to your queue&quot;, response1.getBody());</span>
     
-<span class="fc" id="L719">    StartChat.setDb(origDb);</span>
-<span class="fc" id="L720">  }</span>
+<span class="fc" id="L714">    StartChat.setDb(origDb);</span>
+<span class="fc" id="L715">  }</span>
 
   @Test
   @Order(22)
   public void addSongTestNoSong() {
-<span class="fc" id="L725">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
-<span class="fc" id="L726">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
-<span class="fc" id="L727">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L720">    HttpResponse&lt;String&gt; response = Unirest.post(&quot;http://localhost:8080/joinroom/blues/&quot;).asString();</span>
+<span class="fc" id="L721">    response = Unirest.get(&quot;http://localhost:8080/chatroom/blues&quot;).asString();</span>
+<span class="fc" id="L722">    assertEquals(200, response.getStatus());</span>
     
-<span class="fc" id="L729">    SqLite mockDb = mock(SqLite.class);</span>
-<span class="fc" id="L730">    User mockUser = mock(User.class);</span>
-<span class="fc" id="L731">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
-<span class="fc" id="L732">    when(mockUser.addToQueue(&quot;hello&quot;)).thenReturn(&quot;song added&quot;);</span>
+<span class="fc" id="L724">    SqLite mockDb = mock(SqLite.class);</span>
+<span class="fc" id="L725">    User mockUser = mock(User.class);</span>
+<span class="fc" id="L726">    when(mockUser.getUsername()).thenReturn(&quot;testing1&quot;);</span>
+<span class="fc" id="L727">    when(mockUser.addToQueue(&quot;hello&quot;)).thenReturn(&quot;song added&quot;);</span>
     
-<span class="fc" id="L734">    SqLite origDb = StartChat.getDb();</span>
-<span class="fc" id="L735">    String sessionId = origDb.getLatestSession();</span>
+<span class="fc" id="L729">    SqLite origDb = StartChat.getDb();</span>
+<span class="fc" id="L730">    String sessionId = origDb.getLatestSession();</span>
     
     
-<span class="fc" id="L738">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
-<span class="fc" id="L739">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
+<span class="fc" id="L733">    when(mockDb.getUserBySessionId(sessionId)).thenReturn(mockUser);</span>
+<span class="fc" id="L734">    when(mockDb.getUserByName(&quot;testing1&quot;)).thenReturn(mockUser);</span>
     
-<span class="fc" id="L741">    StartChat.setDb(mockDb);</span>
+<span class="fc" id="L736">    StartChat.setDb(mockDb);</span>
 
-<span class="fc" id="L743">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/add&quot;).asString();</span>
-<span class="fc" id="L744">    System.out.println(&quot;/add Response: &quot; + response1.getBody());</span>
+<span class="fc" id="L738">    HttpResponse&lt;String&gt; response1 = Unirest.post(&quot;http://localhost:8080/add&quot;).asString();</span>
+<span class="fc" id="L739">    System.out.println(&quot;/add Response: &quot; + response1.getBody());</span>
 
-<span class="fc" id="L746">    assertEquals(&quot;no song uri&quot;, response1.getBody());</span>
+<span class="fc" id="L741">    assertEquals(&quot;no song uri&quot;, response1.getBody());</span>
     
-<span class="fc" id="L748">    StartChat.setDb(origDb);</span>
-<span class="fc" id="L749">  }</span>
+<span class="fc" id="L743">    StartChat.setDb(origDb);</span>
+<span class="fc" id="L744">  }</span>
   
   @Test
   @Order(23)
   public void authTest() {
 
     // Create HTTP request and get response
-<span class="fc" id="L756">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/auth&quot;).asString();</span>
-<span class="fc" id="L757">    SqLite db = StartChat.getDb();</span>
+<span class="fc" id="L751">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/auth&quot;).asString();</span>
+<span class="fc" id="L752">    SqLite db = StartChat.getDb();</span>
     
-<span class="fc" id="L759">    String sessionId = db.getLatestSession();</span>
+<span class="fc" id="L754">    String sessionId = db.getLatestSession();</span>
 
-<span class="fc" id="L761">    db.insertAuthenticatedUser(&quot;authTest&quot;, &quot;authToken&quot;, &quot;authRefresh&quot;, sessionId);</span>
+<span class="fc" id="L756">    db.insertAuthenticatedUser(&quot;authTest&quot;, &quot;authToken&quot;, &quot;authRefresh&quot;, sessionId);</span>
     
-<span class="fc" id="L763">    response = Unirest.get(&quot;http://localhost:8080/auth&quot;).asString();</span>
+<span class="fc" id="L758">    response = Unirest.get(&quot;http://localhost:8080/auth&quot;).asString();</span>
     
-<span class="fc" id="L765">    assertEquals(&quot;{}&quot;, response.getBody());</span>
+<span class="fc" id="L760">    assertEquals(&quot;{}&quot;, response.getBody());</span>
 	
-<span class="fc" id="L767">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L762">    assertEquals(200, response.getStatus());</span>
     
     //assertEquals(&quot;New user&quot;, response.getBody());
 	
-<span class="fc" id="L771">    System.out.println(&quot;/auth Response: &quot; + response.getBody());</span>
+<span class="fc" id="L766">    System.out.println(&quot;/auth Response: &quot; + response.getBody());</span>
     
-<span class="fc" id="L773">    Unirest.config().reset();</span>
-<span class="fc" id="L774">    Unirest.config().followRedirects(true);</span>
-<span class="fc" id="L775">  }</span>
+<span class="fc" id="L768">    Unirest.config().reset();</span>
+<span class="fc" id="L769">    Unirest.config().followRedirects(true);</span>
+<span class="fc" id="L770">  }</span>
   
   @Test
   @Order(24)
   public void authTestNoSessionId() {
-<span class="fc" id="L780">    StartChat.stop();</span>
-<span class="fc" id="L781">    StartChat.main(null);</span>
+<span class="fc" id="L775">    StartChat.stop();</span>
+<span class="fc" id="L776">    StartChat.main(null);</span>
     
-<span class="fc" id="L783">    Unirest.config().reset();</span>
-<span class="fc" id="L784">    Unirest.config().followRedirects(false);</span>
+<span class="fc" id="L778">    Unirest.config().reset();</span>
+<span class="fc" id="L779">    Unirest.config().followRedirects(false);</span>
 
-<span class="fc" id="L786">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/auth&quot;).asString();</span>
+<span class="fc" id="L781">    HttpResponse&lt;String&gt; response = Unirest.get(&quot;http://localhost:8080/auth&quot;).asString();</span>
     
-<span class="fc" id="L788">    System.out.println(&quot;/auth no sessionId Response: &quot; + response.getBody());</span>
+<span class="fc" id="L783">    System.out.println(&quot;/auth no sessionId Response: &quot; + response.getBody());</span>
     
-<span class="fc" id="L790">    assertNotEquals(&quot;{}&quot;, response.getBody());</span>
+<span class="fc" id="L785">    assertNotEquals(&quot;{}&quot;, response.getBody());</span>
     
-<span class="fc" id="L792">    assertEquals(200, response.getStatus());</span>
-<span class="fc" id="L793">    Unirest.config().reset();</span>
-<span class="fc" id="L794">    Unirest.config().followRedirects(true);</span>
-<span class="fc" id="L795">  }</span>
+<span class="fc" id="L787">    assertEquals(200, response.getStatus());</span>
+<span class="fc" id="L788">    Unirest.config().reset();</span>
+<span class="fc" id="L789">    Unirest.config().followRedirects(true);</span>
+<span class="fc" id="L790">  }</span>
 
   /**
   * This will run every time after a test has finished.
   */
   @AfterEach
   public void finishChat() {
-<span class="fc" id="L802">    SqLite db = StartChat.getDb();</span>
-<span class="fc" id="L803">    db.clear();</span>
+<span class="fc" id="L797">    SqLite db = StartChat.getDb();</span>
+<span class="fc" id="L798">    db.clear();</span>
     
-<span class="fc" id="L805">    StartChat.stop();</span>
-<span class="fc" id="L806">    System.out.println(&quot;After Each&quot;);</span>
-<span class="fc" id="L807">  }</span>
+<span class="fc" id="L800">    StartChat.stop();</span>
+<span class="fc" id="L801">    System.out.println(&quot;After Each&quot;);</span>
+<span class="fc" id="L802">  }</span>
 
   /**
    * This method runs only once after all the test cases have been executed.
    */
   @AfterAll
   public static void close() {
-<span class="fc" id="L814">    System.out.println(&quot;After All&quot;);</span>
-<span class="fc" id="L815">  }</span>
+<span class="fc" id="L809">    System.out.println(&quot;After All&quot;);</span>
+<span class="fc" id="L810">  }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 5, 2020 10:25:25 PM)</div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span>java (2) (Dec 6, 2020 2:15:21 PM)</div></body></html>
