@@ -46,11 +46,12 @@ const updateprops = (msg, setParticipants, setChat, genre) => {
     setParticipants(participantsArray)
     
 }
-const updatePlayListSongs = (songs, setPlayListSongs, setIsPlayListOpen) => {
+const updatePlayListSongs = (songs, name, setPlayListSongs, setIsPlayListOpen, setPlayListName) => {
     const songsArray = [...songs]
     console.log(songsArray)
     setPlayListSongs(songsArray)
     setIsPlayListOpen(true)
+    setPlayListName(name)
 }
 const closePlayList = (setIsPlayListOpen) => {
     setIsPlayListOpen(false)
@@ -61,6 +62,7 @@ const Chatroom = (props) => {
     const [chat, setChat] = useState([])
     const [playListSongs, setPlayListSongs] = useState([])
     const [isPlayListOpen, setIsPlayListOpen] = useState(false)
+    const [playListName, setPlayListName] = useState('')
     const location = useLocation()
     const genre  = location.state.genre
     useEffect(() => {
@@ -82,12 +84,12 @@ const Chatroom = (props) => {
         <div>
             <div className={classes.personPanelStyle}>
                 <PersonPanel genre={genre} participants={participants} 
-                  updatePlayListSongs={(songs) => updatePlayListSongs(songs, setPlayListSongs, setIsPlayListOpen)}
+                  updatePlayListSongs={(songs, name) => updatePlayListSongs(songs, name, setPlayListSongs, setIsPlayListOpen, setPlayListName)}
                 />
             </div>
             
             <ChatBoard chat={chat}/>
-            {isPlayListOpen ? <PlayList songs={playListSongs} closePlayList={() => closePlayList(setIsPlayListOpen)}/> : null}
+            {isPlayListOpen ? <PlayList songs={playListSongs} name={playListName} closePlayList={() => closePlayList(setIsPlayListOpen)}/> : null}
             <TextBox />
         </div>
     )

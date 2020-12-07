@@ -17,6 +17,11 @@ const styles = {
     arrowBack: {
         color: 'white',
         marginLeft: '25px',
+    },
+    personPanelDiv: {
+        overflow: 'scroll',
+        height: '100%',
+        overflowX: 'hidden',
     }
 }
 const leaveChatroom = (genre, history) => {
@@ -38,7 +43,7 @@ const PersonPanel = (props) => {
         }
     }, [])
     return (
-        <div>
+        <div className={classes.personPanelDiv}>
             <ArrowBackIcon className={classes.arrowBack} onClick={() => leaveChatroom(genre, history)}/>
             <h1 className={classes.roomHeader}>{genre}</h1>
             <PersonList participants={participants} updatePlayListSongs={updatePlayListSongs}/>
