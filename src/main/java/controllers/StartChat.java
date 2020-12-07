@@ -199,7 +199,7 @@ public final class StartChat {
       String response = db.authenticateUser(ctx.queryParam("code"),
               ctx.sessionAttribute("sessionId"));
       ctx.result(response);
-      ctx.redirect("https://cryptic-brushlands-09346.herokuapp.com"); //TODO change to HOME constant
+      ctx.redirect("http://localhost:3000"); //TODO change to HOME constant
     });
 
     app.get("/chatrooms", ctx -> {
