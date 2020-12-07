@@ -70,8 +70,7 @@ const Chatroom = (props) => {
         let hostname = 'localhost'
         let port = '8080'
         chatHistory = []
-        // let ws = new WebSocket('ws://' + hostname + ':' + port + '/chatroom')
-        let ws = new WebSocket('ws://' + 'autumn-audio.herokuapp.com' + '/chatroom')
+        let ws = new WebSocket('ws://' + hostname + ':' + port + '/chatroom')
         ws.onmessage = msg => updateprops(msg, setParticipants, setChat, genre);
         ws.onclose = () => console.log("WebSocket connection closed")
         return () => {
