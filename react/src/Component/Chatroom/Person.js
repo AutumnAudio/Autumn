@@ -54,7 +54,7 @@ const Person = (props) => {
             <PersonIcon className={classes.personIcon}/>
             <div className={classes.nameDiv}>{person.username}</div>
             <AddIcon className={classes.addIcon}/>
-            <div className={classes.currentSongDiv} onClick={() => updatePlayListSongs(recentlyPlayedSongs)}>
+            <div className={classes.currentSongDiv} onClick={() => updatePlayListSongs(recentlyPlayedSongs, person.username)}>
                 {currentSong} - {currentArtist}
             </div>
         </div>

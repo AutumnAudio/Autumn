@@ -11,6 +11,7 @@ const styles = {
         height: '90%',
         background: '#F3F2FF',
         overflow: 'scroll',
+        overflowX: 'hidden',
     }
 };
 

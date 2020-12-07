@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should be able to render person panel 1`] = `
-<div>
+<div
+  className="PersonPanel-personPanelDiv-3"
+>
   <svg
     aria-hidden={true}
     className="MuiSvgIcon-root PersonPanel-arrowBack-2"
@@ -19,14 +21,14 @@ exports[`should be able to render person panel 1`] = `
     POP
   </h1>
   <div
-    className="PersonList-personListDiv-3"
+    className="PersonList-personListDiv-4"
   >
     <div
-      className="Person-personDiv-7"
+      className="Person-personDiv-8"
     >
       <svg
         aria-hidden={true}
-        className="MuiSvgIcon-root Person-personIcon-4"
+        className="MuiSvgIcon-root Person-personIcon-5"
         focusable="false"
         viewBox="0 0 24 24"
       >
@@ -35,13 +37,13 @@ exports[`should be able to render person panel 1`] = `
         />
       </svg>
       <div
-        className="Person-nameDiv-5"
+        className="Person-nameDiv-6"
       >
         testUser
       </div>
       <svg
         aria-hidden={true}
-        className="MuiSvgIcon-root Person-addIcon-8"
+        className="MuiSvgIcon-root Person-addIcon-9"
         focusable="false"
         viewBox="0 0 24 24"
       >
@@ -50,7 +52,7 @@ exports[`should be able to render person panel 1`] = `
         />
       </svg>
       <div
-        className="Person-currentSongDiv-6"
+        className="Person-currentSongDiv-7"
         onClick={[Function]}
       >
         song name
@@ -59,11 +61,11 @@ exports[`should be able to render person panel 1`] = `
       </div>
     </div>
     <div
-      className="Person-personDiv-7"
+      className="Person-personDiv-8"
     >
       <svg
         aria-hidden={true}
-        className="MuiSvgIcon-root Person-personIcon-4"
+        className="MuiSvgIcon-root Person-personIcon-5"
         focusable="false"
         viewBox="0 0 24 24"
       >
@@ -72,13 +74,13 @@ exports[`should be able to render person panel 1`] = `
         />
       </svg>
       <div
-        className="Person-nameDiv-5"
+        className="Person-nameDiv-6"
       >
         testUser2
       </div>
       <svg
         aria-hidden={true}
-        className="MuiSvgIcon-root Person-addIcon-8"
+        className="MuiSvgIcon-root Person-addIcon-9"
         focusable="false"
         viewBox="0 0 24 24"
       >
@@ -87,7 +89,7 @@ exports[`should be able to render person panel 1`] = `
         />
       </svg>
       <div
-        className="Person-currentSongDiv-6"
+        className="Person-currentSongDiv-7"
         onClick={[Function]}
       >
         another song
