@@ -67,5 +67,5 @@ PASS src/Component/Chatroom/ChatMessage.test.js
 Test Suites: 8 passed, 8 total
 Tests:       8 passed, 8 total
 Snapshots:   8 passed, 8 total
-Time:        3.258 s
+Time:        3.145 s
 Ran all test suites.
